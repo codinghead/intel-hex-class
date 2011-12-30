@@ -1,0 +1,13 @@
+#
+# Makefile for the Free Software Foundations g++ compiler
+#
+CC=g++
+CFLAGS=-g -Wall
+CNAME=intelhextest
+DNAME=intelhexclass
+
+$(CNAME): $(CNAME).cpp
+	$(CC) $(CFLAGS) -o$(CNAME) $(CNAME).cpp $(DNAME).cpp
+
+clean:
+	rm $(CNAME)
