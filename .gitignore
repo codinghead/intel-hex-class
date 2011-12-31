@@ -1,0 +1,5 @@
+# Ignore file for Intel HEX Class project
+
+# Ignore gedit backup files
+*.*~
+
