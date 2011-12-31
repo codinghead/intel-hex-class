@@ -13,7 +13,7 @@ void usage()
 {
     cerr << "Usage is " << program_name <<
                  " [file]" << endl;
-    exit (8);
+    exit (EXIT_FAILURE);
 }
 
 int main(int argc, char *argv[])

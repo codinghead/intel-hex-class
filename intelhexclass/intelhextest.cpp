@@ -45,6 +45,8 @@ int main(int argc, char *argv[])
     
     intelHexInput >> classTest;
     
+    cout << classTest.outputSBA() << endl;
+    
     return(0);
 }
 

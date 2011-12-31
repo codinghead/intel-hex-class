@@ -32,6 +32,10 @@ class intelhex {
         /* Converts a 2 char string to its HEX value                          */
         friend unsigned char stringToHex(string value);
         
+        /* Convert the data content of a data record                          */
+        friend void decodeDataRecord(unsigned char recordLength,
+                                     string data);
+        
     private:
         /* Stores the addresses and their data of the HEX file                */
         map<int, unsigned char> ihContent;
@@ -42,8 +46,8 @@ class intelhex {
         /* Return value for handling results of map operations                */
         pair<map<int, unsigned char>::iterator,bool> ihReturn;
   
-        /* Stores the current address                                         */
-        unsigned long currentAddress;
+        /* Stores the segment base address                                    */
+        unsigned long segmentBaseAddress;
         
         /* Stores the CS register value for a 'Start Segment Address Record'  */
         unsigned short csRegister;
@@ -60,5 +64,7 @@ class intelhex {
 
         /* Destructor                                                         */
         ~intelhex();
+        
+        unsigned long outputSBA();
 };
     

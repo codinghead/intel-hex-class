@@ -18,8 +18,8 @@ enum intelhexRecordType {
 /* Constructor                                                                */
 intelhex::intelhex()
 {
-    /* Initialise the address pointer to zero                                 */
-    currentAddress = 0;
+    /* Initialise the segment base address to zero                            */
+    segmentBaseAddress = 0;
     /* Clear content of register variables used with the 'Start Segment' and  */
     /* 'Start Linear' address records                                         */
     ipRegister = 0;
@@ -33,35 +33,6 @@ intelhex::~intelhex()
     
 }
 
-/* Converts ASCII chars to their HEX values                                   */
-unsigned char charToHex(char value)
-{
-    // cout << "In charToHex()" << value << endl;
-    
-    
-    if (value >= '0' && value <= '9')
-    {
-        //std::cout << "A:Found " << value << " returning " << static_cast<unsigned int>(value - '0') << std::endl;
-        return static_cast<unsigned char>(value - '0');
-    }
-    else if (value >= 'A' && value <= 'F')
-    {
-        //std::cout << "B:Found " << value << " returning " << static_cast<unsigned int>(value - 'A' + 10) << std::endl;
-        return static_cast<unsigned char>(value - 'A' + 10);
-    }
-    else if (value >= 'a' && value <= 'f')
-    {
-        //std::cout << "C:Found " << value << " returning " << static_cast<unsigned int>(value - 'a' + 10) << std::endl;
-        return static_cast<unsigned char>(value - 'a' + 10);
-    }
-    else
-    {
-        /* Add some error code here                                           */
-        //cerr << "Error: In charToHex()" << endl;
-        return 0xFF;
-    }
-}
-
 /* Converts a 2 char string to its HEX value                                  */
 unsigned char stringToHex(string value)
 {
@@ -70,7 +41,7 @@ unsigned char stringToHex(string value)
     
     if(value.length() == 2)
     {
-        cout << "In stringToHex() " << value << " ";
+        //cout << "In stringToHex() " << value << " ";
         valueIterator = value.begin();
         
         for (int x=0; x < 2; x++)
@@ -80,29 +51,32 @@ unsigned char stringToHex(string value)
             
             if (*valueIterator >= '0' && *valueIterator <= '9')
             {
-                cout << " 0-9 ";
-                returnValue += static_cast<unsigned char>(*valueIterator - '0');
+                //cout << " 0-9 ";
+                returnValue += 
+                               static_cast<unsigned char>(*valueIterator - '0');
             }
             else if (*valueIterator >= 'A' && *valueIterator <= 'F')
             {                
-                cout << " A-F ";
-                returnValue += static_cast<unsigned char>(*valueIterator - 'A' + 10);
+                //cout << " A-F ";
+                returnValue += 
+                          static_cast<unsigned char>(*valueIterator - 'A' + 10);
             }
             else if (*valueIterator >= 'a' && *valueIterator <= 'f')
             {
-                cout << " a-f ";
-                returnValue += static_cast<unsigned char>(*valueIterator - 'a' + 10);
+                //cout << " a-f ";
+                returnValue += 
+                          static_cast<unsigned char>(*valueIterator - 'a' + 10);
             }
             else
             {
-                /* Add some error code here                                           */
-                //cerr << "Error: In charToHex()" << endl;
+                /* Add some error code here                                   */
+                cerr << "Error: In charToHex()" << endl;
                 returnValue = 0;
             }
             ++valueIterator;
         }
     }
-    cout << returnValue << ";" << endl;
+    //cout << returnValue << ";" << endl;
     
     return returnValue;
 }
@@ -110,6 +84,8 @@ unsigned char stringToHex(string value)
 /* Input Stream for Intel HEX File Decoding                                   */
 istream& operator>>(istream& dataIn, const intelhex& intelhexData)
 {
+    /* Local intelhex class to access private variables                       */
+    intelhex ihLocal;
     // Create a string to store lines of Intel Hex info
 	string ihLine;
 	/* Create a string to store a single byte of Intel HEX info               */
@@ -118,10 +94,6 @@ istream& operator>>(istream& dataIn, const intelhex& intelhexData)
     string::iterator ihLineIterator;
     // Create a line counter
     unsigned long lineCounter = 0;
-    /* Variables to hold upper and lower nibbles of data being read during    */
-    /* decoding                                                               */
-    unsigned char upperNibble;
-    unsigned char lowerNibble;
     // Variable to hold a single byte (two chars) of data
     unsigned char byteRead;
     // Variable to calculate the checksum for each line
@@ -132,7 +104,6 @@ istream& operator>>(istream& dataIn, const intelhex& intelhexData)
     unsigned long loadOffset;
     // Variables to hold the record type
     intelhexRecordType recordType;
-    unsigned char tempRecordType;
     
     do
     {
@@ -184,18 +155,7 @@ istream& operator>>(istream& dataIn, const intelhex& intelhexData)
                 ++ihLineIterator;
                 
                 byteRead = stringToHex(ihByte);
-                
-#if 0                
-                upperNibble = charToHex(static_cast<char>(*ihLineIterator));
-            
-                ++ihLineIterator;
-            
-                lowerNibble = charToHex(static_cast<char>(*ihLineIterator));
-            
-                ++ihLineIterator;
-            
-                byteRead = (upperNibble << 4) + lowerNibble;
-#endif            
+                           
                 intelHexChecksum += byteRead;
             }
         
@@ -209,100 +169,228 @@ istream& operator>>(istream& dataIn, const intelhex& intelhexData)
                 /* Clear all the variables associated with decoding a line of */
                 /* Intel HEX code.                                            */
                 recordLength = 0;
-                tempRecordType = 0;
                 loadOffset = 0;
                 
                 /* Get the record length                                      */
-                upperNibble = charToHex(static_cast<char>(*ihLineIterator));
+                ihByte.erase();
+                ihByte = *ihLineIterator;
                 ++ihLineIterator;
-                lowerNibble = charToHex(static_cast<char>(*ihLineIterator));
+                ihByte += *ihLineIterator;
                 ++ihLineIterator;
-                recordLength = (upperNibble << 4) + lowerNibble;
+                recordLength = stringToHex(ihByte);
                 
                 /* Get the load offset (2 bytes)                              */
-                upperNibble = charToHex(static_cast<char>(*ihLineIterator));
+                ihByte.erase();
+                ihByte = *ihLineIterator;
                 ++ihLineIterator;
-                lowerNibble = charToHex(static_cast<char>(*ihLineIterator));
+                ihByte += *ihLineIterator;
                 ++ihLineIterator;
-                loadOffset = 
-                   static_cast<unsigned long>((upperNibble << 4) + lowerNibble);
+                loadOffset = static_cast<unsigned long>(stringToHex(ihByte));
                 loadOffset <<= 8;
-                upperNibble = charToHex(static_cast<char>(*ihLineIterator));
+                ihByte.erase();
+                ihByte = *ihLineIterator;
                 ++ihLineIterator;
-                lowerNibble = charToHex(static_cast<char>(*ihLineIterator));
+                ihByte += *ihLineIterator;
                 ++ihLineIterator;
-                loadOffset += 
-                   static_cast<unsigned long>((upperNibble << 4) + lowerNibble);
+                loadOffset += static_cast<unsigned long>(stringToHex(ihByte));
                 
                 /* Get the record type                                        */
-                upperNibble = charToHex(static_cast<char>(*ihLineIterator));
+                ihByte.erase();
+                ihByte = *ihLineIterator;
                 ++ihLineIterator;
-                lowerNibble = charToHex(static_cast<char>(*ihLineIterator));
+                ihByte += *ihLineIterator;
                 ++ihLineIterator;
-                tempRecordType = (upperNibble << 4) + lowerNibble;
-                
-                /* Convert record type to proper type                         */
-                recordType = static_cast<intelhexRecordType>(tempRecordType);
+                recordType = 
+                           static_cast<intelhexRecordType>(stringToHex(ihByte));
                            
                 /* Decode the INFO or DATA portion of the record              */
                 switch (recordType)
                 {
                     case DATA_RECORD:
                         //decodeDataRecord();
+                        cout << "Data Record" << endl;
                         break;
                     
                     case END_OF_FILE_RECORD:
                         /* Note the line number at this point. Later, check   */
                         /* that there were no more lines after this one.      */
                         /* Generate error if there were                       */
+                        cout << "End of File" << endl;
                         break;
                         
                     case EXTENDED_SEGMENT_ADDRESS:
                         /* Make sure we have 2 bytes of data                  */
                         if (recordLength == 2)
                         {
+                            /* Extract the two bytes of the ESA               */
+                            unsigned long extSegAddress = 0;
+                            
+                            ihByte.erase();
+                            ihByte = *ihLineIterator;
+                            ++ihLineIterator;
+                            ihByte += *ihLineIterator;
+                            ++ihLineIterator;
+                            extSegAddress =
+                                static_cast<unsigned long>(stringToHex(ihByte));
+                            extSegAddress <<= 8;
+                            ihByte.erase();
+                            ihByte = *ihLineIterator;
+                            ++ihLineIterator;
+                            ihByte += *ihLineIterator;
+                            ++ihLineIterator;
+                            extSegAddress +=
+                                static_cast<unsigned long>(stringToHex(ihByte));
+                            
+                            /* ESA is bits 4-19 of the segment base address   */
+                            /* (SBA), so shift left 4 bits                    */
+                            extSegAddress <<= 4;
+                            
+                            /* Update the SBA                                 */
+                            ihLocal.segmentBaseAddress = extSegAddress;
                         }
                         else
                         {
                             /* Note the error                                 */
+                            cout << "Error in Ext. Seg. Address" << endl;
                         }
+                        cout << "Ext. Seg. Address" << endl;
                         break;
                         
                     case START_SEGMENT_ADDRESS:
                         /* Make sure we have 4 bytes of data                  */
                         if (recordLength == 4)
                         {
+                            ihLocal.csRegister = 0;
+                            ihLocal.ipRegister = 0;
+                            
+                            ihByte.erase();
+                            ihByte = *ihLineIterator;
+                            ++ihLineIterator;
+                            ihByte += *ihLineIterator;
+                            ++ihLineIterator;
+                            ihLocal.csRegister =
+                                static_cast<unsigned long>(stringToHex(ihByte));
+                            ihLocal.csRegister <<= 8;
+                            ihByte.erase();
+                            ihByte = *ihLineIterator;
+                            ++ihLineIterator;
+                            ihByte += *ihLineIterator;
+                            ++ihLineIterator;
+                            ihLocal.csRegister +=
+                                static_cast<unsigned long>(stringToHex(ihByte));
+                                
+                            ihByte.erase();
+                            ihByte = *ihLineIterator;
+                            ++ihLineIterator;
+                            ihByte += *ihLineIterator;
+                            ++ihLineIterator;
+                            ihLocal.ipRegister =
+                                static_cast<unsigned long>(stringToHex(ihByte));
+                            ihLocal.ipRegister <<= 8;
+                            ihByte.erase();
+                            ihByte = *ihLineIterator;
+                            ++ihLineIterator;
+                            ihByte += *ihLineIterator;
+                            ++ihLineIterator;
+                            ihLocal.ipRegister +=
+                                static_cast<unsigned long>(stringToHex(ihByte));
                         }
                         else
                         {
                             /* Note the error                                 */
+                            cout << "Error in Start Seg. Address" << endl;
                         }
+                        cout << "Start Seg. Address" << endl;
                         break;
                         
                     case EXTENDED_LINEAR_ADDRESS:
                         /* Make sure we have 2 bytes of data                  */
                         if (recordLength == 2)
                         {
+                            /* Extract the two bytes of the ELA               */
+                            unsigned long extLinAddress = 0;
+                            
+                            ihByte.erase();
+                            ihByte = *ihLineIterator;
+                            ++ihLineIterator;
+                            ihByte += *ihLineIterator;
+                            ++ihLineIterator;
+                            extLinAddress =
+                                static_cast<unsigned long>(stringToHex(ihByte));
+                            extLinAddress <<= 8;
+                            ihByte.erase();
+                            ihByte = *ihLineIterator;
+                            ++ihLineIterator;
+                            ihByte += *ihLineIterator;
+                            ++ihLineIterator;
+                            extLinAddress +=
+                                static_cast<unsigned long>(stringToHex(ihByte));
+                            
+                            /* ELA is bits 16-31 of the segment base address  */
+                            /* (SBA), so shift left 16 bits                   */
+                            extLinAddress <<= 16;
+                            
+                            /* Update the SBA                                 */
+                            ihLocal.segmentBaseAddress = extLinAddress;
                         }
                         else
                         {
                             /* Note the error                                 */
+                            cout << "Error in Ext. Lin. Address" << endl;
                         }
+                        cout << "Ext. Lin. Address" << endl;
                         break;
                         
                     case START_LINEAR_ADDRESS:
                         /* Make sure we have 4 bytes of data                  */
                         if (recordLength == 4)
                         {
+                            /* Extract the four bytes of the SLA              */
+                            ihLocal.eipRegister = 0;
+                            
+                            ihByte.erase();
+                            ihByte = *ihLineIterator;
+                            ++ihLineIterator;
+                            ihByte += *ihLineIterator;
+                            ++ihLineIterator;
+                            ihLocal.eipRegister =
+                                static_cast<unsigned long>(stringToHex(ihByte));
+                            ihLocal.eipRegister <<= 8;
+                            ihByte.erase();
+                            ihByte = *ihLineIterator;
+                            ++ihLineIterator;
+                            ihByte += *ihLineIterator;
+                            ++ihLineIterator;
+                            ihLocal.eipRegister +=
+                                static_cast<unsigned long>(stringToHex(ihByte));
+                            ihLocal.eipRegister <<= 8;
+                            ihByte.erase();
+                            ihByte = *ihLineIterator;
+                            ++ihLineIterator;
+                            ihByte += *ihLineIterator;
+                            ++ihLineIterator;
+                            ihLocal.eipRegister +=
+                                static_cast<unsigned long>(stringToHex(ihByte));
+                            ihLocal.eipRegister <<= 8;
+                            ihByte.erase();
+                            ihByte = *ihLineIterator;
+                            ++ihLineIterator;
+                            ihByte += *ihLineIterator;
+                            ++ihLineIterator;
+                            ihLocal.eipRegister +=
+                                static_cast<unsigned long>(stringToHex(ihByte));
                         }
                         else
                         {
                             /* Note the error                                 */
+                            cout << "Error in Start Lin. Address" << endl;
                         }
+                        cout << "Start Lin. Address" << endl;
                         break;
                     
                     default:
                         /* Handle the error here                              */
+                        cout << "Unknown Record" << endl;
                         break;
                 }
             }
@@ -317,4 +405,9 @@ istream& operator>>(istream& dataIn, const intelhex& intelhexData)
     cout << ihLine << endl << lineCounter << endl;
     
     return(dataIn);
+}
+
+inline void intelhex::outputSBA()
+{
+    cout << segmentBaseAddress << endl;
 }
