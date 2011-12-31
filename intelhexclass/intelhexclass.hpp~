@@ -6,9 +6,7 @@
 *                                                                              *
 * This class is constructed based upon the definition given in the document    *
 * 'Hexadecimal Object File Format Specification', Revision A, January 6, 1988, *
-* 
-
-
+* © 1998 Intel Corporation                                                     *
 *------------------------------------------------------------------------------*
 * class intelhex                                                               *
 *   Member Functions:                                                          *
@@ -18,16 +16,6 @@
 #include <map>
 
 using namespace std;
-
-enum intelhexRecordType {
-    DATA_RECORD,
-    END_OF_FILE_RECORD,
-    EXTENDED_SEGMENT_ADDRESS,
-    START_SEGMENT_ADDRESS,
-    EXTENDED_LINEAR_ADDRESS,
-    START_LINEAR_ADDRESS,
-    NO_OF_RECORD_TYPES
-};
 
 class intelhex {
         /* Output stream operator to encode contents                          */

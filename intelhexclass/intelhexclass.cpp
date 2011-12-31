@@ -5,6 +5,16 @@
 
 using namespace std;
 
+enum intelhexRecordType {
+    DATA_RECORD,
+    END_OF_FILE_RECORD,
+    EXTENDED_SEGMENT_ADDRESS,
+    START_SEGMENT_ADDRESS,
+    EXTENDED_LINEAR_ADDRESS,
+    START_LINEAR_ADDRESS,
+    NO_OF_RECORD_TYPES
+};
+
 /* Constructor                                                                */
 intelhex::intelhex()
 {
@@ -27,6 +37,7 @@ intelhex::~intelhex()
 unsigned char charToHex(char value)
 {
     // cout << "In charToHex()" << value << endl;
+    
     
     if (value >= '0' && value <= '9')
     {
@@ -51,13 +62,60 @@ unsigned char charToHex(char value)
     }
 }
 
+/* Converts a 2 char string to its HEX value                                  */
+unsigned char stringToHex(string value)
+{
+    unsigned char returnValue = 0;
+    string::iterator valueIterator;
+    
+    if(value.length() == 2)
+    {
+        //cout << "In stringToHex() " << value << " ";
+        valueIterator = value.begin();
+        
+        for (int x=0; x < 2; x++)
+        {
+            /* Shift result variable 4 bits to the left                       */
+            returnValue <<= 4;
+            
+            if (*valueIterator >= '0' && *valueIterator <= '9')
+            {
+                //cout << " 0-9 ";
+                returnValue += static_cast<unsigned char>(*valueIterator - '0');
+            }
+            else if (*valueIterator >= 'A' && *valueIterator <= 'F')
+            {                
+                //cout << " A-F ";
+                returnValue += static_cast<unsigned char>(*valueIterator - 'A' + 10);
+            }
+            else if (*valueIterator >= 'a' && *valueIterator <= 'f')
+            {
+                //cout << " a-f ";
+                returnValue += static_cast<unsigned char>(*valueIterator - 'a' + 10);
+            }
+            else
+            {
+                /* Add some error code here                                           */
+                cerr << "Error: In charToHex()" << endl;
+                returnValue = 0;
+            }
+            ++valueIterator;
+        }
+    }
+    //cout << returnValue << ";" << endl;
+    
+    return returnValue;
+}
+
 /* Input Stream for Intel HEX File Decoding                                   */
 istream& operator>>(istream& dataIn, const intelhex& intelhexData)
 {
     // Create a string to store lines of Intel Hex info
-	std::string ihLine;
+	string ihLine;
+	/* Create a string to store a single byte of Intel HEX info               */
+	string ihByte;
 	// Create an iterator for this variable
-    std::string::iterator ihLineIterator;
+    string::iterator ihLineIterator;
     // Create a line counter
     unsigned long lineCounter = 0;
     /* Variables to hold upper and lower nibbles of data being read during    */
@@ -73,7 +131,7 @@ istream& operator>>(istream& dataIn, const intelhex& intelhexData)
     // Variable to hold the load offset
     unsigned long loadOffset;
     // Variables to hold the record type
-    enum intelhexRecordType recordType;
+    intelhexRecordType recordType;
     unsigned char tempRecordType;
     
     do
@@ -118,6 +176,16 @@ istream& operator>>(istream& dataIn, const intelhex& intelhexData)
                 /* By adding all the bytes in a line together *including* the */
                 /* checksum byte, we should get a result of '0' at the end.   */
                 /* If not, there is a checksum error                          */
+                ihByte.erase();
+                
+                ihByte = *ihLineIterator;
+                ++ihLineIterator;
+                ihByte += *ihLineIterator;
+                ++ihLineIterator;
+                
+                byteRead = stringToHex(ihByte);
+                
+#if 0                
                 upperNibble = charToHex(static_cast<char>(*ihLineIterator));
             
                 ++ihLineIterator;
@@ -127,7 +195,7 @@ istream& operator>>(istream& dataIn, const intelhex& intelhexData)
                 ++ihLineIterator;
             
                 byteRead = (upperNibble << 4) + lowerNibble;
-            
+#endif            
                 intelHexChecksum += byteRead;
             }
         
@@ -174,8 +242,7 @@ istream& operator>>(istream& dataIn, const intelhex& intelhexData)
                 tempRecordType = (upperNibble << 4) + lowerNibble;
                 
                 /* Convert record type to proper type                         */
-                recordType = 
-                           static_cast<enum intelhexRecordType>(tempRecordType);
+                recordType = static_cast<intelhexRecordType>(tempRecordType);
                            
                 /* Decode the INFO or DATA portion of the record              */
                 switch (recordType)

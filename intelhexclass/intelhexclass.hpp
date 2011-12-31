@@ -17,16 +17,6 @@
 
 using namespace std;
 
-enum intelhexRecordType {
-    DATA_RECORD,
-    END_OF_FILE_RECORD,
-    EXTENDED_SEGMENT_ADDRESS,
-    START_SEGMENT_ADDRESS,
-    EXTENDED_LINEAR_ADDRESS,
-    START_LINEAR_ADDRESS,
-    NO_OF_RECORD_TYPES
-};
-
 class intelhex {
         /* Output stream operator to encode contents                          */
         friend ostream& operator<<(ostream& dataOut, 
@@ -38,6 +28,9 @@ class intelhex {
                                    
         /* Converts ASCII char to their HEX values                            */
         friend unsigned char charToHex(char value);
+        
+        /* Converts a 2 char string to its HEX value                          */
+        friend unsigned char stringToHex(string value);
         
     private:
         /* Stores the addresses and their data of the HEX file                */
