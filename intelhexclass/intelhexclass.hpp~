@@ -65,6 +65,6 @@ class intelhex {
         /* Destructor                                                         */
         ~intelhex();
         
-        void outputSBA();
+        unsigned long outputSBA();
 };
     

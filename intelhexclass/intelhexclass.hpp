@@ -24,7 +24,7 @@ class intelhex {
         
         /* Input stream to decode contents                                    */
         friend istream& operator>>(istream& dataIn, 
-                                   const intelhex& intelhexData);
+                                   intelhex& intelhexData);
                                    
         /* Converts ASCII char to their HEX values                            */
         friend unsigned char charToHex(char value);
