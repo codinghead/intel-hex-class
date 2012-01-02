@@ -29,13 +29,6 @@ class intelhex {
         /* Converts ASCII char to their HEX values                            */
         friend unsigned char charToHex(char value);
         
-        /* Converts a 2 char string to its HEX value                          */
-        friend unsigned char stringToHex(string value);
-        
-        /* Convert the data content of a data record                          */
-        friend void decodeDataRecord(unsigned char recordLength,
-                                     string data);
-        
     private:
         /* Stores the addresses and their data of the HEX file                */
         map<int, unsigned char> ihContent;
@@ -57,6 +50,12 @@ class intelhex {
         
         /* Stores the EIP register value for a 'Start Linear Address Record'  */
         unsigned long eipRegister;
+        
+        /* Converts a 2 char string to its HEX value                          */
+        unsigned char stringToHex(string value);
+        
+        /* Convert the data content of a data record                          */
+        void decodeDataRecord(unsigned char recordLength, string data);
         
     public:
         /* Constructor                                                        */

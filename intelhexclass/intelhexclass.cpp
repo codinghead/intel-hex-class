@@ -34,7 +34,7 @@ intelhex::~intelhex()
 }
 
 /* Converts a 2 char string to its HEX value                                  */
-unsigned char stringToHex(string value)
+unsigned char intelhex::stringToHex(string value)
 {
     unsigned char returnValue = 0;
     string::iterator valueIterator;
@@ -81,8 +81,18 @@ unsigned char stringToHex(string value)
     return returnValue;
 }
 
+void intelhex::decodeDataRecord(nsigned char recordLength, string data)
+{
+
+}
+
+unsigned long intelhex::outputSBA()
+{
+    return (segmentBaseAddress);
+}
+
 /* Input Stream for Intel HEX File Decoding                                   */
-istream& operator>>(istream& dataIn, intelhex& intelhexLocal)
+istream& operator>>(istream& dataIn, intelhex& ihLocal)
 {
     // Create a string to store lines of Intel Hex info
 	string ihLine;
@@ -152,7 +162,7 @@ istream& operator>>(istream& dataIn, intelhex& intelhexLocal)
                 ihByte += *ihLineIterator;
                 ++ihLineIterator;
                 
-                byteRead = stringToHex(ihByte);
+                byteRead = ihLocal.stringToHex(ihByte);
                            
                 intelHexChecksum += byteRead;
             }
@@ -175,7 +185,7 @@ istream& operator>>(istream& dataIn, intelhex& intelhexLocal)
                 ++ihLineIterator;
                 ihByte += *ihLineIterator;
                 ++ihLineIterator;
-                recordLength = stringToHex(ihByte);
+                recordLength = ihLocal.stringToHex(ihByte);
                 
                 /* Get the load offset (2 bytes)                              */
                 ihByte.erase();
@@ -183,14 +193,16 @@ istream& operator>>(istream& dataIn, intelhex& intelhexLocal)
                 ++ihLineIterator;
                 ihByte += *ihLineIterator;
                 ++ihLineIterator;
-                loadOffset = static_cast<unsigned long>(stringToHex(ihByte));
+                loadOffset = 
+                        static_cast<unsigned long>(ihLocal.stringToHex(ihByte));
                 loadOffset <<= 8;
                 ihByte.erase();
                 ihByte = *ihLineIterator;
                 ++ihLineIterator;
                 ihByte += *ihLineIterator;
                 ++ihLineIterator;
-                loadOffset += static_cast<unsigned long>(stringToHex(ihByte));
+                loadOffset += 
+                        static_cast<unsigned long>(ihLocal.stringToHex(ihByte));
                 
                 /* Get the record type                                        */
                 ihByte.erase();
@@ -199,7 +211,7 @@ istream& operator>>(istream& dataIn, intelhex& intelhexLocal)
                 ihByte += *ihLineIterator;
                 ++ihLineIterator;
                 recordType = 
-                           static_cast<intelhexRecordType>(stringToHex(ihByte));
+                   static_cast<intelhexRecordType>(ihLocal.stringToHex(ihByte));
                            
                 /* Decode the INFO or DATA portion of the record              */
                 switch (recordType)
@@ -228,23 +240,23 @@ istream& operator>>(istream& dataIn, intelhex& intelhexLocal)
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            extSegAddress =
-                                static_cast<unsigned long>(stringToHex(ihByte));
+                            extSegAddress = static_cast<unsigned long>
+                                                  (ihLocal.stringToHex(ihByte));
                             extSegAddress <<= 8;
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            extSegAddress +=
-                                static_cast<unsigned long>(stringToHex(ihByte));
+                            extSegAddress += static_cast<unsigned long>
+                                                  (ihLocal.stringToHex(ihByte));
                             
                             /* ESA is bits 4-19 of the segment base address   */
                             /* (SBA), so shift left 4 bits                    */
                             extSegAddress <<= 4;
                             
                             /* Update the SBA                                 */
-                            intelhexLocal.segmentBaseAddress = extSegAddress;
+                            ihLocal.segmentBaseAddress = extSegAddress;
                         }
                         else
                         {
@@ -258,40 +270,40 @@ istream& operator>>(istream& dataIn, intelhex& intelhexLocal)
                         /* Make sure we have 4 bytes of data                  */
                         if (recordLength == 4)
                         {
-                            intelhexLocal.csRegister = 0;
-                            intelhexLocal.ipRegister = 0;
+                            ihLocal.csRegister = 0;
+                            ihLocal.ipRegister = 0;
                             
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            intelhexLocal.csRegister =
-                                static_cast<unsigned long>(stringToHex(ihByte));
-                            intelhexLocal.csRegister <<= 8;
+                            ihLocal.csRegister = static_cast<unsigned long>
+                                                  (ihLocal.stringToHex(ihByte));
+                            ihLocal.csRegister <<= 8;
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            intelhexLocal.csRegister +=
-                                static_cast<unsigned long>(stringToHex(ihByte));
+                            ihLocal.csRegister += static_cast<unsigned long>
+                                                  (ihLocal.stringToHex(ihByte));
                                 
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            intelhexLocal.ipRegister =
-                                static_cast<unsigned long>(stringToHex(ihByte));
-                            intelhexLocal.ipRegister <<= 8;
+                            ihLocal.ipRegister = static_cast<unsigned long>
+                                                  (ihLocal.stringToHex(ihByte));
+                            ihLocal.ipRegister <<= 8;
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            intelhexLocal.ipRegister +=
-                                static_cast<unsigned long>(stringToHex(ihByte));
+                            ihLocal.ipRegister += static_cast<unsigned long>
+                                                  (ihLocal.stringToHex(ihByte));
                         }
                         else
                         {
@@ -313,23 +325,23 @@ istream& operator>>(istream& dataIn, intelhex& intelhexLocal)
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            extLinAddress =
-                                static_cast<unsigned long>(stringToHex(ihByte));
+                            extLinAddress = static_cast<unsigned long>
+                                                  (ihLocal.stringToHex(ihByte));
                             extLinAddress <<= 8;
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            extLinAddress +=
-                                static_cast<unsigned long>(stringToHex(ihByte));
+                            extLinAddress += static_cast<unsigned long>
+                                                  (ihLocal.stringToHex(ihByte));
                             
                             /* ELA is bits 16-31 of the segment base address  */
                             /* (SBA), so shift left 16 bits                   */
                             extLinAddress <<= 16;
                             
                             /* Update the SBA                                 */
-                            intelhexLocal.segmentBaseAddress = extLinAddress;
+                            ihLocal.segmentBaseAddress = extLinAddress;
                         }
                         else
                         {
@@ -344,39 +356,39 @@ istream& operator>>(istream& dataIn, intelhex& intelhexLocal)
                         if (recordLength == 4)
                         {
                             /* Extract the four bytes of the SLA              */
-                            intelhexLocal.eipRegister = 0;
+                            ihLocal.eipRegister = 0;
                             
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            intelhexLocal.eipRegister =
-                                static_cast<unsigned long>(stringToHex(ihByte));
-                            intelhexLocal.eipRegister <<= 8;
+                            ihLocal.eipRegister = static_cast<unsigned long>
+                                                  (ihLocal.stringToHex(ihByte));
+                            ihLocal.eipRegister <<= 8;
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            intelhexLocal.eipRegister +=
-                                static_cast<unsigned long>(stringToHex(ihByte));
-                            intelhexLocal.eipRegister <<= 8;
+                            ihLocal.eipRegister += static_cast<unsigned long>
+                                                  (ihLocal.stringToHex(ihByte));
+                            ihLocal.eipRegister <<= 8;
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            intelhexLocal.eipRegister +=
-                                static_cast<unsigned long>(stringToHex(ihByte));
-                            intelhexLocal.eipRegister <<= 8;
+                            ihLocal.eipRegister += static_cast<unsigned long>
+                                                  (ihLocal.stringToHex(ihByte));
+                            ihLocal.eipRegister <<= 8;
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            intelhexLocal.eipRegister +=
-                                static_cast<unsigned long>(stringToHex(ihByte));
+                            ihLocal.eipRegister += static_cast<unsigned long>
+                                                  (ihLocal.stringToHex(ihByte));
                         }
                         else
                         {
@@ -405,7 +417,3 @@ istream& operator>>(istream& dataIn, intelhex& intelhexLocal)
     return(dataIn);
 }
 
-unsigned long intelhex::outputSBA()
-{
-    return (segmentBaseAddress);
-}
