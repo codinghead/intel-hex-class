@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     
     intelHexInput >> classTest;
     
-    cout << classTest.outputSBA() << endl;
+    cout << classTest.currentAddress() << endl;
     
     return(0);
 }

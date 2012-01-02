@@ -14,6 +14,7 @@
 *******************************************************************************/
 #include <iostream>
 #include <map>
+#include <vector>
 
 using namespace std;
 
@@ -25,19 +26,16 @@ class intelhex {
         /* Input stream to decode contents                                    */
         friend istream& operator>>(istream& dataIn, 
                                    intelhex& intelhexData);
-                                   
-        /* Converts ASCII char to their HEX values                            */
-        friend unsigned char charToHex(char value);
-        
+
     private:
         /* Stores the addresses and their data of the HEX file                */
-        map<int, unsigned char> ihContent;
+        map<unsigned long, unsigned char> ihContent;
         
         /* Iterator for Intel HEX Content map                                 */
-        map<int, unsigned char>::iterator ihIterator;
+        map<unsigned long, unsigned char>::iterator ihIterator;
         
         /* Return value for handling results of map operations                */
-        pair<map<int, unsigned char>::iterator,bool> ihReturn;
+        pair<map<unsigned long, unsigned char>::iterator,bool> ihReturn;
   
         /* Stores the segment base address                                    */
         unsigned long segmentBaseAddress;
@@ -55,15 +53,82 @@ class intelhex {
         unsigned char stringToHex(string value);
         
         /* Convert the data content of a data record                          */
-        void decodeDataRecord(unsigned char recordLength, string data);
+        void decodeDataRecord(unsigned char recordLength,
+                              unsigned long loadOffset, 
+                              string::const_iterator data);
         
     public:
+        /* Vector to hold warning messages                                    */
+        vector<string> ihWarnings;
+        /* Variable to hold number of warning messages                        */
+        unsigned long noOfWarnings;
+        /* Vector to hold error messages                                      */
+        vector<string> ihErrors;
+        /* Variable to hold number of error messages                          */
+        unsigned long noOfErrors;
+        
         /* Constructor                                                        */
-        intelhex();
+        intelhex()
+        {
+            /* Initialise the segment base address to zero                            */
+            segmentBaseAddress = 0;
+            /* Clear content of register variables used with the 'Start Segment' and  */
+            /* 'Start Linear' address records                                         */
+            ipRegister = 0;
+            csRegister = 0;
+            eipRegister = 0;
+        }
 
         /* Destructor                                                         */
-        ~intelhex();
+        ~intelhex()
+        {
+            /* Currently nothing */
+        }
         
-        unsigned long outputSBA();
+        void begin();
+        
+        void end();
+        
+        bool jumpTo(unsigned long address);
+        
+        unsigned long currentAddress()
+        {
+            return segmentBaseAddress;
+        }
+        
+        unsigned long startAddress()
+        {
+            map<unsigned long, unsigned char>::iterator localIterator;
+            
+            localIterator = ihContent.begin();
+            return (*localIterator).first;
+        }
+        
+        unsigned long endAddress()
+        {
+            map<unsigned long, unsigned char>::iterator localIterator;
+            
+            localIterator = ihContent.end();
+            return (*localIterator).first;
+        }
+
+        unsigned char getData();
+        
+        bool insertData(unsigned char data);
+        
+        bool blankFill(unsigned char data);
+        
+        bool blankFill(unsigned char * const data, unsigned long sizeOfData);
+        
+        void blankFill(unsigned char * const data, unsigned long sizeOfData,
+                       unsigned long endAddress);
+        
+        bool blankFillRandom();
+        
+        void blankFillRandom(unsigned long endAddress);
+        
+        bool blankFillAddressLowByte();
+        
+        void blankFillAddressLowByte(unsigned long endAddress);
 };
     

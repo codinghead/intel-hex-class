@@ -15,24 +15,6 @@ enum intelhexRecordType {
     NO_OF_RECORD_TYPES
 };
 
-/* Constructor                                                                */
-intelhex::intelhex()
-{
-    /* Initialise the segment base address to zero                            */
-    segmentBaseAddress = 0;
-    /* Clear content of register variables used with the 'Start Segment' and  */
-    /* 'Start Linear' address records                                         */
-    ipRegister = 0;
-    csRegister = 0;
-    eipRegister = 0;
-}
-
-/* Destructor                                                                 */
-intelhex::~intelhex()
-{
-    
-}
-
 /* Converts a 2 char string to its HEX value                                  */
 unsigned char intelhex::stringToHex(string value)
 {
@@ -81,17 +63,54 @@ unsigned char intelhex::stringToHex(string value)
     return returnValue;
 }
 
-void intelhex::decodeDataRecord(nsigned char recordLength, string data)
+void intelhex::decodeDataRecord(unsigned char recordLength,
+                                unsigned long loadOffset,
+                                string::const_iterator data)
 {
+    /*  */
+    string sByteRead;
+    
+    /*  */
+    unsigned char byteRead;
+    
+    /* Calculate new SBA                                                      */
+    segmentBaseAddress += loadOffset;
+    
+    for (int x = 0; x < static_cast<int>(recordLength); x ++)
+    {
+        sByteRead.erase();
+        
+        sByteRead = *data;
+        data++;
+        sByteRead += *data;
+        data++;
 
+        byteRead = stringToHex(sByteRead);
+        
+        ihReturn=ihContent.insert(pair<int,unsigned char>(segmentBaseAddress, byteRead)); 
+        
+        if (ihReturn.second==false)
+        {
+          cout << "element " << segmentBaseAddress << " already existed";
+          cout << " with a value of "; //<< ret.first->second << endl;
+          cout << "0x" << static_cast<unsigned short>(ihReturn.first->second);
+          cout << " tried writing 0x" << static_cast<unsigned short>(byteRead) << endl;
+        }
+        
+        segmentBaseAddress++;
+#if 0
+        cout << *data;
+        data++;
+        cout << *data;
+        data++;
+#endif
+    }
+#if 0    
+    cout << endl;
+#endif
 }
 
-unsigned long intelhex::outputSBA()
-{
-    return (segmentBaseAddress);
-}
-
-/* Input Stream for Intel HEX File Decoding                                   */
+/* Input Stream for Intel HEX File Decoding (friend function)                 */
 istream& operator>>(istream& dataIn, intelhex& ihLocal)
 {
     // Create a string to store lines of Intel Hex info
@@ -217,7 +236,8 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                 switch (recordType)
                 {
                     case DATA_RECORD:
-                        //decodeDataRecord();
+                        ihLocal.decodeDataRecord(recordLength, loadOffset,
+                                                 ihLineIterator);
                         cout << "Data Record" << endl;
                         break;
                     
