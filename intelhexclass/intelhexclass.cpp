@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "intelhexclass.hpp"
 
@@ -52,25 +53,63 @@ unsigned char intelhex::stringToHex(string value)
             else
             {
                 /* Add some error code here                                   */
-                cerr << "Error: In charToHex()" << endl;
+                string message;
+
+                message = "Can't convert byte 0x" + value + " @ 0x" + segmentBaseAddress;// + " to hex.";
+
+                addError(message);
+                
                 returnValue = 0;
             }
             ++valueIterator;
         }
+    }
+    else
+    {
+        string message;
+#if 0
+        message = value + " @ 0x" + segmentBaseAddress + 
+                                                       " isn't an 8-bit value.";
+#endif
+        addError(message);
     }
     //cout << returnValue << ";" << endl;
     
     return returnValue;
 }
 
+void intelhex::addWarning(string warningMessage)
+{
+    string localMessage;
+    
+    /* Increment the number of warning messages                               */
+    ++noOfWarnings;
+    
+    localMessage += noOfWarnings + " Warning: " + warningMessage;
+    
+    ihWarnings.insert(ihWarnings.end(), localMessage);
+}
+
+void intelhex::addError(string errorMessage)
+{
+    string localMessage;
+    
+    /* Increment the number of error messages                                 */
+    ++noOfErrors;
+    
+    localMessage += noOfErrors + " Error: " + errorMessage;
+    
+    ihErrors.insert(ihErrors.end(), localMessage);
+}
+
 void intelhex::decodeDataRecord(unsigned char recordLength,
                                 unsigned long loadOffset,
                                 string::const_iterator data)
 {
-    /*  */
+    /* Variable to store a byte of the record as a two char string            */
     string sByteRead;
     
-    /*  */
+    /* Variable to store the byte of the record as an u.char                  */
     unsigned char byteRead;
     
     /* Calculate new SBA                                                      */
@@ -91,10 +130,34 @@ void intelhex::decodeDataRecord(unsigned char recordLength,
         
         if (ihReturn.second==false)
         {
+            /* If this address already contains the byte we are trying to     */
+            /* write, this is only a warning                                  */
+            if (ihReturn.first->second == byteRead)
+            {
+                string message;
+#if 0
+                message = "Location 0x" + segmentBaseAddress + 
+                                        " already contains data 0x" + sByteRead;
+#endif
+                addWarning(message);
+            }
+            /* Otherwise this is an error                                     */
+            else
+            {
+                string message;
+#if 0
+                message = "Couldn't add 0x" + sByteRead + " @ 0x" + 
+                          segmentBaseAddress + "; already contains 0x" + 
+                                                         ihReturn.first->second;
+#endif
+                addError(message);
+            }
+#if 0
           cout << "element " << segmentBaseAddress << " already existed";
           cout << " with a value of "; //<< ret.first->second << endl;
           cout << "0x" << static_cast<unsigned short>(ihReturn.first->second);
           cout << " tried writing 0x" << static_cast<unsigned short>(byteRead) << endl;
+#endif          
         }
         
         segmentBaseAddress++;

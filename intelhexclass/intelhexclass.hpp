@@ -56,6 +56,12 @@ class intelhex {
         void decodeDataRecord(unsigned char recordLength,
                               unsigned long loadOffset, 
                               string::const_iterator data);
+                              
+        /* Add a warning message                                              */
+        void addWarning(string warningMessage);
+        
+        /* Add an error message                                               */
+        void addError(string errorMessage);
         
     public:
         /* Vector to hold warning messages                                    */
@@ -77,6 +83,9 @@ class intelhex {
             ipRegister = 0;
             csRegister = 0;
             eipRegister = 0;
+            /* Set up error and warning handling variables                    */
+            noOfWarnings = 0;
+            noOfErrors = 0;
         }
 
         /* Destructor                                                         */
@@ -89,7 +98,17 @@ class intelhex {
         
         void end();
         
-        bool jumpTo(unsigned long address);
+        bool jumpTo(unsigned long address)
+        {
+            bool returnValue = false;
+            
+            if(ihContent.find(address) != ihContent.end())
+            {
+                returnValue = true;
+                segmentBaseAddress = address;
+            }
+            return returnValue;
+        }
         
         unsigned long currentAddress()
         {
