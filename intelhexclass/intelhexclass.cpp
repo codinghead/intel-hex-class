@@ -55,7 +55,8 @@ unsigned char intelhex::stringToHex(string value)
                 /* Add some error code here                                   */
                 string message;
 
-                message = "Can't convert byte 0x" + value + " @ 0x" + segmentBaseAddress;// + " to hex.";
+                message = "Can't convert byte 0x" + value + " @ 0x" + 
+                          ulToHexString(segmentBaseAddress) + " to hex.";
 
                 addError(message);
                 
@@ -67,15 +68,88 @@ unsigned char intelhex::stringToHex(string value)
     else
     {
         string message;
-#if 0
-        message = value + " @ 0x" + segmentBaseAddress + 
+
+        message = value + " @ 0x" + ulToHexString(segmentBaseAddress) + 
                                                        " isn't an 8-bit value.";
-#endif
+
         addError(message);
     }
     //cout << returnValue << ";" << endl;
     
     return returnValue;
+}
+
+/* Converts an unsigned long char to a string in HEX format                   */
+string intelhex::ulToHexString(unsigned long value)
+{
+    string returnString;
+    
+    returnString.erase();
+    
+    /* Converts values from 0x00000000 to 0xFFFFFFFF only                     */
+    for (int x = 0; x < 8; x++)
+    {
+        /* Mask off lsByte                                                    */
+        char byte = static_cast<char>(value & 0xF);
+        
+        returnString.insert(0, 1, (byte + '0'));
+        
+        /* Shift the original value 8 bits to the right to get next byte      */
+        value >>= 8;
+    }
+    
+    return returnString;
+}
+
+string intelhex::ulToString(unsigned long value)
+{
+    string returnString;
+    
+    returnString.erase();
+    
+    if (value == 0)
+    {
+        returnString.insert(0, 1, '0');    
+    }
+    else
+    {
+        unsigned long modulo = 10;
+        while (value != 0)
+        {
+            unsigned long ulTemp;
+            char cTemp;
+            
+            ulTemp = value - (value % modulo);
+            cTemp = static_cast<char>(ulTemp);
+            
+            returnString.insert(returnString.end(), 1, (cTemp + '0'));
+            
+            modulo *= 10;
+        }    
+    }
+    
+    return returnString;
+}
+
+string intelhex::ucToHexString(unsigned char value)
+{
+    string returnString;
+    
+    returnString.erase();
+    
+    /* Converts values from 0x00 to 0xFF only                                 */
+    for (int x = 0; x < 2; x++)
+    {
+        /* Mask off lsByte                                                    */
+        char byte = static_cast<char>(value & 0xF);
+        
+        returnString.insert(0, 1, (byte + '0'));
+        
+        /* Shift the original value 8 bits to the right to get next byte      */
+        value >>= 8;
+    }
+    
+    return returnString;
 }
 
 void intelhex::addWarning(string warningMessage)
@@ -135,21 +209,22 @@ void intelhex::decodeDataRecord(unsigned char recordLength,
             if (ihReturn.first->second == byteRead)
             {
                 string message;
-#if 0
-                message = "Location 0x" + segmentBaseAddress + 
+
+                message = "Location 0x" + ulToHexString(segmentBaseAddress) + 
                                         " already contains data 0x" + sByteRead;
-#endif
+                                        
                 addWarning(message);
             }
             /* Otherwise this is an error                                     */
             else
             {
                 string message;
-#if 0
+
                 message = "Couldn't add 0x" + sByteRead + " @ 0x" + 
-                          segmentBaseAddress + "; already contains 0x" + 
-                                                         ihReturn.first->second;
-#endif
+                          ulToHexString(segmentBaseAddress) + 
+                               "; already contains 0x" + 
+                                          ucToHexString(ihReturn.first->second);
+
                 addError(message);
             }
 #if 0
@@ -218,9 +293,13 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
             /* Check that we have a ':' record mark at the beginning          */
             if (*ihLineIterator != ':')
             {
-                /* Add some error code here                                   */
-                cerr << "Line without record mark ':' found @" << lineCounter
-                                                                        << endl;
+                /* Add some warning code here                                 */
+                string message;
+
+                message = "Line without record mark ':' found @ line " +
+                                                ihLocal.ulToString(lineCounter);
+
+                ihLocal.addWarning(message);
             }
         
             /* Remove the record mark from the string as we don't need it     */
@@ -344,7 +423,14 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         else
                         {
                             /* Note the error                                 */
-                            cout << "Error in Ext. Seg. Address" << endl;
+                            //cout << "Error in Ext. Seg. Address" << endl;
+                            string message;
+                            
+                            message = "Extended Segment Address @ line " +
+                                      ihLocal.ulToString(lineCounter) + 
+                                      " not 2 bytes as required.";
+                            
+                            ihLocal.addError(message);
                         }
                         cout << "Ext. Seg. Address" << endl;
                         break;
@@ -391,7 +477,15 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         else
                         {
                             /* Note the error                                 */
-                            cout << "Error in Start Seg. Address" << endl;
+                            //cout << "Error in Start Seg. Address" << endl;
+                            
+                            string message;
+                            
+                            message = "Start Segment Address @ line " +
+                                      ihLocal.ulToString(lineCounter) + 
+                                      " not 4 bytes as required.";
+                            
+                            ihLocal.addError(message);
                         }
                         cout << "Start Seg. Address" << endl;
                         break;
@@ -429,7 +523,15 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         else
                         {
                             /* Note the error                                 */
-                            cout << "Error in Ext. Lin. Address" << endl;
+                            //cout << "Error in Ext. Lin. Address" << endl;
+                            
+                            string message;
+                            
+                            message = "Extended Linear Address @ line " +
+                                      ihLocal.ulToString(lineCounter) + 
+                                      " not 2 bytes as required.";
+                            
+                            ihLocal.addError(message);
                         }
                         cout << "Ext. Lin. Address" << endl;
                         break;
@@ -476,7 +578,15 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         else
                         {
                             /* Note the error                                 */
-                            cout << "Error in Start Lin. Address" << endl;
+                            //cout << "Error in Start Lin. Address" << endl;
+                            
+                            string message;
+                            
+                            message = "Start Linear Address @ line " +
+                                      ihLocal.ulToString(lineCounter) + 
+                                      " not 4 bytes as required.";
+                            
+                            ihLocal.addError(message);
                         }
                         cout << "Start Lin. Address" << endl;
                         break;
@@ -484,13 +594,32 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                     default:
                         /* Handle the error here                              */
                         cout << "Unknown Record" << endl;
+                        
+                        string message;
+                            
+                        message = "Unknown Intel HEX record @ line " +
+                                  ihLocal.ulToString(lineCounter);
+                        
+                        ihLocal.addError(message);
+                        
                         break;
                 }
             }
             else
             {
                 /* Add some error code here                                   */
-                cerr << "Checksum error on line " << lineCounter << endl;
+                //cerr << "Checksum error on line " << lineCounter << endl;
+                
+                string message;
+                            
+                message = "Checksum error @ line " + 
+                          ihLocal.ulToString(lineCounter) + 
+                          "; calculated 0x" + 
+                          ihLocal.ucToHexString(intelHexChecksum - byteRead) +
+                          " expected 0x" + 
+                          ihLocal.ucToHexString(byteRead);
+                
+                ihLocal.addError(message);
             }
         }
     } while (ihLine.length() > 0);

@@ -45,7 +45,22 @@ int main(int argc, char *argv[])
     
     intelHexInput >> classTest;
     
-    cout << classTest.currentAddress() << endl;
+    cout << "Final address is " << classTest.currentAddress() << endl;
+    
+    cout << "File contained " << classTest.noOfWarnings << " warnings and "
+         << classTest.noOfErrors << " errors." << endl;
+    
+    if (classTest.noOfErrors > 0)
+    {
+        classTest.ihErrors.begin();
+        
+        while(classTest.noOfErrors > 0)
+        {
+            cout << classTest.ihErrors.front() << endl;
+            --classTest.noOfErrors;
+            classTest.ihErrors.erase(classTest.ihErrors.begin());
+        }
+    }
     
     return(0);
 }

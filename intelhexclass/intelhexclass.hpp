@@ -52,6 +52,15 @@ class intelhex {
         /* Converts a 2 char string to its HEX value                          */
         unsigned char stringToHex(string value);
         
+        /* Converts an unsigned long to a string in HEX format                */
+        string ulToHexString(unsigned long value);
+        
+        /* Converts an unsigned char to a string in HEX format                */
+        string ucToHexString(unsigned char value);
+        
+        /* Converts an unsigned long to a string in DEC format                */
+        string ulToString(unsigned long value);
+        
         /* Convert the data content of a data record                          */
         void decodeDataRecord(unsigned char recordLength,
                               unsigned long loadOffset, 
