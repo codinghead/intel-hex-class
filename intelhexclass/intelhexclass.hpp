@@ -72,6 +72,9 @@ class intelhex {
         /* Add an error message                                               */
         void addError(string errorMessage);
         
+        /* Select verbose mode during development                             */
+        bool verbose;
+        
     public:
         /* Vector to hold warning messages                                    */
         list<string> ihWarnings;
@@ -95,6 +98,8 @@ class intelhex {
             /* Set up error and warning handling variables                    */
             noOfWarnings = 0;
             noOfErrors = 0;
+            /* Set verbose mode to off                                        */
+            verbose = false;
         }
 
         /* Destructor                                                         */
@@ -158,5 +163,15 @@ class intelhex {
         bool blankFillAddressLowByte();
         
         void blankFillAddressLowByte(unsigned long endAddress);
+        
+        void verboseOn()
+        {
+            verbose = true;
+        }
+        
+        void verboseOff()
+        {
+            verbose = false;
+        }
 };
     

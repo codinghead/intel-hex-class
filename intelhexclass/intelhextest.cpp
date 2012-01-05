@@ -25,6 +25,9 @@ int main(int argc, char *argv[])
 	// Create a variable of the class we are testing
 	intelhex classTest;
 	
+	// Make class verbose
+	classTest.verboseOn();
+	
 	// The program name is the first argument - save for later use
 	program_name = argv[0];
 
@@ -45,7 +48,7 @@ int main(int argc, char *argv[])
     
     intelHexInput >> classTest;
     
-    cout << "Final address is " << classTest.currentAddress() << endl;
+    cout << "Final address is 0x" << classTest.currentAddress() << endl;
     
     cout << "File contained " << classTest.noOfWarnings << " warnings and "
          << classTest.noOfErrors << " errors." << endl;
