@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <vector>
+#include <cstdio>
 
 #include "intelhexclass.hpp"
 
@@ -83,72 +83,42 @@ unsigned char intelhex::stringToHex(string value)
 string intelhex::ulToHexString(unsigned long value)
 {
     string returnString;
+    char localString[50];
     
     returnString.erase();
     
-    /* Converts values from 0x00000000 to 0xFFFFFFFF only                     */
-    for (int x = 0; x < 8; x++)
-    {
-        /* Mask off lsByte                                                    */
-        char byte = static_cast<char>(value & 0xF);
-        
-        returnString.insert(0, 1, (byte + '0'));
-        
-        /* Shift the original value 8 bits to the right to get next byte      */
-        value >>= 8;
-    }
+    snprintf(localString, 49, "%08lX", value);
     
+    returnString.insert(0, localString);
+
     return returnString;
 }
 
 string intelhex::ulToString(unsigned long value)
 {
     string returnString;
+    char localString[50];
     
     returnString.erase();
     
-    if (value == 0)
-    {
-        returnString.insert(0, 1, '0');    
-    }
-    else
-    {
-        unsigned long modulo = 10;
-        while (value != 0)
-        {
-            unsigned long ulTemp;
-            char cTemp;
-            
-            ulTemp = value - (value % modulo);
-            cTemp = static_cast<char>(ulTemp);
-            
-            returnString.insert(returnString.end(), 1, (cTemp + '0'));
-            
-            modulo *= 10;
-        }    
-    }
+    snprintf(localString, 49, "%lu", value);
     
+    returnString.insert(0, localString);
+
     return returnString;
 }
 
 string intelhex::ucToHexString(unsigned char value)
 {
     string returnString;
+    char localString[50];
     
     returnString.erase();
     
-    /* Converts values from 0x00 to 0xFF only                                 */
-    for (int x = 0; x < 2; x++)
-    {
-        /* Mask off lsByte                                                    */
-        char byte = static_cast<char>(value & 0xF);
-        
-        returnString.insert(0, 1, (byte + '0'));
-        
-        /* Shift the original value 8 bits to the right to get next byte      */
-        value >>= 8;
-    }
+    snprintf(localString, 49, "%02X", value);
     
+    returnString.insert(0, localString);
+
     return returnString;
 }
 
@@ -159,9 +129,9 @@ void intelhex::addWarning(string warningMessage)
     /* Increment the number of warning messages                               */
     ++noOfWarnings;
     
-    localMessage += noOfWarnings + " Warning: " + warningMessage;
+    localMessage += ulToString(noOfWarnings) + " Warning: " + warningMessage;
     
-    ihWarnings.insert(ihWarnings.end(), localMessage);
+    ihWarnings.push_back(localMessage);
 }
 
 void intelhex::addError(string errorMessage)
@@ -171,9 +141,9 @@ void intelhex::addError(string errorMessage)
     /* Increment the number of error messages                                 */
     ++noOfErrors;
     
-    localMessage += noOfErrors + " Error: " + errorMessage;
+    localMessage += ulToString(noOfErrors) + " Error: " + errorMessage;
     
-    ihErrors.insert(ihErrors.end(), localMessage);
+    ihErrors.push_back(localMessage);
 }
 
 void intelhex::decodeDataRecord(unsigned char recordLength,
@@ -187,9 +157,10 @@ void intelhex::decodeDataRecord(unsigned char recordLength,
     unsigned char byteRead;
     
     /* Calculate new SBA                                                      */
+    segmentBaseAddress &= ~(0xFFFFUL);
     segmentBaseAddress += loadOffset;
     
-    for (int x = 0; x < static_cast<int>(recordLength); x ++)
+    for (unsigned char x = 0; x < recordLength; x ++)
     {
         sByteRead.erase();
         
@@ -201,6 +172,8 @@ void intelhex::decodeDataRecord(unsigned char recordLength,
         byteRead = stringToHex(sByteRead);
         
         ihReturn=ihContent.insert(pair<int,unsigned char>(segmentBaseAddress, byteRead)); 
+        
+        //cout << ulToHexString(segmentBaseAddress) << endl;
         
         if (ihReturn.second==false)
         {
@@ -235,7 +208,8 @@ void intelhex::decodeDataRecord(unsigned char recordLength,
 #endif          
         }
         
-        segmentBaseAddress++;
+        ++segmentBaseAddress;
+
 #if 0
         cout << *data;
         data++;
@@ -533,7 +507,8 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             
                             ihLocal.addError(message);
                         }
-                        cout << "Ext. Lin. Address" << endl;
+                        cout << "Ext. Lin. Address " << ihLocal.ulToHexString(ihLocal.segmentBaseAddress) << endl;
+                        
                         break;
                         
                     case START_LINEAR_ADDRESS:
@@ -624,7 +599,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
         }
     } while (ihLine.length() > 0);
     
-    cout << ihLine << endl << lineCounter << endl;
+    cout << "File contained " << lineCounter << " lines." << endl;
     
     return(dataIn);
 }

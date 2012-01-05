@@ -14,7 +14,7 @@
 *******************************************************************************/
 #include <iostream>
 #include <map>
-#include <vector>
+#include <list>
 
 using namespace std;
 
@@ -74,11 +74,11 @@ class intelhex {
         
     public:
         /* Vector to hold warning messages                                    */
-        vector<string> ihWarnings;
+        list<string> ihWarnings;
         /* Variable to hold number of warning messages                        */
         unsigned long noOfWarnings;
         /* Vector to hold error messages                                      */
-        vector<string> ihErrors;
+        list<string> ihErrors;
         /* Variable to hold number of error messages                          */
         unsigned long noOfErrors;
         

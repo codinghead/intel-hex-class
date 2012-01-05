@@ -58,7 +58,19 @@ int main(int argc, char *argv[])
         {
             cout << classTest.ihErrors.front() << endl;
             --classTest.noOfErrors;
-            classTest.ihErrors.erase(classTest.ihErrors.begin());
+            classTest.ihErrors.pop_front();
+        }
+    }
+    
+    if (classTest.noOfWarnings > 0)
+    {
+        classTest.ihWarnings.begin();
+        
+        while(classTest.noOfWarnings > 0)
+        {
+            cout << classTest.ihWarnings.front() << endl;
+            --classTest.noOfWarnings;
+            classTest.ihWarnings.pop_front();
         }
     }
     
