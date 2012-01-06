@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <iomanip>
 
 #include "intelhexclass.hpp"
 
@@ -48,7 +49,7 @@ int main(int argc, char *argv[])
     
     intelHexInput >> classTest;
     
-    cout << "Final address is 0x" << classTest.currentAddress() << endl;
+    cout << "Final address is 0x" << setw(2) << setfill('0') << uppercase << hex << classTest.currentAddress() << endl;
     
     cout << "File contained " << classTest.noOfWarnings << " warnings and "
          << classTest.noOfErrors << " errors." << endl;
