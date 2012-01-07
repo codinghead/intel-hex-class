@@ -1,0 +1,178 @@
+\hypertarget{classintelhex}{
+\section{intelhex Class Reference}
+\label{classintelhex}\index{intelhex@{intelhex}}
+}
+
+
+Class to decode, encode and manipulate Intel HEX format files.  
+
+
+
+
+{\ttfamily \#include $<$intelhexclass.hpp$>$}
+
+
+
+Collaboration diagram for intelhex:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=600pt]{classintelhex__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classintelhex_ab2b1119e14a960ea2b356967244aafb3}{
+void {\bfseries begin} ()}
+\label{classintelhex_ab2b1119e14a960ea2b356967244aafb3}
+
+\item 
+\hypertarget{classintelhex_a7759926596cfcffec94e391fff4298e9}{
+void {\bfseries end} ()}
+\label{classintelhex_a7759926596cfcffec94e391fff4298e9}
+
+\item 
+\hypertarget{classintelhex_a83b54457c121b0f35b21b78fa2ecd712}{
+bool {\bfseries jumpTo} (unsigned long address)}
+\label{classintelhex_a83b54457c121b0f35b21b78fa2ecd712}
+
+\item 
+\hypertarget{classintelhex_a631d8930daeaf04bf0d9ad9c25679a0b}{
+unsigned long {\bfseries currentAddress} ()}
+\label{classintelhex_a631d8930daeaf04bf0d9ad9c25679a0b}
+
+\item 
+\hypertarget{classintelhex_ab78b6ecc1fd3889bfb0c3bb57f028a64}{
+unsigned long {\bfseries startAddress} ()}
+\label{classintelhex_ab78b6ecc1fd3889bfb0c3bb57f028a64}
+
+\item 
+\hypertarget{classintelhex_af7692acb24330da3debf8c7fb21ab056}{
+unsigned long {\bfseries endAddress} ()}
+\label{classintelhex_af7692acb24330da3debf8c7fb21ab056}
+
+\item 
+\hypertarget{classintelhex_a00e0fd557bec34d0bb11ef92530121a0}{
+unsigned char {\bfseries getData} ()}
+\label{classintelhex_a00e0fd557bec34d0bb11ef92530121a0}
+
+\item 
+\hypertarget{classintelhex_a71096983db3c24a5ac9b95663937a4ce}{
+bool {\bfseries insertData} (unsigned char data)}
+\label{classintelhex_a71096983db3c24a5ac9b95663937a4ce}
+
+\item 
+\hypertarget{classintelhex_a5de5cf10103fc307127f9017f3e5cd76}{
+bool {\bfseries blankFill} (unsigned char data)}
+\label{classintelhex_a5de5cf10103fc307127f9017f3e5cd76}
+
+\item 
+\hypertarget{classintelhex_a84bbd449bb55e218b62ea73e2b399196}{
+bool {\bfseries blankFill} (unsigned char $\ast$const data, unsigned long sizeOfData)}
+\label{classintelhex_a84bbd449bb55e218b62ea73e2b399196}
+
+\item 
+\hypertarget{classintelhex_aaf6f77af7a82623ef16471f105ac3fe7}{
+void {\bfseries blankFill} (unsigned char $\ast$const data, unsigned long sizeOfData, unsigned long endAddress)}
+\label{classintelhex_aaf6f77af7a82623ef16471f105ac3fe7}
+
+\item 
+\hypertarget{classintelhex_a9c26ba3dc9dd4f3021bb6c7f6983388f}{
+bool {\bfseries blankFillRandom} ()}
+\label{classintelhex_a9c26ba3dc9dd4f3021bb6c7f6983388f}
+
+\item 
+\hypertarget{classintelhex_aa1dbcbf3df1aaafd518882c882f43f76}{
+void {\bfseries blankFillRandom} (unsigned long endAddress)}
+\label{classintelhex_aa1dbcbf3df1aaafd518882c882f43f76}
+
+\item 
+\hypertarget{classintelhex_a2e5c67fccc34c78e6dbd28f4b795fb0f}{
+bool {\bfseries blankFillAddressLowByte} ()}
+\label{classintelhex_a2e5c67fccc34c78e6dbd28f4b795fb0f}
+
+\item 
+\hypertarget{classintelhex_ab7b16f457563da93569b9812fafb9e7d}{
+void {\bfseries blankFillAddressLowByte} (unsigned long endAddress)}
+\label{classintelhex_ab7b16f457563da93569b9812fafb9e7d}
+
+\item 
+\hypertarget{classintelhex_ac6a0119a04a2090af3ffe8c33a37cbc9}{
+void {\bfseries verboseOn} ()}
+\label{classintelhex_ac6a0119a04a2090af3ffe8c33a37cbc9}
+
+\item 
+\hypertarget{classintelhex_a3958f077a662291bbde3472ea2bcfb4d}{
+void {\bfseries verboseOff} ()}
+\label{classintelhex_a3958f077a662291bbde3472ea2bcfb4d}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classintelhex_a0ae0e9a75bdfaa50d6d0266bb3d56ed1}{
+list$<$ string $>$ {\bfseries ihWarnings}}
+\label{classintelhex_a0ae0e9a75bdfaa50d6d0266bb3d56ed1}
+
+\item 
+\hypertarget{classintelhex_a5ea3789cc9ea71c9b35322aabca05158}{
+unsigned long {\bfseries noOfWarnings}}
+\label{classintelhex_a5ea3789cc9ea71c9b35322aabca05158}
+
+\item 
+\hypertarget{classintelhex_a76fb4550b43dfbb08018cabf34298400}{
+list$<$ string $>$ {\bfseries ihErrors}}
+\label{classintelhex_a76fb4550b43dfbb08018cabf34298400}
+
+\item 
+\hypertarget{classintelhex_a451b78972165b898e91a129670fce919}{
+unsigned long {\bfseries noOfErrors}}
+\label{classintelhex_a451b78972165b898e91a129670fce919}
+
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+ostream \& \hyperlink{classintelhex_aad8e829c665b49d225a9d0dc48c1fe3c}{operator$<$$<$} (ostream \&dataOut, const \hyperlink{classintelhex}{intelhex} \&ihLocal)
+\item 
+\hypertarget{classintelhex_a73fb9c5b9d6d069b5eb83340942fd54b}{
+istream \& {\bfseries operator$>$$>$} (istream \&dataIn, \hyperlink{classintelhex}{intelhex} \&ihLocal)}
+\label{classintelhex_a73fb9c5b9d6d069b5eb83340942fd54b}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class to decode, encode and manipulate Intel HEX format files. The Intel HEX class allows the user to stream in the content of an Intel HEX file so that its content can by analysed more easily than trying to decode the Intel HEX file in a text editor. In conjunction with a suitable application it is possible to create content, analyse content and even compare the content of files with one another. 
+
+Definition at line 83 of file intelhexclass.hpp.
+
+
+
+\subsection{Friends And Related Function Documentation}
+\hypertarget{classintelhex_aad8e829c665b49d225a9d0dc48c1fe3c}{
+\index{intelhex@{intelhex}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!intelhex@{intelhex}}
+\subsubsection[{operator$<$$<$}]{\setlength{\rightskip}{0pt plus 5cm}ostream\& operator$<$$<$ (
+\begin{DoxyParamCaption}
+\item[{ostream \&}]{ dataOut, }
+\item[{const {\bf intelhex} \&}]{ ihLocal}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}friend\mbox{]}}}}
+\label{classintelhex_aad8e829c665b49d225a9d0dc48c1fe3c}
+Output stream overload operator Operator overloaded to encode any data held in memory into the Intel HEX format for storgae on disk
+
+\begin{DoxySeeAlso}{See also}
+operator$>$$>$()
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}{Parameters}
+\item[{\em dataOut}]-\/ Output stream for the encoded file information \item[{\em ihLocal}]-\/ Points to this class so that friend function has access to private class members \end{DoxyParams}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{intelhexclass_8hpp}{intelhexclass.hpp}\item 
+intelhexclass.cpp\end{DoxyCompactItemize}

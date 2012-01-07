@@ -1,0 +1,122 @@
+.TH "intelhex" 3 "Sat Jan 7 2012" "Intel Hex Encoder/Decoder Class" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+intelhex \- 
+.PP
+Class to decode, encode and manipulate Intel HEX format files.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <intelhexclass.hpp>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBbegin\fP ()"
+.br
+.ti -1c
+.RI "void \fBend\fP ()"
+.br
+.ti -1c
+.RI "bool \fBjumpTo\fP (unsigned long address)"
+.br
+.ti -1c
+.RI "unsigned long \fBcurrentAddress\fP ()"
+.br
+.ti -1c
+.RI "unsigned long \fBstartAddress\fP ()"
+.br
+.ti -1c
+.RI "unsigned long \fBendAddress\fP ()"
+.br
+.ti -1c
+.RI "unsigned char \fBgetData\fP ()"
+.br
+.ti -1c
+.RI "bool \fBinsertData\fP (unsigned char data)"
+.br
+.ti -1c
+.RI "bool \fBblankFill\fP (unsigned char data)"
+.br
+.ti -1c
+.RI "bool \fBblankFill\fP (unsigned char *const data, unsigned long sizeOfData)"
+.br
+.ti -1c
+.RI "void \fBblankFill\fP (unsigned char *const data, unsigned long sizeOfData, unsigned long endAddress)"
+.br
+.ti -1c
+.RI "bool \fBblankFillRandom\fP ()"
+.br
+.ti -1c
+.RI "void \fBblankFillRandom\fP (unsigned long endAddress)"
+.br
+.ti -1c
+.RI "bool \fBblankFillAddressLowByte\fP ()"
+.br
+.ti -1c
+.RI "void \fBblankFillAddressLowByte\fP (unsigned long endAddress)"
+.br
+.ti -1c
+.RI "void \fBverboseOn\fP ()"
+.br
+.ti -1c
+.RI "void \fBverboseOff\fP ()"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "list< string > \fBihWarnings\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBnoOfWarnings\fP"
+.br
+.ti -1c
+.RI "list< string > \fBihErrors\fP"
+.br
+.ti -1c
+.RI "unsigned long \fBnoOfErrors\fP"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "ostream & \fBoperator<<\fP (ostream &dataOut, const \fBintelhex\fP &ihLocal)"
+.br
+.ti -1c
+.RI "istream & \fBoperator>>\fP (istream &dataIn, \fBintelhex\fP &ihLocal)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Class to decode, encode and manipulate Intel HEX format files. 
+
+The Intel HEX class allows the user to stream in the content of an Intel HEX file so that its content can by analysed more easily than trying to decode the Intel HEX file in a text editor. In conjunction with a suitable application it is possible to create content, analyse content and even compare the content of files with one another. 
+.PP
+Definition at line 83 of file intelhexclass.hpp.
+.SH "Friends And Related Function Documentation"
+.PP 
+.SS "ostream& operator<< (ostream & dataOut, const \fBintelhex\fP & ihLocal)\fC [friend]\fP"Output stream overload operator Operator overloaded to encode any data held in memory into the Intel HEX format for storgae on disk
+.PP
+\fBSee also:\fP
+.RS 4
+operator>>()
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdataOut\fP - Output stream for the encoded file information 
+.br
+\fIihLocal\fP - Points to this class so that friend function has access to private class members 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Intel Hex Encoder/Decoder Class from the source code.
