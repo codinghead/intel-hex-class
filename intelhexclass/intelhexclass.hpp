@@ -82,69 +82,120 @@ using namespace std;
 *******************************************************************************/
 class intelhex {
         /**********************************************************************/
-        /** Output stream overload operator                                   
+        /** Output stream overload operator.                                   
         * Operator overloaded to encode any data held in memory into the Intel
-        * HEX format for storgae on disk                 
+        * HEX format for storage on disk                 
         *
         * \sa operator>>()
         *
-        * \param dataOut    - Output stream for the encoded file information
+        * \param dataOut    - Output stream for to store the decoded file 
+        *                     information
         * \param ihLocal    - Points to this class so that friend function has
         *                     access to private class members
         ***********************************************************************/
         friend ostream& operator<<(ostream& dataOut, 
                                    const intelhex& ihLocal);
         
-        /* Input stream to decode contents                                    */
+        /**********************************************************************/
+        /** Input stream overload operator.                                   
+        * Operator overloaded to decode data streamed in from a file in the 
+        * Intel HEX format into memory                 
+        *
+        * \sa operator<<()
+        *
+        * \param dataIn     - Input stream for the encoded file information
+        * \param ihLocal    - Points to this class so that friend function has
+        *                     access to private class members
+        ***********************************************************************/
         friend istream& operator>>(istream& dataIn, 
                                    intelhex& ihLocal);
 
     private:
-        /* Stores the addresses and their data of the HEX file                */
+        /**********************************************************************/
+        /** Container for decoded Intel HEX content.                                 
+        * STL map holding the addresses found in the Intel HEX file and the
+        * associated data byte stored at that address                 
+        ***********************************************************************/
         map<unsigned long, unsigned char> ihContent;
         
-        /* Iterator for Intel HEX Content map                                 */
+        /**********************************************************************/
+        /** Iterator for the container holding the decoded Intel HEX content. 
+        ***********************************************************************/
         map<unsigned long, unsigned char>::iterator ihIterator;
         
-        /* Return value for handling results of map operations                */
+        /**********************************************************************/
+        /** Pair for the container holding the decoded Intel HEX content. 
+        * This is used to acquire the result of an attempt to insert new data
+        * into ihContent. Since the ihContent is a map STL, it can't allow
+        * data to be assigned to the same address more than once. In this way we
+        * can ensure that no address in a file is falsely assigned data more 
+        * than once.
+        ***********************************************************************/
         pair<map<unsigned long, unsigned char>::iterator,bool> ihReturn;
   
-        /* Stores the segment base address                                    */
+        /**********************************************************************/
+        /** Stores segment base address of Intel HEX file.
+        * The segment base address is a 32-bit address to which the current
+        * load offset (as found in a Data Record line of the Intel HEX file) is
+        * added to calculate the actual address of the data. The Data Records
+        * can only point to a 64kByte address, so the segment base address 
+        * expands the addressing to 4GB. This variable always holds the last
+        * address accessed.
+        ***********************************************************************/
         unsigned long segmentBaseAddress;
         
-        /* Stores the CS register value for a 'Start Segment Address Record'  */
+        /**********************************************************************/
+        /** Stores the content of the CS Register.
+        * Used to store the content of the CS Register for HEX files created for
+        * x386 or earlier Intel processors. This information is retrieved from
+        * the Start Segment Address Record.
+        ***********************************************************************/
         unsigned short csRegister;
         
-        /* Stores the IP register value for a 'Start Segment Address Record'  */
+        /**********************************************************************/
+        /** Stores the content of the IP Register.
+        * Used to store the content of the IP Register for HEX files created for
+        * x386 or earlier Intel processors. This information is retrieved from
+        * the Start Segment Address Record.
+        ***********************************************************************/
         unsigned short ipRegister;
         
-        /* Stores the EIP register value for a 'Start Linear Address Record'  */
+        /**********************************************************************/
+        /** Stores the content of the EIP Register.
+        * Used to store the content of the EIP Register for HEX files created for
+        * x386 or earlier Intel processors. This information is retrieved from
+        * the Start Linear Address Record.
+        ***********************************************************************/
         unsigned long eipRegister;
         
-        /* Converts a 2 char string to its HEX value                          */
+        /** Converts a 2 char string to its HEX value                         */
         unsigned char stringToHex(string value);
         
-        /* Converts an unsigned long to a string in HEX format                */
+        /** Converts an unsigned long to a string in HEX format               */
         string ulToHexString(unsigned long value);
         
-        /* Converts an unsigned char to a string in HEX format                */
+        /** Converts an unsigned char to a string in HEX format               */
         string ucToHexString(unsigned char value);
         
-        /* Converts an unsigned long to a string in DEC format                */
+        /** Converts an unsigned long to a string in DEC format               */
         string ulToString(unsigned long value);
         
-        /* Convert the data content of a data record                          */
+        /** Decodes the data content of a data record                         */
         void decodeDataRecord(unsigned char recordLength,
                               unsigned long loadOffset, 
                               string::const_iterator data);
                               
-        /* Add a warning message                                              */
+        /** Add a warning message to the warning message list                 */
         void addWarning(string warningMessage);
         
-        /* Add an error message                                               */
+        /** Add an error message to the error message list                    */
         void addError(string errorMessage);
         
-        /* Select verbose mode during development                             */
+        /**********************************************************************/
+        /** Select verbose mode
+        * Used during development to display messages as the incoming data 
+        * stream is decoded                
+        ***********************************************************************/
         bool verbose;
         
     public:
