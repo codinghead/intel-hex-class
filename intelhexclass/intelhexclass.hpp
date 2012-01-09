@@ -198,7 +198,6 @@ class intelhex {
         ***********************************************************************/
         bool verbose;
         
-    public:
         /* Vector to hold warning messages                                    */
         list<string> ihWarnings;
         /* Variable to hold number of warning messages                        */
@@ -208,6 +207,7 @@ class intelhex {
         /* Variable to hold number of error messages                          */
         unsigned long noOfErrors;
         
+    public:
         /* Constructor                                                        */
         intelhex()
         {
