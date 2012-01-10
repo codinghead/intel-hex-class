@@ -168,28 +168,29 @@ class intelhex {
         ***********************************************************************/
         unsigned long eipRegister;
         
-        /** Converts a 2 char string to its HEX value                         */
-        unsigned char stringToHex(string value);
+        /**********************************************************************/
+        /** Vector to hold warning messages
+        * Holds warning messages generated during encoding/decoding process
+        ***********************************************************************/
+        list<string> ihWarnings;
         
-        /** Converts an unsigned long to a string in HEX format               */
-        string ulToHexString(unsigned long value);
+        /**********************************************************************/
+        /** Variable to hold number of warning messages
+        * Holds current number of warning messages that can be read out
+        ***********************************************************************/
+        unsigned long noOfWarnings;
         
-        /** Converts an unsigned char to a string in HEX format               */
-        string ucToHexString(unsigned char value);
+        /**********************************************************************/
+        /** Vector to hold error messages
+        * Holds error messages generated during encoding/decoding process
+        ***********************************************************************/
+        list<string> ihErrors;
         
-        /** Converts an unsigned long to a string in DEC format               */
-        string ulToString(unsigned long value);
-        
-        /** Decodes the data content of a data record                         */
-        void decodeDataRecord(unsigned char recordLength,
-                              unsigned long loadOffset, 
-                              string::const_iterator data);
-                              
-        /** Add a warning message to the warning message list                 */
-        void addWarning(string warningMessage);
-        
-        /** Add an error message to the error message list                    */
-        void addError(string errorMessage);
+        /**********************************************************************/
+        /** Variable to hold number of error messages
+        * Holds current number of error messages that can be read out
+        ***********************************************************************/
+        unsigned long noOfErrors;
         
         /**********************************************************************/
         /** Select verbose mode
@@ -197,24 +198,70 @@ class intelhex {
         * stream is decoded                
         ***********************************************************************/
         bool verbose;
+
+        /**********************************************************************/        
+        /** Converts a 2 char string to its HEX value
+        ***********************************************************************/
+        unsigned char stringToHex(string value);
+
+        /**********************************************************************/        
+        /** Converts an unsigned long to a string in HEX format               
+        ***********************************************************************/
+        string ulToHexString(unsigned long value);
+
+        /**********************************************************************/        
+        /** Converts an unsigned char to a string in HEX format               
+        ***********************************************************************/
+        string ucToHexString(unsigned char value);
         
-        /* Vector to hold warning messages                                    */
-        list<string> ihWarnings;
-        /* Variable to hold number of warning messages                        */
-        unsigned long noOfWarnings;
-        /* Vector to hold error messages                                      */
-        list<string> ihErrors;
-        /* Variable to hold number of error messages                          */
-        unsigned long noOfErrors;
+        /**********************************************************************/
+        /** Converts an unsigned long to a string in DEC format               
+        ***********************************************************************/
+        string ulToString(unsigned long value);
+        
+        /**********************************************************************/
+        /** Decodes the data content of a data record                         
+        * Takes the data element of a data record in string format, converts
+        * each 2 char element into a single byte and then inserts that byte of
+        * data into the ihContent STL map.
+        *
+        * \sa encodeDataRecord()
+        *
+        * \param recordLength   - Number of bytes in this record as extracted
+        *                         from this line in the Intel HEX file
+        * \param loadOffset     - The offset from the segment base address for 
+        *                         the first byte in this record
+        * \param data           - The data content of the record in a string
+        ***********************************************************************/
+        void decodeDataRecord(unsigned char recordLength,
+                              unsigned long loadOffset, 
+                              string::const_iterator data);
+                              
+        /**********************************************************************/
+        /** Add a warning message to the warning message list                
+        ***********************************************************************/
+        void addWarning(string warningMessage);
+        
+        /**********************************************************************/
+        /** Add an error message to the error message list                
+        ***********************************************************************/
+        void addError(string errorMessage);
         
     public:
-        /* Constructor                                                        */
+        /**********************************************************************/
+        /** intelhex Class Constructor
+        * Important initialisation steps performed here:
+        * - clear segment base address to zero
+        * - clear all x86 start address registers to zero
+        * - note that there are, as yet, no errors or warnings
+        * - set verbode mode to 'false' (default)
+        ***********************************************************************/
         intelhex()
         {
-            /* Initialise the segment base address to zero                            */
+            /* Initialise the segment base address to zero                    */
             segmentBaseAddress = 0;
-            /* Clear content of register variables used with the 'Start Segment' and  */
-            /* 'Start Linear' address records                                         */
+            /* Clear content of register variables used with the 'Start Segment'
+            *  and 'Start Linear' address records                             */
             ipRegister = 0;
             csRegister = 0;
             eipRegister = 0;
