@@ -421,26 +421,34 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         break;
                         
                     case START_SEGMENT_ADDRESS:
-                        /* Make sure we have 4 bytes of data                  */
-                        if (recordLength == 4)
+                        /* Make sure we have 4 bytes of data, and that no     */
+                        /* Start Segment Address has been found to date       */
+                        if (recordLength == 4 && 
+                            ihLocal.startSegmentAddress.found == false)
                         {
-                            ihLocal.csRegister = 0;
-                            ihLocal.ipRegister = 0;
+                            /* Note that the Start Segment Address has been   */
+                            /* found.                                         */
+                            ihLocal.startSegmentAddress.found = true;
+                            /* Clear the two registers, just in case          */
+                            ihLocal.startSegmentAddress.csRegister = 0;
+                            ihLocal.startSegmentAddress.ipRegister = 0;
                             
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            ihLocal.csRegister = static_cast<unsigned long>
+                            ihLocal.startSegmentAddress.csRegister = 
+                            static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
-                            ihLocal.csRegister <<= 8;
+                            ihLocal.startSegmentAddress.csRegister <<= 8;
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            ihLocal.csRegister += static_cast<unsigned long>
+                            ihLocal.startSegmentAddress.csRegister += 
+                            static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
                                 
                             ihByte.erase();
@@ -448,22 +456,33 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            ihLocal.ipRegister = static_cast<unsigned long>
+                            ihLocal.startSegmentAddress.ipRegister = 
+                            static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
-                            ihLocal.ipRegister <<= 8;
+                            ihLocal.startSegmentAddress.ipRegister <<= 8;
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            ihLocal.ipRegister += static_cast<unsigned long>
+                            ihLocal.startSegmentAddress.ipRegister += 
+                            static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
                         }
-                        else
+                        else if (ihLocal.startSegmentAddress.found == true)
                         {
                             /* Note the error                                 */
-                            //cout << "Error in Start Seg. Address" << endl;
+                            string message;
                             
+                            message = "Start Segment Address record appears again @ line " + 
+                                      ihLocal.ulToString(lineCounter) + 
+                                      "; repeated record ignored.";
+                            
+                            ihLocal.addError(message);
+                        }
+                        if (recordLength != 4)
+                        {
+                            /* Note the error                                 */
                             string message;
                             
                             message = "Start Segment Address @ line " +
@@ -475,9 +494,9 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         if (ihLocal.verbose == true)
                         {
                             cout << "Start Seg. Address - CS 0x" <<
-                                 ihLocal.ulToHexString(ihLocal.csRegister) <<
+                                 ihLocal.ulToHexString(ihLocal.startSegmentAddress.csRegister) <<
                                  " IP 0x" << 
-                                 ihLocal.ulToHexString(ihLocal.ipRegister) 
+                                 ihLocal.ulToHexString(ihLocal.startSegmentAddress.ipRegister) 
                                                                         << endl;
                         }
                         break;
@@ -536,48 +555,62 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         
                     case START_LINEAR_ADDRESS:
                         /* Make sure we have 4 bytes of data                  */
-                        if (recordLength == 4)
+                        if (recordLength == 4 && 
+                                      ihLocal.startLinearAddress.found == false)
                         {
                             /* Extract the four bytes of the SLA              */
-                            ihLocal.eipRegister = 0;
+                            ihLocal.startLinearAddress.eipRegister = 0;
                             
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            ihLocal.eipRegister = static_cast<unsigned long>
+                            ihLocal.startLinearAddress.eipRegister = 
+                            static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
-                            ihLocal.eipRegister <<= 8;
+                            ihLocal.startLinearAddress.eipRegister <<= 8;
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            ihLocal.eipRegister += static_cast<unsigned long>
+                            ihLocal.startLinearAddress.eipRegister += 
+                            static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
-                            ihLocal.eipRegister <<= 8;
+                            ihLocal.startLinearAddress.eipRegister <<= 8;
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            ihLocal.eipRegister += static_cast<unsigned long>
+                            ihLocal.startLinearAddress.eipRegister += 
+                            static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
-                            ihLocal.eipRegister <<= 8;
+                            ihLocal.startLinearAddress.eipRegister <<= 8;
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
                             ihByte += *ihLineIterator;
                             ++ihLineIterator;
-                            ihLocal.eipRegister += static_cast<unsigned long>
+                            ihLocal.startLinearAddress.eipRegister += 
+                            static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
                         }
-                        else
+                        else if (ihLocal.startLinearAddress.found == true)
                         {
                             /* Note the error                                 */
-                            //cout << "Error in Start Lin. Address" << endl;
+                            string message;
                             
+                            message = "Start Linear Address record appears again @ line " + 
+                                      ihLocal.ulToString(lineCounter) + 
+                                      "; repeated record ignored.";
+                            
+                            ihLocal.addError(message);
+                        }
+                        if (recordLength != 4)
+                        {
+                            /* Note the error                                 */
                             string message;
                             
                             message = "Start Linear Address @ line " +
@@ -589,7 +622,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         if (ihLocal.verbose == true)
                         {
                             cout << "Start Lin. Address - EIP 0x" <<
-                                 ihLocal.ulToHexString(ihLocal.eipRegister) 
+                                 ihLocal.ulToHexString(ihLocal.startLinearAddress.eipRegister) 
                                                                         << endl;
                         }
                         break;

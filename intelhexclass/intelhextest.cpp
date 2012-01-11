@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
     intelHexInput >> classTest;
     
     cout << "Final address is 0x" << setw(2) << setfill('0') << uppercase << hex << classTest.currentAddress() << endl;
-    
+
+#if 0    
     cout << "File contained " << classTest.noOfWarnings << " warnings and "
          << classTest.noOfErrors << " errors." << endl;
     
@@ -77,6 +78,7 @@ int main(int argc, char *argv[])
             classTest.ihWarnings.pop_front();
         }
     }
+#endif
     
     return(0);
 }

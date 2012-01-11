@@ -145,28 +145,30 @@ class intelhex {
         unsigned long segmentBaseAddress;
         
         /**********************************************************************/
-        /** Stores the content of the CS Register.
-        * Used to store the content of the CS Register for HEX files created for
-        * x386 or earlier Intel processors. This information is retrieved from
-        * the Start Segment Address Record.
+        /** Stores the content of the CS/IP Registers, if used.
+        * Used to store the content of the CS and IS Register for HEX files 
+        * created for x386 or earlier Intel processors. This information is 
+        * retrieved from the Start Segment Address Record.
+        * The found element defines if these registers hold valid data or not.
         ***********************************************************************/
-        unsigned short csRegister;
+        struct {
+            unsigned short  csRegister;
+            unsigned short  ipRegister;
+            bool            found;
+        } startSegmentAddress;
         
         /**********************************************************************/
-        /** Stores the content of the IP Register.
-        * Used to store the content of the IP Register for HEX files created for
-        * x386 or earlier Intel processors. This information is retrieved from
-        * the Start Segment Address Record.
-        ***********************************************************************/
-        unsigned short ipRegister;
-        
-        /**********************************************************************/
-        /** Stores the content of the EIP Register.
+        /** Stores the content of the EIP Register, if used.
         * Used to store the content of the EIP Register for HEX files created for
         * x386 or earlier Intel processors. This information is retrieved from
         * the Start Linear Address Record.
+        * The found element defines if this register holds valid data or not.
         ***********************************************************************/
-        unsigned long eipRegister;
+        struct {
+            unsigned long   eipRegister;
+            bool            found;
+        } startLinearAddress;
+        
         
         /**********************************************************************/
         /** Vector to hold warning messages
@@ -262,9 +264,11 @@ class intelhex {
             segmentBaseAddress = 0;
             /* Clear content of register variables used with the 'Start Segment'
             *  and 'Start Linear' address records                             */
-            ipRegister = 0;
-            csRegister = 0;
-            eipRegister = 0;
+            startSegmentAddress.ipRegister = 0;
+            startSegmentAddress.csRegister = 0;
+            startSegmentAddress.found = false;
+            startLinearAddress.eipRegister = 0;
+            startLinearAddress.found = false;
             /* Set up error and warning handling variables                    */
             noOfWarnings = 0;
             noOfErrors = 0;
@@ -333,6 +337,22 @@ class intelhex {
         bool blankFillAddressLowByte();
         
         void blankFillAddressLowByte(unsigned long endAddress);
+        
+        unsigned short getNoWarnings();
+        
+        unsigned short getNoErrors();
+        
+        bool popNextWarning(string& warning);
+        
+        bool popNextError(string& error);
+        
+        bool getSegmentStartAddress(unsigned short * ipRegister, unsigned short * esRegister);
+        
+        bool getSegmentLinearAddress(unsigned long * eipRegister);
+        
+        void setSegmentStartAddress(unsigned short ipRegister, unsigned short esRegister);
+        
+        void setSegmentLinearAddress(unsigned long eipRegister);
         
         void verboseOn()
         {
