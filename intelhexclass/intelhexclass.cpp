@@ -125,7 +125,7 @@ void intelhex::addWarning(string warningMessage)
     string localMessage;
     
     /* Increment the number of warning messages                               */
-    ++noOfWarnings;
+    ++msgWarning.noOfWarnings;
     
     /* Push the warning message onto the list                                 */
     localMessage += ulToString(noOfWarnings) + " Warning: " + warningMessage;

@@ -171,28 +171,24 @@ class intelhex {
         
         
         /**********************************************************************/
-        /** Vector to hold warning messages
-        * Holds warning messages generated during encoding/decoding process
+        /** Structure to hold warning messages
+        * Holds warning messages generated during encoding/decoding process and
+        * number of messages currently present in system
         ***********************************************************************/
-        list<string> ihWarnings;
+        struct {
+            list<string> ihWarnings;
+            unsigned long noOfWarnings;
+        } msgWarning;
         
         /**********************************************************************/
-        /** Variable to hold number of warning messages
-        * Holds current number of warning messages that can be read out
+        /** Structure to hold error messages
+        * Holds error messages generated during encoding/decoding process and 
+        * number of messages currently present in system
         ***********************************************************************/
-        unsigned long noOfWarnings;
-        
-        /**********************************************************************/
-        /** Vector to hold error messages
-        * Holds error messages generated during encoding/decoding process
-        ***********************************************************************/
-        list<string> ihErrors;
-        
-        /**********************************************************************/
-        /** Variable to hold number of error messages
-        * Holds current number of error messages that can be read out
-        ***********************************************************************/
-        unsigned long noOfErrors;
+        struct {
+            list<string> ihErrors;
+            unsigned long noOfErrors;
+        } msgError;
         
         /**********************************************************************/
         /** Select verbose mode
@@ -270,8 +266,8 @@ class intelhex {
             startLinearAddress.eipRegister = 0;
             startLinearAddress.found = false;
             /* Set up error and warning handling variables                    */
-            noOfWarnings = 0;
-            noOfErrors = 0;
+            msgWarning.noOfWarnings = 0;
+            msgError.noOfErrors = 0;
             /* Set verbose mode to off                                        */
             verbose = false;
         }
