@@ -51,34 +51,26 @@ int main(int argc, char *argv[])
     
     cout << "Final address is 0x" << setw(2) << setfill('0') << uppercase << hex << classTest.currentAddress() << endl;
 
-#if 0    
-    cout << "File contained " << classTest.noOfWarnings << " warnings and "
-         << classTest.noOfErrors << " errors." << endl;
+    cout << "File contained " << classTest.getNoWarnings() << " warnings and "
+         << classTest.getNoErrors() << " errors." << endl;
     
-    if (classTest.noOfErrors > 0)
+    while (classTest.getNoErrors() > 0)
     {
-        classTest.ihErrors.begin();
+        string message;
         
-        while(classTest.noOfErrors > 0)
-        {
-            cout << classTest.ihErrors.front() << endl;
-            --classTest.noOfErrors;
-            classTest.ihErrors.pop_front();
-        }
+        classTest.popNextError(message);
+        
+        cout << message << endl;
     }
     
-    if (classTest.noOfWarnings > 0)
+    while (classTest.getNoWarnings() > 0)
     {
-        classTest.ihWarnings.begin();
+        string message;
         
-        while(classTest.noOfWarnings > 0)
-        {
-            cout << classTest.ihWarnings.front() << endl;
-            --classTest.noOfWarnings;
-            classTest.ihWarnings.pop_front();
-        }
+        classTest.popNextWarning(message);
+        
+        cout << message << endl;
     }
-#endif
     
     return(0);
 }

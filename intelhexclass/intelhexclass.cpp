@@ -124,26 +124,28 @@ void intelhex::addWarning(string warningMessage)
 {
     string localMessage;
     
-    /* Increment the number of warning messages                               */
-    ++msgWarning.noOfWarnings;
+    /* Build the message and push the warning message onto the list           */
+    localMessage += ulToString(msgWarning.noOfWarnings + 1) + " Warning: " 
+                                                               + warningMessage;
     
-    /* Push the warning message onto the list                                 */
-    localMessage += ulToString(noOfWarnings) + " Warning: " + warningMessage;
+    msgWarning.ihWarnings.push_back(localMessage);
     
-    ihWarnings.push_back(localMessage);
+    /* Update the number of warning messages                                  */
+    msgWarning.noOfWarnings = msgWarning.ihWarnings.size();
 }
 
 void intelhex::addError(string errorMessage)
 {
     string localMessage;
     
-    /* Increment the number of error messages                                 */
-    ++noOfErrors;
-
-    /* Push the error message onto the list                                   */    
-    localMessage += ulToString(noOfErrors) + " Error: " + errorMessage;
+    /* Build the message and push the error message onto the list             */
+    localMessage += ulToString(msgError.noOfErrors + 1) + " Error: " 
+                                                                 + errorMessage;
     
-    ihErrors.push_back(localMessage);
+    msgError.ihErrors.push_back(localMessage);
+    
+    /* Update the number of error messages                                    */
+    msgError.noOfErrors = msgError.ihErrors.size();
 }
 
 void intelhex::decodeDataRecord(unsigned char recordLength,
@@ -260,10 +262,12 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
 
                 ihLocal.addWarning(message);
             }
-        
-            /* Remove the record mark from the string as we don't need it     */
-            /* anymore                                                        */
-            ihLine.erase(ihLineIterator);
+            else
+            {
+                /* Remove the record mark from the string as we don't need it */
+                /* anymore                                                    */
+                ihLine.erase(ihLineIterator);
+            }
         
             /* Run through the whole line to check the checksum               */
             for (ihLineIterator = ihLine.begin(); 

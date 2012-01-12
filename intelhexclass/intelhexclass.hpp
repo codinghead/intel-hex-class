@@ -334,13 +334,51 @@ class intelhex {
         
         void blankFillAddressLowByte(unsigned long endAddress);
         
-        unsigned short getNoWarnings();
+        unsigned long getNoWarnings()
+        {
+            return msgWarning.noOfWarnings;
+        }
         
-        unsigned short getNoErrors();
+        unsigned long getNoErrors()
+        {
+            return msgError.noOfErrors;
+        }
         
-        bool popNextWarning(string& warning);
+        bool popNextWarning(string& warning)
+        {
+            if (msgWarning.noOfWarnings > 0)
+            {
+                warning = msgWarning.ihWarnings.front();
+                
+                msgWarning.ihWarnings.pop_front();
+            
+                msgWarning.noOfWarnings = msgWarning.ihWarnings.size();
+                
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         
-        bool popNextError(string& error);
+        bool popNextError(string& error)
+        {
+            if (msgError.noOfErrors > 0)
+            {
+                error = msgError.ihErrors.front();
+                
+                msgError.ihErrors.pop_front();
+            
+                msgError.noOfErrors = msgError.ihErrors.size();
+                
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         
         bool getSegmentStartAddress(unsigned short * ipRegister, unsigned short * esRegister);
         
