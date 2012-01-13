@@ -428,11 +428,11 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         /* Make sure we have 4 bytes of data, and that no     */
                         /* Start Segment Address has been found to date       */
                         if (recordLength == 4 && 
-                            ihLocal.startSegmentAddress.found == false)
+                            ihLocal.startSegmentAddress.exists == false)
                         {
                             /* Note that the Start Segment Address has been   */
                             /* found.                                         */
-                            ihLocal.startSegmentAddress.found = true;
+                            ihLocal.startSegmentAddress.exists = true;
                             /* Clear the two registers, just in case          */
                             ihLocal.startSegmentAddress.csRegister = 0;
                             ihLocal.startSegmentAddress.ipRegister = 0;
@@ -473,7 +473,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
                         }
-                        else if (ihLocal.startSegmentAddress.found == true)
+                        else if (ihLocal.startSegmentAddress.exists == true)
                         {
                             /* Note the error                                 */
                             string message;
@@ -560,7 +560,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                     case START_LINEAR_ADDRESS:
                         /* Make sure we have 4 bytes of data                  */
                         if (recordLength == 4 && 
-                                      ihLocal.startLinearAddress.found == false)
+                                      ihLocal.startLinearAddress.exists == false)
                         {
                             /* Extract the four bytes of the SLA              */
                             ihLocal.startLinearAddress.eipRegister = 0;
@@ -601,7 +601,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
                         }
-                        else if (ihLocal.startLinearAddress.found == true)
+                        else if (ihLocal.startLinearAddress.exists == true)
                         {
                             /* Note the error                                 */
                             string message;

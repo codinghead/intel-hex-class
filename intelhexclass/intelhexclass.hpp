@@ -154,7 +154,7 @@ class intelhex {
         struct {
             unsigned short  csRegister;
             unsigned short  ipRegister;
-            bool            found;
+            bool            exists;
         } startSegmentAddress;
         
         /**********************************************************************/
@@ -166,7 +166,7 @@ class intelhex {
         ***********************************************************************/
         struct {
             unsigned long   eipRegister;
-            bool            found;
+            bool            exists;
         } startLinearAddress;
         
         
@@ -262,9 +262,9 @@ class intelhex {
             *  and 'Start Linear' address records                             */
             startSegmentAddress.ipRegister = 0;
             startSegmentAddress.csRegister = 0;
-            startSegmentAddress.found = false;
+            startSegmentAddress.exists = false;
             startLinearAddress.eipRegister = 0;
-            startLinearAddress.found = false;
+            startLinearAddress.exists = false;
             /* Set up error and warning handling variables                    */
             msgWarning.noOfWarnings = 0;
             msgError.noOfErrors = 0;
