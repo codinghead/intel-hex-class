@@ -473,9 +473,10 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
                         }
+                        /* Note an error if the start seg. address already    */
+                        /* exists                                             */
                         else if (ihLocal.startSegmentAddress.exists == true)
                         {
-                            /* Note the error                                 */
                             string message;
                             
                             message = "Start Segment Address record appears again @ line " + 
@@ -484,9 +485,22 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             
                             ihLocal.addError(message);
                         }
+                        /* Note an error if the start lin. address already    */
+                        /* exists as they should be mutually exclusive        */
+                        if (ihLocal.startLinearAddress.exists == true)
+                        {
+                            string message;
+                            
+                            message = "Start Segment Address record found @ line " + 
+                                      ihLocal.ulToString(lineCounter) + 
+                                      " but Start Linear Address already exists.";
+                            
+                            ihLocal.addError(message);
+                        }
+                        /* Note an error if the record lenght is not 4 as     */
+                        /* expected                                           */
                         if (recordLength != 4)
                         {
-                            /* Note the error                                 */
                             string message;
                             
                             message = "Start Segment Address @ line " +
@@ -601,9 +615,10 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
                         }
+                        /* Note an error if the start seg. address already    */
+                        /* exists                                             */
                         else if (ihLocal.startLinearAddress.exists == true)
                         {
-                            /* Note the error                                 */
                             string message;
                             
                             message = "Start Linear Address record appears again @ line " + 
@@ -612,9 +627,22 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             
                             ihLocal.addError(message);
                         }
+                        /* Note an error if the start seg. address already    */
+                        /* exists as they should be mutually exclusive        */
+                        if (ihLocal.startSegmentAddress.exists == true)
+                        {
+                            string message;
+                            
+                            message = "Start Linear Address record found @ line " + 
+                                      ihLocal.ulToString(lineCounter) + 
+                                      " but Start Segment Address already exists.";
+                            
+                            ihLocal.addError(message);
+                        }
+                        /* Note an error if the record lenght is not 4 as     */
+                        /* expected                                           */
                         if (recordLength != 4)
                         {
-                            /* Note the error                                 */
                             string message;
                             
                             message = "Start Linear Address @ line " +
