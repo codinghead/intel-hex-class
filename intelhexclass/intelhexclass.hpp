@@ -191,6 +191,13 @@ class intelhex {
         } msgError;
         
         /**********************************************************************/
+        /** Note that EOF record is found
+        * Used to note that the EOF record was found in order to ensure that it
+        * doesn't appear twice during encoding.                
+        ***********************************************************************/
+        bool foundEof;
+        
+        /**********************************************************************/
         /** Select verbose mode
         * Used during development to display messages as the incoming data 
         * stream is decoded                
@@ -268,6 +275,8 @@ class intelhex {
             /* Set up error and warning handling variables                    */
             msgWarning.noOfWarnings = 0;
             msgError.noOfErrors = 0;
+            /* Note that the EOF record has not been found yet                */
+            foundEof = false;
             /* Set verbose mode to off                                        */
             verbose = false;
         }

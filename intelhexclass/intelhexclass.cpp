@@ -365,8 +365,22 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         break;
                     
                     case END_OF_FILE_RECORD:
-                        /* Note the line number at this point. Later, check   */
-                        /* that there were no more lines after this one.      */
+                        /* Check that the EOF record wasn't already found. If */
+                        /* it was, generate appropriate error                 */
+                        if (ihLocal.foundEof == false)
+                        {
+                            ihLocal.foundEof = true;
+                        }
+                        else
+                        {
+                            string message;
+                            
+                            message = "Additional End Of File record @ line " +
+                                      ihLocal.ulToString(lineCounter) + 
+                                      " found.";
+                            
+                            ihLocal.addError(message);
+                        }
                         /* Generate error if there were                       */
                         if (ihLocal.verbose == true)
                         {
