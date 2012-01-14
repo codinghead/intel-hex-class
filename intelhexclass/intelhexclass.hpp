@@ -243,12 +243,16 @@ class intelhex {
                               string::const_iterator data);
                               
         /**********************************************************************/
-        /** Add a warning message to the warning message list                
+        /** Add a warning message to the warning message list      
+        *
+        * \param    warningMessage - the text to be added for this warning
         ***********************************************************************/
         void addWarning(string warningMessage);
         
         /**********************************************************************/
         /** Add an error message to the error message list                
+        *
+        * \param    errorMessage - the text to be added for this error        
         ***********************************************************************/
         void addError(string errorMessage);
         
@@ -259,6 +263,7 @@ class intelhex {
         * - clear segment base address to zero
         * - clear all x86 start address registers to zero
         * - note that there are, as yet, no errors or warnings
+        * - note that the EOF record has not yet been found
         * - set verbode mode to 'false' (default)
         ***********************************************************************/
         intelhex()
@@ -287,46 +292,143 @@ class intelhex {
             /* Currently nothing */
         }
         
-        void begin();
-        
-        void end();
-        
-        bool jumpTo(unsigned long address)
+        /**********************************************************************/
+        /** Moves the address pointer to the first available address.
+        * The address pointer will be moved to the first available address in 
+        * memory of the decoded file or of the data the user has inserted into
+        * memory for the purpose of encoding into the Intel HEX format.
+        *
+        * \sa end()
+        *
+        * \note This function has no effect if no file has be as yet decoded and
+        * no data has been inserted into memory.
+        ***********************************************************************/
+        void begin()
         {
-            bool returnValue = false;
-            
-            if(ihContent.find(address) != ihContent.end())
+            if (ihContent.size() != 0)
             {
-                returnValue = true;
-                segmentBaseAddress = address;
+                map<unsigned long, unsigned char>::iterator it;
+                it = ihContent.begin();
+                segmentBaseAddress = (*it).first;
             }
-            return returnValue;
         }
         
+        /**********************************************************************/
+        /** Moves the address pointer to the last available address.
+        * The address pointer will be moved to the last available address in 
+        * memory of the decoded file or of the data the user has inserted into
+        * memory for the purpose of encoding into the Intel HEX format.
+        *
+        * \sa begin()
+        *
+        * \note This function has no effect if no file has be as yet decoded and
+        * no data has been inserted into memory.
+        ***********************************************************************/
+        void end()
+        {
+            if (ihContent.size() != 0)
+            {
+                map<unsigned long, unsigned char>::reverse_iterator rit;
+                rit = ihContent.rbegin();
+                segmentBaseAddress = (*rit).first;
+            }
+        }
+        
+        /**********************************************************************/
+        /** Moves the address pointer to the desired address.
+        * Address pointer will take on the requested address.
+        *
+        * \sa currentAddress()
+        *
+        * \param address        - Desired new address for the address pointer
+        ***********************************************************************/
+        void jumpTo(unsigned long address)
+        {
+            segmentBaseAddress = address;
+        }
+        
+        /**********************************************************************/
+        /** Returns the current segment base address.
+        * Current address will be returned.
+        *
+        * \sa jumpTo()
+        *
+        * \retval   Current address being pointed to.
+        ***********************************************************************/
         unsigned long currentAddress()
         {
             return segmentBaseAddress;
         }
         
-        unsigned long startAddress()
+        /**********************************************************************/
+        /** Returns the lowest address currently available.
+        * Returns the first address that appears in the memory if there is data
+        * present. If not, no value will be returned.
+        *
+        * \sa endAddress()
+        *
+        * \param address    - variable to hold address requested
+        *
+        * \retval true      - address existed and returned value is valid
+        * \retval false     - address did not exist and returned valid is not
+        *                     valid
+        ***********************************************************************/
+        bool startAddress(unsigned long * address)
         {
-            map<unsigned long, unsigned char>::iterator localIterator;
+            if (ihContent.size() != 0)
+            {
+                map<unsigned long, unsigned char>::iterator it;
             
-            localIterator = ihContent.begin();
-            return (*localIterator).first;
+                it = ihContent.begin();
+                *address = (*it).first;
+                return true;
+            }
+            
+            return false;
         }
         
-        unsigned long endAddress()
+        /**********************************************************************/
+        /** Returns the highest address currently available.
+        * Returns the last address that appears in the memory if there is data
+        * present. If not, no value will be returned.
+        *
+        * \sa startAddress()
+        *
+        * \param address    - variable to hold address requested
+        *
+        * \retval true      - address existed and returned value is valid
+        * \retval false     - address did not exist and returned valid is not
+        *                     valid
+        ***********************************************************************/
+        bool endAddress(unsigned long * address)
         {
-            map<unsigned long, unsigned char>::iterator localIterator;
+            if (ihContent.size() != 0)
+            {
+                map<unsigned long, unsigned char>::reverse_iterator rit;
             
-            localIterator = ihContent.end();
-            return (*localIterator).first;
+                rit = ihContent.rbegin();
+                *address = (*rit).first;
+                return true;
+            }
+            
+            return false;
         }
 
         unsigned char getData();
         
+        /**********************************************************************/
+        /** Inserts desired byte at the current address pointer.
+        * Inserts byte of data at the current address pointer
+        *
+        * \sa startAddress()
+        *
+        * \param    data - data byte to be inserted
+        ***********************************************************************/
         bool insertData(unsigned char data);
+        bool insertData(unsigned char data, unsigned long address);
+        
+        void overwriteData(unsigned char data);
+        void overwriteData(unsigned char data, unsigned long address);
         
         bool blankFill(unsigned char data);
         
