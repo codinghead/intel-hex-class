@@ -147,7 +147,7 @@ class intelhex {
         /**********************************************************************/
         /** Stores the content of the CS/IP Registers, if used.
         * Used to store the content of the CS and IS Register for HEX files 
-        * created for x386 or earlier Intel processors. This information is 
+        * created for x286 or earlier Intel processors. This information is 
         * retrieved from the Start Segment Address Record.
         * The found element defines if these registers hold valid data or not.
         ***********************************************************************/
@@ -159,8 +159,8 @@ class intelhex {
         
         /**********************************************************************/
         /** Stores the content of the EIP Register, if used.
-        * Used to store the content of the EIP Register for HEX files created for
-        * x386 or earlier Intel processors. This information is retrieved from
+        * Used to store the content of the EIP Register for HEX files created
+        * for x386 or Intel processors. This information is retrieved from the
         * the Start Linear Address Record.
         * The found element defines if this register holds valid data or not.
         ***********************************************************************/
@@ -300,8 +300,8 @@ class intelhex {
         *
         * \sa end()
         *
-        * \note This function has no effect if no file has be as yet decoded and
-        * no data has been inserted into memory.
+        * \note This function has no effect if no file has been as yet decoded
+        * and no data has been inserted into memory.
         ***********************************************************************/
         void begin()
         {
@@ -321,8 +321,8 @@ class intelhex {
         *
         * \sa begin()
         *
-        * \note This function has no effect if no file has be as yet decoded and
-        * no data has been inserted into memory.
+        * \note This function has no effect if no file has been as yet decoded
+        * and no data has been inserted into memory.
         ***********************************************************************/
         void end()
         {
@@ -414,7 +414,8 @@ class intelhex {
             return false;
         }
 
-        unsigned char getData();
+        bool getData(unsigned char * data);
+        bool getData(unsigned char * data, unsigned long address);
         
         /**********************************************************************/
         /** Inserts desired byte at the current address pointer.
@@ -445,16 +446,40 @@ class intelhex {
         
         void blankFillAddressLowByte(unsigned long endAddress);
         
+        /**********************************************************************/
+        /** Returns number of unread warning messages
+        * Number of unread warning messages will be returned.
+        *
+        * \sa popNextWarning(), getNoErrors(), popNextError()
+        ***********************************************************************/
         unsigned long getNoWarnings()
         {
             return msgWarning.noOfWarnings;
         }
         
+        /**********************************************************************/
+        /** Returns number of unread error messages
+        * Number of unread error messages will be returned.
+        *
+        * \sa popNextWarning(), getNoWarnings(), popNextError()
+        ***********************************************************************/
         unsigned long getNoErrors()
         {
             return msgError.noOfErrors;
         }
         
+        /**********************************************************************/
+        /** Pop next warning message from the list of warnings.
+        * Next warning message is returned from the list of warnings. If there 
+        * are no more warning in the list, the string will be unchanged.
+        *
+        * \sa getNoWarnings(), getNoErrors(), popNextError()
+        *
+        * \param    warning - variable to store warning string to be returned
+        *
+        * \retval   true    - more warning messages are available
+        * \retval   false   - no more warning messages are available
+        ***********************************************************************/
         bool popNextWarning(string& warning)
         {
             if (msgWarning.noOfWarnings > 0)
@@ -473,6 +498,18 @@ class intelhex {
             }
         }
         
+        /**********************************************************************/
+        /** Pop next error message from the list of errors.
+        * Next error message is returned from the list of errors. If there are
+        * no more errors in the list, no string will be returned unchanged.
+        *
+        * \sa getNoWarnings(), getNoErrors(), popNextError()
+        *
+        * \param    error   - variable to store error string to be returned
+        *
+        * \retval   true    - more error messages are available
+        * \retval   false   - no more error messages are available
+        ***********************************************************************/
         bool popNextError(string& error)
         {
             if (msgError.noOfErrors > 0)
@@ -499,11 +536,20 @@ class intelhex {
         
         void setSegmentLinearAddress(unsigned long eipRegister);
         
+        /**********************************************************************/
+        /** Turns on textual output to cout during decoding.
+        * Per record single line output to cout during decoding of Intel HEX
+        * files.
+        ***********************************************************************/
         void verboseOn()
         {
             verbose = true;
         }
         
+        /**********************************************************************/
+        /** Turns off textual output to cout during decoding.
+        * No output to cout during decoding of Intel HEX files.
+        ***********************************************************************/
         void verboseOff()
         {
             verbose = false;

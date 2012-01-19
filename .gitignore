@@ -12,6 +12,7 @@ intelhexclass/doxygen/*.txt
 intelhexclass/doxygen/html/
 intelhexclass/doxygen/latex/
 intelhexclass/doxygen/rtf/
+intelhexclass/doxygen/man/
 
 # Ignore extraneous Open Office files
 *.odt#
