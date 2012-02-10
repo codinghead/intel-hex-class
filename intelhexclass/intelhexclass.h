@@ -160,7 +160,7 @@ class intelhex {
         /**********************************************************************/
         /** Stores the content of the EIP Register, if used.
         * Used to store the content of the EIP Register for HEX files created
-        * for x386 or Intel processors. This information is retrieved from the
+        * for x386 Intel processors. This information is retrieved from the
         * the Start Linear Address Record.
         * The found element defines if this register holds valid data or not.
         ***********************************************************************/
@@ -528,13 +528,88 @@ class intelhex {
             }
         }
         
-        bool getSegmentStartAddress(unsigned short * ipRegister, unsigned short * esRegister);
+        /**********************************************************************/
+        /** Returns segment start address for the IP and ES registers.
+        * If these values exist, they will be returned. If not, the function
+        * returns false.
+        *
+        * \sa getStartLinearAddress(), setStartSegmentAddress(), 
+        *     setStartLinearAddress()
+        *
+        * \param    ipRegister  - variable to store IP register's value
+        * \param    csRegister  - variable to store CS register's value
+        *
+        * \retval   true    - IP and CS registers have defined values
+        * \retval   false   - IP and CS registers do not contain values
+        ***********************************************************************/
+        bool getStartSegmentAddress(unsigned short * ipRegister, 
+                                    unsigned short * csRegister)
+        {
+            if (startSegmentAddress.exists == true)
+            {
+                *ipRegister = startSegmentAddress.ipRegister;
+                *csRegister = startSegmentAddress.csRegister;
+            }
+            
+            return startSegmentAddress.exists;
+        }
         
-        bool getSegmentLinearAddress(unsigned long * eipRegister);
+        /**********************************************************************/
+        /** Returns segment linear address for the EIP register.
+        * If this value exists, they will be returned. If not, the function
+        * returns false.
+        *
+        * \sa getStartSegmentAddress(), setStartSegmentAddress(), 
+        *     setStartLinearAddress()
+        *
+        * \param    eipRegister - variable to store EIP register's value
+        *
+        * \retval   true    - EIP register has defined value
+        * \retval   false   - EIP register do not contain value
+        ***********************************************************************/
+        bool getStartLinearAddress(unsigned long * eipRegister)
+        {
+            if (startLinearAddress.exists == true)
+            {
+                *eipRegister = startLinearAddress.eipRegister;
+            }
+            
+            return startLinearAddress.exists;
+        }
         
-        void setSegmentStartAddress(unsigned short ipRegister, unsigned short esRegister);
+        /**********************************************************************/
+        /** Sets the segment start address for the IP and CS registers.
+        * Allows user to define or redefine the contents of the IP and CS 
+        * registers
+        *
+        * \sa getStartLinearAddress(), getStartSegmentAddress(), 
+        *     setStartLinearAddress()
+        *
+        * \param    ipRegister  - desired IP register value
+        * \param    esRegister  - desired CS register value
+        ***********************************************************************/
+        void setStartSegmentAddress(unsigned short ipRegister, 
+                                    unsigned short csRegister)
+        {
+            startSegmentAddress.ipRegister = ipRegister;
+            startSegmentAddress.csRegister = csRegister;
+            startSegmentAddress.exists = true;
+        }
         
-        void setSegmentLinearAddress(unsigned long eipRegister);
+        /**********************************************************************/
+        /** Sets the segment start address for the EIP register.
+        * Allows user to define or redefine the contents of the EIP register
+        *
+        * \sa getStartSegmentAddress(), setStartSegmentAddress(), 
+        *     getStartLinearAddress()
+        *
+        * \param    eipRegister - desired EIP register value
+        ***********************************************************************/
+        void setStartLinearAddress(unsigned long eipRegister)
+        {
+            startLinearAddress.eipRegister = eipRegister;
+            startLinearAddress.exists = true;
+        }
         
         /**********************************************************************/
         /** Turns on textual output to cout during decoding.

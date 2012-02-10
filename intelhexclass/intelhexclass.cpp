@@ -62,7 +62,7 @@
 #include <string>
 #include <cstdio>
 
-#include "intelhexclass.hpp"
+#include "intelhexclass.h"
 
 using namespace std;
 

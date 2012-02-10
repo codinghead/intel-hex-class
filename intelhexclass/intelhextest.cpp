@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <iomanip>
 
-#include "intelhexclass.hpp"
+#include "intelhexclass.h"
 
 using namespace std;
 
