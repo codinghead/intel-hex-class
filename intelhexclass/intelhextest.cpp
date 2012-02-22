@@ -13,7 +13,7 @@ char *program_name;
 void usage()
 {
     cerr << "Usage is " << program_name <<
-                 " [file]" << endl;
+                 " [file]" << " [file]" << endl;
     exit (EXIT_FAILURE);
 }
 
@@ -21,6 +21,10 @@ int main(int argc, char *argv[])
 {
     // Create an input stream
 	std::ifstream intelHexInput;
+	
+	// Create an output stream
+	std::ofstream intelHexOutput;
+	
 	// Create a string to store lines of Intel Hex info
 	std::string intelHexLine;
 	// Create a variable of the class we are testing
@@ -32,8 +36,8 @@ int main(int argc, char *argv[])
 	// The program name is the first argument - save for later use
 	program_name = argv[0];
 
-	// Make sure there is only <command> and <file> arguments	
-	if(argc != 2) {
+	// Make sure there are only <command> and 2 x <file> arguments	
+	if(argc != 3) {
     	usage();
     }
     	
@@ -42,6 +46,14 @@ int main(int argc, char *argv[])
 	if(!intelHexInput.good())
 	{
     	std::cerr << "Error: couldn't open " << argv[1] << std::endl;
+    	usage();
+	}
+	
+	intelHexOutput.open(argv[2], ofstream::out);
+	
+	if(!intelHexOutput.good())
+	{
+    	std::cerr << "Error: couldn't open " << argv[2] << std::endl;
     	usage();
 	}
 	
@@ -71,6 +83,8 @@ int main(int argc, char *argv[])
         
         cout << message << endl;
     }
+    
+    intelHexOutput << classTest;
     
     return(0);
 }

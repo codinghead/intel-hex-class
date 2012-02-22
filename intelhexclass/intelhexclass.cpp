@@ -60,6 +60,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include <cstdio>
 
 #include "intelhexclass.h"
@@ -777,6 +778,296 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
     return(dataIn);
 }
 
+/* Input Stream for Intel HEX File Decoding (friend function)                 */
+ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
+{
+    /* Stores the address offset needed by the linear/segment address records */
+    unsigned long addressOffset;
+    /* Iterator into the ihContent - where the addresses & data are stored    */
+    map<const unsigned long, unsigned char>::iterator ihIterator;
+    /* Holds string that represents next record to be written                 */
+    string thisRecord;
+    /* Checksum calculation variable                                          */
+    unsigned char checksum;
+    
+    thisRecord.clear();
+    
+    /* Check that there is some content to encode */
+    if (ihLocal.ihContent.size() > 0)
+    {
+        /* Calculate the Linear/Segment address                               */
+        ihIterator = ihLocal.ihContent.begin();
+        addressOffset = (*ihIterator).first;
+        checksum = 0;
+        
+        /* Construct the first record to define the segment base address      */
+        if (ihLocal.segmentAddressMode == false)
+        {
+            unsigned char dataByte;
+            
+            addressOffset >>= 16;
+            
+            thisRecord = ":02000004";
+            checksum = 0x02 + 0x04;
+            
+            dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
+            checksum += dataByte;
+            thisRecord += ihLocal.ucToHexString(dataByte);
+            
+            dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
+            checksum += dataByte;
+            thisRecord += ihLocal.ucToHexString(dataByte);
+            
+            thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+        }
+        else
+        {
+            unsigned char dataByte;
+            
+            addressOffset >>= 4;
+            
+            thisRecord = ":02000002";
+            checksum = 0x02 + 0x02;
+            
+            dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
+            checksum += dataByte;
+            thisRecord += ihLocal.ucToHexString(dataByte);
+            
+            dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
+            checksum += dataByte;
+            thisRecord += ihLocal.ucToHexString(dataByte);
+            
+            thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+        }
+        
+        /* Output the record                                                  */
+        dataOut << thisRecord << endl;
+        
+        /* Now loop through all the available data and insert into file       */
+        /* with maximum 16 bytes per line, and making sure to keep the        */
+        /* segment base address up to date                                    */
+        vector<unsigned char> recordData;
+        unsigned long previousAddress;
+        unsigned long currentAddress;
+        unsigned long loadOffset;
+        
+        while(ihIterator != ihLocal.ihContent.end())
+        {
+            /* Check to see if we need to start a new linear/segment section  */
+            loadOffset = (*ihIterator).first;
+            
+            /* If we are using the linear mode...                             */
+            if (ihLocal.segmentAddressMode == false)
+            {
+                if ((loadOffset >> 16) != addressOffset)
+                {
+                    unsigned char dataByte;
+                    
+                    thisRecord.clear();
+                    checksum = 0;
+                    
+                    addressOffset = loadOffset;
+                    addressOffset >>= 16;
+                    
+                    thisRecord = ":02000004";
+                    checksum = 0x02 + 0x04;
+                    
+                    dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
+                    checksum += dataByte;
+                    thisRecord += ihLocal.ucToHexString(dataByte);
+                    
+                    dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
+                    checksum += dataByte;
+                    thisRecord += ihLocal.ucToHexString(dataByte);
+                    
+                    thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+                    
+                    /* Output the record                                      */
+                    dataOut << thisRecord << endl;
+                }
+            }
+            /* ...otherwise assume segment mode                               */
+            else
+            {
+                if ((loadOffset >> 4) != addressOffset)
+                {
+                    unsigned char dataByte;
+                    
+                    thisRecord.clear();
+                    checksum = 0;
+                    
+                    addressOffset = loadOffset;
+                    addressOffset >>= 4;
+                    
+                    thisRecord = ":02000002";
+                    checksum = 0x02 + 0x02;
+                    
+                    dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
+                    checksum += dataByte;
+                    thisRecord += ihLocal.ucToHexString(dataByte);
+                    
+                    dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
+                    checksum += dataByte;
+                    thisRecord += ihLocal.ucToHexString(dataByte);
+                    
+                    thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+                    
+                    /* Output the record                                      */
+                    dataOut << thisRecord << endl;
+                }
+            }
+            
+            /* Prepare for encoding next data record                          */
+            thisRecord.clear();
+            checksum = 0;
+            recordData.clear();
+                        
+            /* We need to check where the data actually starts, but only the  */
+            /* bottom 16-bits; the other bits are in the segment/linear       */
+            /* address record                                                 */
+            loadOffset = (*ihIterator).first & 0xFFFF;
+            
+            /* Loop through and collect up to 16 bytes of data                */
+            for (int x = 0; x < 16; x++)
+            {
+                currentAddress = (*ihIterator).first & 0xFFFF;
+                
+                recordData.push_back((*ihIterator).second);
+                
+                ihIterator++;
+                
+                /* Check that we haven't run out of data                      */
+                if (ihIterator == ihLocal.ihContent.end())
+                {
+                    break;
+                }
+                
+                /* Check that the next address is consecutive                 */
+                previousAddress = currentAddress;
+                currentAddress = (*ihIterator).first & 0xFFFF;
+                if (currentAddress != (previousAddress + 1))
+                {
+                    break;
+                }
+                
+                /* If we got here we have a consecutive address and can keep  */
+                /* building up the data portion of the data record            */
+            }
+            
+            /* Now we should have some data to encode; check first            */
+            if (recordData.size() > 0)
+            {
+                vector<unsigned char>::iterator itData;
+                unsigned char dataByte;
+                
+                /* Start building data record                                 */
+                thisRecord = ":";
+                
+                /* Start with the RECLEN record length                        */
+                dataByte = static_cast<unsigned char>(recordData.size());
+                thisRecord += ihLocal.ucToHexString(dataByte);
+                checksum += dataByte;
+                
+                /* Then the LOAD OFFSET                                       */
+                dataByte = static_cast<unsigned char>((loadOffset >> 8) & 0xFF);
+                thisRecord += ihLocal.ucToHexString(dataByte);
+                checksum += dataByte;
+                dataByte = static_cast<unsigned char>(loadOffset & 0xFF);
+                thisRecord += ihLocal.ucToHexString(dataByte);
+                checksum += dataByte;
+                
+                /* Then the RECTYP record type (no need to add to checksum -  */
+                /* value is zero '00'                                         */
+                thisRecord += "00";
+                
+                /* Now we add the data                                        */
+                for (itData = recordData.begin(); itData != recordData.end(); itData ++)
+                {
+                    dataByte = (*itData);
+                    checksum += dataByte;
+                    thisRecord += ihLocal.ucToHexString(dataByte);
+                }
+                
+                /* Last bit - add the checksum                                */
+                thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+                
+                /* Now write the record                                       */
+                dataOut << thisRecord << endl;
+            }
+        }
+    }
+    
+    /* If there is a segment start address, output the data                   */
+    if (ihLocal.startSegmentAddress.exists == true)
+    {
+        thisRecord.clear();
+        checksum = 0;
+        
+        thisRecord = ":04000003";
+        checksum = 0x04 + 0x03;
+        
+        dataByte = static_cast<unsigned char>((ihLocal.startSegmentAddress.csRegister >> 8) & 0xFF);
+        checksum += dataByte;
+        thisRecord += ucToHexString(dataByte);
+        
+        dataByte = static_cast<unsigned char>(ihLocal.startSegmentAddress.csRegister & 0xFF);
+        checksum += dataByte;
+        thisRecord += ucToHexString(dataByte);
+        
+        dataByte = static_cast<unsigned char>((ihLocal.startSegmentAddress.ipRegister >> 8) & 0xFF);
+        checksum += dataByte;
+        thisRecord += ucToHexString(dataByte);
+        
+        dataByte = static_cast<unsigned char>(ihLocal.startSegmentAddress.ipRegister & 0xFF);
+        checksum += dataByte;
+        thisRecord += ucToHexString(dataByte);
+        
+        
+        /* Last bit - add the checksum                                        */
+        thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+        
+        /* Now write the record                                               */
+        dataOut << thisRecord << endl;
+    }
+    
+    /* If there is a linear start address, output the data                    */
+    if (ihLocal.startLinearAddress.exists == true)
+    {
+        thisRecord.clear();
+        checksum = 0;
+        
+        thisRecord = ":04000005";
+        checksum = 0x04 + 0x05;
+        
+        dataByte = static_cast<unsigned char>((ihLocal.startLinearAddress.eipRegister >> 24) & 0xFF);
+        checksum += dataByte;
+        thisRecord += ucToHexString(dataByte);
+        
+        dataByte = static_cast<unsigned char>((ihLocal.startLinearAddress.eipRegister >> 16) & 0xFF);
+        checksum += dataByte;
+        thisRecord += ucToHexString(dataByte);
+        
+        dataByte = static_cast<unsigned char>((ihLocal.startLinearAddress.eipRegister >> 8) & 0xFF);
+        checksum += dataByte;
+        thisRecord += ucToHexString(dataByte);
+        
+        dataByte = static_cast<unsigned char>(ihLocal.startLinearAddress.eipRegister & 0xFF);
+        checksum += dataByte;
+        thisRecord += ucToHexString(dataByte);
+        
+        
+        /* Last bit - add the checksum                                        */
+        thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+        
+        /* Now write the record                                               */
+        dataOut << thisRecord << endl;
+    }
+    
+    /* Whatever happened, we can always output the EOF record                 */
+    dataOut << ":00000001FF" << endl;
+    
+    return (dataOut);
+}
 /*******************************************************************************
 *
 *                        INTEL HEX FILE CLASS MODULE END

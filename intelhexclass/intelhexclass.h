@@ -94,7 +94,7 @@ class intelhex {
         *                     access to private class members
         ***********************************************************************/
         friend ostream& operator<<(ostream& dataOut, 
-                                   const intelhex& ihLocal);
+                                   intelhex& ihLocal);
         
         /**********************************************************************/
         /** Input stream overload operator.                                   
@@ -204,6 +204,13 @@ class intelhex {
         ***********************************************************************/
         bool verbose;
 
+        /**********************************************************************/
+        /** Select segment address mode
+        * If true, use the segment addressing mode when encoding files.
+        * otherwise the default linear address mode will be used.                
+        ***********************************************************************/
+        bool segmentAddressMode;
+
         /**********************************************************************/        
         /** Converts a 2 char string to its HEX value
         ***********************************************************************/
@@ -284,6 +291,8 @@ class intelhex {
             foundEof = false;
             /* Set verbose mode to off                                        */
             verbose = false;
+            /* Set segment address mode to false (default)                    */
+            segmentAddressMode = false;
         }
 
         /* Destructor                                                         */
@@ -609,6 +618,24 @@ class intelhex {
         {
             startLinearAddress.eipRegister = eipRegister;
             startLinearAddress.exists = true;
+        }
+        
+        /**********************************************************************/
+        /** Turns on segment addressing mode during encoding.
+        * Uses the Segment Address Record during encoding.
+        ***********************************************************************/
+        void segmentAddressingOn()
+        {
+            segmentAddressMode = true;
+        }
+        
+        /**********************************************************************/
+        /** Turns on linear addressing mode during encoding.
+        * Uses the Linear Address Record during encoding.
+        ***********************************************************************/
+        void linearAddressingOn()
+        {
+            segmentAddressMode = false;
         }
         
         /**********************************************************************/
