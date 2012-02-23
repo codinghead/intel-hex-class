@@ -19,8 +19,7 @@
 *******************************************************************************/
 
 /******************************************************************************/
-/**
-* \file intelhexclass.h
+/*! \file intelhexclass.h
 * \author Stuart Cording aka CODINGHEAD 
 * 
 * A class to handle the encoding, decoding and manipulatio of an Intel HEX
@@ -68,7 +67,7 @@
 using namespace std;
 
 /******************************************************************************/
-/** \cond
+/*! \cond
 * class - intelhex
 * \endcond
 *
@@ -82,7 +81,8 @@ using namespace std;
 *******************************************************************************/
 class intelhex {
         /**********************************************************************/
-        /** Output stream overload operator.                                   
+        /*! \brief Output stream overload operator.
+        *
         * Operator overloaded to encode any data held in memory into the Intel
         * HEX format for storage on disk                 
         *
@@ -99,7 +99,8 @@ class intelhex {
                                    intelhex& ihLocal);
         
         /**********************************************************************/
-        /** Input stream overload operator.                                   
+        /*! \brief Input stream overload operator.
+        *
         * Operator overloaded to decode data streamed in from a file in the 
         * Intel HEX format into memory                 
         *
@@ -116,19 +117,22 @@ class intelhex {
 
     private:
         /**********************************************************************/
-        /** Container for decoded Intel HEX content.                                 
+        /*! \brief Container for decoded Intel HEX content.
+        *
         * STL map holding the addresses found in the Intel HEX file and the
         * associated data byte stored at that address                 
         ***********************************************************************/
         map<unsigned long, unsigned char> ihContent;
         
         /**********************************************************************/
-        /** Iterator for the container holding the decoded Intel HEX content. 
+        /*! \brief Iterator for the container holding the decoded Intel HEX
+        *        content. 
         ***********************************************************************/
         map<unsigned long, unsigned char>::iterator ihIterator;
         
         /**********************************************************************/
-        /** Pair for the container holding the decoded Intel HEX content. 
+        /*! \brief Pair for the container holding the decoded Intel HEX content.
+        *
         * This is used to acquire the result of an attempt to insert new data
         * into ihContent. Since the ihContent is a map STL, it can't allow
         * data to be assigned to the same address more than once. In this way we
@@ -138,7 +142,8 @@ class intelhex {
         pair<map<unsigned long, unsigned char>::iterator,bool> ihReturn;
   
         /**********************************************************************/
-        /** Stores segment base address of Intel HEX file.
+        /*! \brief Stores segment base address of Intel HEX file.
+        *
         * The segment base address is a 32-bit address to which the current
         * load offset (as found in a Data Record line of the Intel HEX file) is
         * added to calculate the actual address of the data. The Data Records
@@ -149,7 +154,8 @@ class intelhex {
         unsigned long segmentBaseAddress;
         
         /**********************************************************************/
-        /** Stores the content of the CS/IP Registers, if used.
+        /*! \brief Stores the content of the CS/IP Registers, if used.
+        *
         * Used to store the content of the CS and IS Register for HEX files 
         * created for x286 or earlier Intel processors. This information is 
         * retrieved from the Start Segment Address Record.
@@ -167,7 +173,8 @@ class intelhex {
         } startSegmentAddress;
         
         /**********************************************************************/
-        /** Stores the content of the EIP Register, if used.
+        /*! \brief Stores the content of the EIP Register, if used.
+        *
         * Used to store the content of the EIP Register for HEX files created
         * for x386 Intel processors. This information is retrieved from the
         * the Start Linear Address Record.
@@ -184,7 +191,8 @@ class intelhex {
         
         
         /**********************************************************************/
-        /** Structure to hold warning messages
+        /*! \brief Structure to hold warning messages.
+        *
         * Holds warning messages generated during encoding/decoding process and
         * number of messages currently present in system
         *
@@ -198,7 +206,8 @@ class intelhex {
         } msgWarning;
         
         /**********************************************************************/
-        /** Structure to hold error messages
+        /*! \brief Structure to hold error messages.
+        *
         * Holds error messages generated during encoding/decoding process and 
         * number of messages currently present in system
         *
@@ -212,21 +221,24 @@ class intelhex {
         } msgError;
         
         /**********************************************************************/
-        /** Note that EOF record is found
+        /*! \brief Note that EOF record is found.
+        *
         * Used to note that the EOF record was found in order to ensure that it
         * doesn't appear twice during encoding.                
         ***********************************************************************/
         bool foundEof;
         
         /**********************************************************************/
-        /** Select verbose mode
+        /*! \brief Select verbose mode.
+        *
         * Used during development to display messages as the incoming data 
         * stream is decoded                
         ***********************************************************************/
         bool verbose;
 
         /**********************************************************************/
-        /** Select segment address mode
+        /*! \brief Select segment address mode.
+        *
         * If true, use the segment addressing mode when encoding files.
         * otherwise the default linear address mode will be used. Please refer 
         * to Intel's Hexadecimal Object File Format Specifiation for further
@@ -234,8 +246,9 @@ class intelhex {
         ***********************************************************************/
         bool segmentAddressMode;
 
-        /**********************************************************************/        
-        /** Converts a 2 char string to its HEX value
+        /***********************************************************************     
+        * \brief Converts a 2 char string to its HEX value.
+        *
         * Converts a two byte string to its equivalent value in hexadecimal
         *
         * \param        value   - a two character, valid ASCII representation of 
@@ -256,8 +269,9 @@ class intelhex {
         ***********************************************************************/
         unsigned char stringToHex(string value);
 
-        /**********************************************************************/        
-        /** Converts an unsigned long to a string in HEX format               
+        /***********************************************************************   
+        * \brief Converts an unsigned long to a string in HEX format.
+        *
         * Takes the received paramter and converts it into its equivalent value
         * represented in ASCII and formatted in hexadecimal. Return value is an
         * 8 character long string, prefaced with '0's where necessary.
@@ -274,8 +288,9 @@ class intelhex {
         ***********************************************************************/
         string ulToHexString(unsigned long value);
 
-        /**********************************************************************/        
-        /** Converts an unsigned char to a string in HEX format               
+        /**********************************************************************/
+        /*! \brief Converts an unsigned char to a string in HEX format.
+        *
         * Takes the received paramter and converts it into its equivalent value
         * represented in ASCII and formatted in hexadecimal. Return value is a
         * 2 character long string, prefaced with '0' where necessary.
@@ -293,7 +308,8 @@ class intelhex {
         string ucToHexString(unsigned char value);
         
         /**********************************************************************/
-        /** Converts an unsigned long to a string in DEC format               
+        /*! \brief Converts an unsigned long to a string in DEC format.
+        *
         * Takes the received paramter and converts it into its equivalent value
         * represented in ASCII and formatted in decimal. Return value will never
         * be longer than a 48 character long string.
@@ -308,7 +324,8 @@ class intelhex {
         string ulToString(unsigned long value);
         
         /**********************************************************************/
-        /** Decodes the data content of a data record                         
+        /*! \brief Decodes the data content of a data record.
+        *
         * Takes the data element of a data record in string format, converts
         * each 2 char element into a single byte and then inserts that byte of
         * data into the ihContent STL map.
@@ -326,14 +343,15 @@ class intelhex {
                               string::const_iterator data);
                               
         /**********************************************************************/
-        /** Add a warning message to the warning message list      
+        /*! \brief Add a warning message to the warning message list.
+        *
         *
         * \param    warningMessage - the text to be added for this warning
         ***********************************************************************/
         void addWarning(string warningMessage);
         
         /**********************************************************************/
-        /** Add an error message to the error message list                
+        /*! \brief Add an error message to the error message list.
         *
         * \param    errorMessage - the text to be added for this error        
         ***********************************************************************/
@@ -341,7 +359,8 @@ class intelhex {
         
     public:
         /**********************************************************************/
-        /** intelhex Class Constructor
+        /*! \brief intelhex Class Constructor.
+        *
         * Important initialisation steps performed here:
         * - clear segment base address to zero
         * - clear all x86 start address registers to zero
@@ -371,14 +390,19 @@ class intelhex {
             segmentAddressMode = false;
         }
 
-        /* Destructor                                                         */
+        /**********************************************************************/
+        /*! \brief intelhex Class Deconstructor.
+        *
+        * Currently the deconstructor is intentially empty.
+        ***********************************************************************/
         ~intelhex()
         {
             /* Currently nothing */
         }
         
         /**********************************************************************/
-        /** Moves the address pointer to the first available address.
+        /*! \brief Moves the address pointer to the first available address.
+        *
         * The address pointer will be moved to the first available address in 
         * memory of the decoded file or of the data the user has inserted into
         * memory for the purpose of encoding into the Intel HEX format.
@@ -399,7 +423,8 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Moves the address pointer to the last available address.
+        /*! \brief Moves the address pointer to the last available address.
+        *
         * The address pointer will be moved to the last available address in 
         * memory of the decoded file or of the data the user has inserted into
         * memory for the purpose of encoding into the Intel HEX format.
@@ -420,7 +445,8 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Moves the address pointer to the desired address.
+        /*! \brief Moves the address pointer to the desired address.
+        *
         * Address pointer will take on the requested address.
         *
         * \sa currentAddress()
@@ -433,7 +459,8 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Returns the current segment base address.
+        /*! \brief Returns the current segment base address.
+        *
         * Current address will be returned.
         *
         * \sa jumpTo()
@@ -446,7 +473,8 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Returns the lowest address currently available.
+        /*! \brief Returns the lowest address currently available.
+        *
         * Returns the first address that appears in the memory if there is data
         * present. If not, no value will be returned.
         *
@@ -473,17 +501,18 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Returns the highest address currently available.
+        /*! \brief Returns the highest address currently available.
+        *
         * Returns the last address that appears in the memory if there is data
         * present. If not, no value will be returned.
-        *
-        * \sa startAddress()
         *
         * \param address    - variable to hold address requested
         *
         * \retval true      - address existed and returned value is valid
         * \retval false     - address did not exist and returned valid is not
         *                     valid
+        *
+        * \sa startAddress()
         ***********************************************************************/
         bool endAddress(unsigned long * address)
         {
@@ -503,12 +532,13 @@ class intelhex {
         bool getData(unsigned char * data, unsigned long address);
         
         /**********************************************************************/
-        /** Inserts desired byte at the current address pointer.
+        /*! \brief Inserts desired byte at the current address pointer.
+        *
         * Inserts byte of data at the current address pointer
         *
-        * \sa startAddress()
-        *
         * \param    data - data byte to be inserted
+        *
+        * \sa startAddress()
         ***********************************************************************/
         bool insertData(unsigned char data);
         bool insertData(unsigned char data, unsigned long address);
@@ -532,7 +562,8 @@ class intelhex {
         void blankFillAddressLowByte(unsigned long endAddress);
         
         /**********************************************************************/
-        /** Returns number of unread warning messages
+        /*! \brief Returns number of unread warning messages.
+        *
         * Number of unread warning messages will be returned.
         *
         * \sa popNextWarning(), getNoErrors(), popNextError()
@@ -543,7 +574,8 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Returns number of unread error messages
+        /*! \brief Returns number of unread error messages.
+        *
         * Number of unread error messages will be returned.
         *
         * \sa popNextWarning(), getNoWarnings(), popNextError()
@@ -554,16 +586,17 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Pop next warning message from the list of warnings.
+        /*! \brief Pop next warning message from the list of warnings.
+        *
         * Next warning message is returned from the list of warnings. If there 
         * are no more warning in the list, the string will be unchanged.
-        *
-        * \sa getNoWarnings(), getNoErrors(), popNextError()
         *
         * \param    warning - variable to store warning string to be returned
         *
         * \retval   true    - more warning messages are available
         * \retval   false   - no more warning messages are available
+        *
+        * \sa getNoWarnings(), getNoErrors(), popNextError()
         ***********************************************************************/
         bool popNextWarning(string& warning)
         {
@@ -584,16 +617,17 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Pop next error message from the list of errors.
+        /*! \brief Pop next error message from the list of errors.
+        *
         * Next error message is returned from the list of errors. If there are
         * no more errors in the list, no string will be returned unchanged.
-        *
-        * \sa getNoWarnings(), getNoErrors(), popNextError()
         *
         * \param    error   - variable to store error string to be returned
         *
         * \retval   true    - more error messages are available
         * \retval   false   - no more error messages are available
+        *
+        * \sa getNoWarnings(), getNoErrors(), popNextError()
         ***********************************************************************/
         bool popNextError(string& error)
         {
@@ -614,18 +648,19 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Returns segment start address for the IP and ES registers.
+        /*! \brief Returns segment start address for the IP and ES registers.
+        *
         * If these values exist, they will be returned. If not, the function
         * returns false.
-        *
-        * \sa getStartLinearAddress(), setStartSegmentAddress(), 
-        *     setStartLinearAddress()
         *
         * \param    ipRegister  - variable to store IP register's value
         * \param    csRegister  - variable to store CS register's value
         *
         * \retval   true    - IP and CS registers have defined values
         * \retval   false   - IP and CS registers do not contain values
+        *
+        * \sa getStartLinearAddress(), setStartSegmentAddress(), 
+        *     setStartLinearAddress()
         ***********************************************************************/
         bool getStartSegmentAddress(unsigned short * ipRegister, 
                                     unsigned short * csRegister)
@@ -640,17 +675,18 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Returns segment linear address for the EIP register.
+        /*! \brief Returns segment linear address for the EIP register.
+        *
         * If this value exists, they will be returned. If not, the function
         * returns false.
-        *
-        * \sa getStartSegmentAddress(), setStartSegmentAddress(), 
-        *     setStartLinearAddress()
         *
         * \param    eipRegister - variable to store EIP register's value
         *
         * \retval   true    - EIP register has defined value
         * \retval   false   - EIP register do not contain value
+        *
+        * \sa getStartSegmentAddress(), setStartSegmentAddress(), 
+        *     setStartLinearAddress()
         ***********************************************************************/
         bool getStartLinearAddress(unsigned long * eipRegister)
         {
@@ -663,15 +699,16 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Sets the segment start address for the IP and CS registers.
+        /*! \brief Sets the segment start address for the IP and CS registers.
+        *
         * Allows user to define or redefine the contents of the IP and CS 
         * registers
         *
-        * \sa getStartLinearAddress(), getStartSegmentAddress(), 
-        *     setStartLinearAddress()
-        *
         * \param    ipRegister  - desired IP register value
         * \param    csRegister  - desired CS register value
+        *
+        * \sa getStartLinearAddress(), getStartSegmentAddress(), 
+        *     setStartLinearAddress()
         ***********************************************************************/
         void setStartSegmentAddress(unsigned short ipRegister, 
                                     unsigned short csRegister)
@@ -682,13 +719,14 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Sets the segment start address for the EIP register.
+        /*! \brief Sets the segment start address for the EIP register.
+        *
         * Allows user to define or redefine the contents of the EIP register
+        *
+        * \param    eipRegister - desired EIP register value
         *
         * \sa getStartSegmentAddress(), setStartSegmentAddress(), 
         *     getStartLinearAddress()
-        *
-        * \param    eipRegister - desired EIP register value
         ***********************************************************************/
         void setStartLinearAddress(unsigned long eipRegister)
         {
@@ -697,7 +735,8 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Turns on segment addressing mode during encoding.
+        /*! \brief Turns on segment addressing mode during encoding.
+        *
         * Uses the Segment Address Record during encoding.
         ***********************************************************************/
         void segmentAddressingOn()
@@ -706,7 +745,8 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Turns on linear addressing mode during encoding.
+        /*! \brief Turns on linear addressing mode during encoding.
+        *
         * Uses the Linear Address Record during encoding.
         ***********************************************************************/
         void linearAddressingOn()
@@ -715,7 +755,8 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Turns on textual output to cout during decoding.
+        /*! \brief Turns on textual output to cout during decoding.
+        *
         * Per record single line output to cout during decoding of Intel HEX
         * files.
         ***********************************************************************/
@@ -725,7 +766,8 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /** Turns off textual output to cout during decoding.
+        /*! \brief Turns off textual output to cout during decoding.
+        *
         * No output to cout during decoding of Intel HEX files.
         ***********************************************************************/
         void verboseOff()
