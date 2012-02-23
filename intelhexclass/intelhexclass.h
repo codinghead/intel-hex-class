@@ -92,6 +92,8 @@ class intelhex {
         *                     information
         * \param ihLocal    - Points to this class so that friend function has
         *                     access to private class members
+        *
+        * \retval           - pointer to output stream
         ***********************************************************************/
         friend ostream& operator<<(ostream& dataOut, 
                                    intelhex& ihLocal);
@@ -106,6 +108,8 @@ class intelhex {
         * \param dataIn     - Input stream for the encoded file information
         * \param ihLocal    - Points to this class so that friend function has
         *                     access to private class members
+        *
+        * \retval           - pointer to input stream
         ***********************************************************************/
         friend istream& operator>>(istream& dataIn, 
                                    intelhex& ihLocal);
@@ -150,6 +154,11 @@ class intelhex {
         * created for x286 or earlier Intel processors. This information is 
         * retrieved from the Start Segment Address Record.
         * The found element defines if these registers hold valid data or not.
+        *
+        * \param    csRegister  - content of the CS register
+        * \param    ipRegister  - content of the IP register
+        * \param    exists      - defines if values for the above registers have
+        *                         been written (true) or not (false)
         ***********************************************************************/
         struct {
             unsigned short  csRegister;
@@ -163,6 +172,10 @@ class intelhex {
         * for x386 Intel processors. This information is retrieved from the
         * the Start Linear Address Record.
         * The found element defines if this register holds valid data or not.
+        *
+        * \param    eipRegister - content of the EIP register
+        * \param    exists      - defines if a value for the above register has
+        *                         been written (true) or not (false)
         ***********************************************************************/
         struct {
             unsigned long   eipRegister;
@@ -174,6 +187,10 @@ class intelhex {
         /** Structure to hold warning messages
         * Holds warning messages generated during encoding/decoding process and
         * number of messages currently present in system
+        *
+        * \param    ihWarnings      - list of warning messages as strings
+        * \param    noOfWarnings    - no of warning messages still present in 
+        *                             the list
         ***********************************************************************/
         struct {
             list<string> ihWarnings;
@@ -184,6 +201,10 @@ class intelhex {
         /** Structure to hold error messages
         * Holds error messages generated during encoding/decoding process and 
         * number of messages currently present in system
+        *
+        * \param    ihErrors        - list of error messages as strings
+        * \param    noOferrors      - no of error messages still present in the
+        *                             list
         ***********************************************************************/
         struct {
             list<string> ihErrors;
@@ -207,27 +228,82 @@ class intelhex {
         /**********************************************************************/
         /** Select segment address mode
         * If true, use the segment addressing mode when encoding files.
-        * otherwise the default linear address mode will be used.                
+        * otherwise the default linear address mode will be used. Please refer 
+        * to Intel's Hexadecimal Object File Format Specifiation for further
+        * information.
         ***********************************************************************/
         bool segmentAddressMode;
 
         /**********************************************************************/        
         /** Converts a 2 char string to its HEX value
+        * Converts a two byte string to its equivalent value in hexadecimal
+        *
+        * \param        value   - a two character, valid ASCII representation of 
+        *                         a hexadecimal value
+        * 
+        * \retval       'value' valid   - 8-bit value
+        * \retval       'value' invalid - 0x00 and calls addWarning()
+        *
+        * \note
+        * This function will post a warning message using the warning handling
+        * system addWarning() if:
+        *   -# The string contains anything other that exactly two characters
+        *   -# The string contains anything other than the characters 0-9, a-f
+        *      and A-F
+        *
+        * \sa
+        * ulToHexString(), ucToHexString(), ulToString()
         ***********************************************************************/
         unsigned char stringToHex(string value);
 
         /**********************************************************************/        
         /** Converts an unsigned long to a string in HEX format               
+        * Takes the received paramter and converts it into its equivalent value
+        * represented in ASCII and formatted in hexadecimal. Return value is an
+        * 8 character long string, prefaced with '0's where necessary.
+        *
+        * \param        value   - a value between 0x0000000 and 0xFFFFFFFF
+        * 
+        * \retval               - 8-character long string
+        *
+        * \note
+        * Alpha characters are capitalised.
+        *
+        * \sa
+        * stringToHex(), ucToHexString(), ulToString()
         ***********************************************************************/
         string ulToHexString(unsigned long value);
 
         /**********************************************************************/        
         /** Converts an unsigned char to a string in HEX format               
+        * Takes the received paramter and converts it into its equivalent value
+        * represented in ASCII and formatted in hexadecimal. Return value is a
+        * 2 character long string, prefaced with '0' where necessary.
+        *
+        * \param        value   - a value between 0x00 and 0xFF
+        * 
+        * \retval               - 2-character long string
+        *
+        * \note
+        * Alpha characters are capitalised.
+        *
+        * \sa
+        * stringToHex(), ulToHexString(), ulToString()
         ***********************************************************************/
         string ucToHexString(unsigned char value);
         
         /**********************************************************************/
         /** Converts an unsigned long to a string in DEC format               
+        * Takes the received paramter and converts it into its equivalent value
+        * represented in ASCII and formatted in decimal. Return value will never
+        * be longer than a 48 character long string.
+        *
+        * \param        value   - value to be converted
+        * 
+        * \retval               - ASCII string representation of value
+        *
+        * \sa
+        * stringToHex(), ulToHexString(), ucToHexString()
         ***********************************************************************/
         string ulToString(unsigned long value);
         
