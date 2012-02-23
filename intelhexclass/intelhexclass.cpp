@@ -51,6 +51,10 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 *
+* \section imageInfo Image Information
+* Image chosen for this project comes from 'Henkster'. Original image is from
+* http://www.sxc.hu/photo/504350 on stock.xchng. 
+*
 * \author Stuart Cording aka CODINGHEAD
 *
 ********************************************************************************

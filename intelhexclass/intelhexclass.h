@@ -20,7 +20,7 @@
 
 /******************************************************************************/
 /**
-* \file intelhexclass.hpp
+* \file intelhexclass.h
 * \author Stuart Cording aka CODINGHEAD 
 * 
 * A class to handle the encoding, decoding and manipulatio of an Intel HEX
@@ -671,7 +671,7 @@ class intelhex {
         *     setStartLinearAddress()
         *
         * \param    ipRegister  - desired IP register value
-        * \param    esRegister  - desired CS register value
+        * \param    csRegister  - desired CS register value
         ***********************************************************************/
         void setStartSegmentAddress(unsigned short ipRegister, 
                                     unsigned short csRegister)
