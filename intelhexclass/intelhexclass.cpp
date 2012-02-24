@@ -71,6 +71,11 @@
 
 using namespace std;
 
+/******************************************************************************/
+/*! Possible record types for Intel HEX file.
+*
+* List of all possible record types that can be found in an Intel HEX file.
+*******************************************************************************/
 enum intelhexRecordType {
     DATA_RECORD,
     END_OF_FILE_RECORD,
@@ -81,7 +86,9 @@ enum intelhexRecordType {
     NO_OF_RECORD_TYPES
 };
 
-/* Converts a 2 char string to its HEX value                                  */
+/*******************************************************************************
+* Converts a 2 char string to its HEX value
+*******************************************************************************/
 unsigned char intelhex::stringToHex(string value)
 {
     unsigned char returnValue = 0;
@@ -142,7 +149,9 @@ unsigned char intelhex::stringToHex(string value)
     return returnValue;
 }
 
-/* Converts an unsigned long char to a string in HEX format                   */
+/*******************************************************************************
+* Converts an unsigned long to a string in HEX format
+*******************************************************************************/
 string intelhex::ulToHexString(unsigned long value)
 {
     string returnString;
@@ -157,6 +166,9 @@ string intelhex::ulToHexString(unsigned long value)
     return returnString;
 }
 
+/*******************************************************************************
+* Converts an unsigned long to a string in DEC format
+*******************************************************************************/
 string intelhex::ulToString(unsigned long value)
 {
     string returnString;
@@ -171,6 +183,9 @@ string intelhex::ulToString(unsigned long value)
     return returnString;
 }
 
+/*******************************************************************************
+* Converts an unsigned char to a string in HEX format
+*******************************************************************************/
 string intelhex::ucToHexString(unsigned char value)
 {
     string returnString;
@@ -185,6 +200,9 @@ string intelhex::ucToHexString(unsigned char value)
     return returnString;
 }
 
+/*******************************************************************************
+* Adds a warning to the list of warning messages
+*******************************************************************************/
 void intelhex::addWarning(string warningMessage)
 {
     string localMessage;
@@ -199,6 +217,9 @@ void intelhex::addWarning(string warningMessage)
     msgWarning.noOfWarnings = msgWarning.ihWarnings.size();
 }
 
+/*******************************************************************************
+* Adds an error to the list of error messages
+*******************************************************************************/
 void intelhex::addError(string errorMessage)
 {
     string localMessage;
@@ -213,6 +234,9 @@ void intelhex::addError(string errorMessage)
     msgError.noOfErrors = msgError.ihErrors.size();
 }
 
+/*******************************************************************************
+* Decodes a data record read in from a file
+*******************************************************************************/
 void intelhex::decodeDataRecord(unsigned char recordLength,
                                 unsigned long loadOffset,
                                 string::const_iterator data)
@@ -274,7 +298,9 @@ void intelhex::decodeDataRecord(unsigned char recordLength,
     }
 }
 
-/* Input Stream for Intel HEX File Decoding (friend function)                 */
+/*******************************************************************************
+* Input Stream for Intel HEX File Decoding (friend function)
+*******************************************************************************/
 istream& operator>>(istream& dataIn, intelhex& ihLocal)
 {
     // Create a string to store lines of Intel Hex info
@@ -782,7 +808,9 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
     return(dataIn);
 }
 
-/* Input Stream for Intel HEX File Decoding (friend function)                 */
+/*******************************************************************************
+* Output Stream for Intel HEX File Encoding (friend function)
+*******************************************************************************/
 ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
 {
     /* Stores the address offset needed by the linear/segment address records */
@@ -1004,6 +1032,8 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
     /* If there is a segment start address, output the data                   */
     if (ihLocal.startSegmentAddress.exists == true)
     {
+        unsigned char dataByte;
+        
         thisRecord.clear();
         checksum = 0;
         
@@ -1012,19 +1042,19 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
         
         dataByte = static_cast<unsigned char>((ihLocal.startSegmentAddress.csRegister >> 8) & 0xFF);
         checksum += dataByte;
-        thisRecord += ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte);
         
         dataByte = static_cast<unsigned char>(ihLocal.startSegmentAddress.csRegister & 0xFF);
         checksum += dataByte;
-        thisRecord += ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte);
         
         dataByte = static_cast<unsigned char>((ihLocal.startSegmentAddress.ipRegister >> 8) & 0xFF);
         checksum += dataByte;
-        thisRecord += ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte);
         
         dataByte = static_cast<unsigned char>(ihLocal.startSegmentAddress.ipRegister & 0xFF);
         checksum += dataByte;
-        thisRecord += ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte);
         
         
         /* Last bit - add the checksum                                        */
@@ -1037,6 +1067,8 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
     /* If there is a linear start address, output the data                    */
     if (ihLocal.startLinearAddress.exists == true)
     {
+        unsigned char dataByte;
+        
         thisRecord.clear();
         checksum = 0;
         
@@ -1045,19 +1077,19 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
         
         dataByte = static_cast<unsigned char>((ihLocal.startLinearAddress.eipRegister >> 24) & 0xFF);
         checksum += dataByte;
-        thisRecord += ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte);
         
         dataByte = static_cast<unsigned char>((ihLocal.startLinearAddress.eipRegister >> 16) & 0xFF);
         checksum += dataByte;
-        thisRecord += ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte);
         
         dataByte = static_cast<unsigned char>((ihLocal.startLinearAddress.eipRegister >> 8) & 0xFF);
         checksum += dataByte;
-        thisRecord += ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte);
         
         dataByte = static_cast<unsigned char>(ihLocal.startLinearAddress.eipRegister & 0xFF);
         checksum += dataByte;
-        thisRecord += ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte);
         
         
         /* Last bit - add the checksum                                        */
@@ -1072,6 +1104,7 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
     
     return (dataOut);
 }
+
 /*******************************************************************************
 *
 *                        INTEL HEX FILE CLASS MODULE END

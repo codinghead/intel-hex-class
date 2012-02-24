@@ -401,6 +401,86 @@ class intelhex {
         }
         
         /**********************************************************************/
+        /*! \brief intelhex Class Copy Constructor.
+        *
+        * Currently the copy constructor is intentially empty.
+        ***********************************************************************/
+        intelhex(const intelhex &ihSource)
+        {
+            /* Initialise the segment base address                            */
+            segmentBaseAddress = ihSource.segmentBaseAddress;
+            /* Initialise content of register variables used with the 'Start Segment'
+            *  and 'Start Linear' address records                             */
+            startSegmentAddress.ipRegister = ihSource.startSegmentAddress.ipRegister;
+            startSegmentAddress.csRegister = ihSource.startSegmentAddress.csRegister;
+            startSegmentAddress.exists = ihSource.startSegmentAddress.exists;
+            startLinearAddress.eipRegister = ihSource.startLinearAddress.eipRegister;
+            startLinearAddress.exists = ihSource.startLinearAddress.exists;
+            /* Set up error and warning handling variables                    */
+            msgWarning.noOfWarnings = ihSource.msgWarning.noOfWarnings;
+            msgWarning.ihWarnings = ihSource.msgWarning.ihWarnings;
+            msgError.noOfErrors = ihSource.msgError.noOfErrors;
+            msgError.ihErrors = ihSource.msgError.ihErrors;
+            /* Note that the EOF record has not been found yet                */
+            foundEof = ihSource.foundEof;
+            /* Set verbose mode to off                                        */
+            verbose = ihSource.verbose;
+            /* Set segment address mode to false (default)                    */
+            segmentAddressMode = ihSource.segmentAddressMode;
+            /* Copy HEX file content variables                                */
+            ihContent = ihSource.ihContent;
+            ihIterator = ihSource.ihIterator;
+        }
+        
+        /**********************************************************************/
+        /*! \brief intelhex Class Assignment Operator.
+        *
+        * Implements the assignment operator so that the content of the Intel
+        * HEX file in memory can be copied to another 'intelhex' variable.
+        * You may want to keep a copy of the original data in memory and 
+        * only manipulate a copy-
+        *
+        * \param    ihSource    - intelhex variable to be assigned to new 
+        *                         variable
+        * 
+        * \retarg   pointer to variable to which value is to be assigned
+        ***********************************************************************/
+        intelhex& operator= (const intelhex &ihSource)
+        {
+            /* Check that we are not trying to assign ourself to ourself      */
+            /* i.e. are the source/destination addresses the same like        */
+            /* myData = myData;                                               */
+            if (this == &ihSource)
+                return *this;
+            
+            /* Initialise the segment base address                            */
+            segmentBaseAddress = ihSource.segmentBaseAddress;
+            /* Initialise content of register variables used with the 'Start Segment'
+            *  and 'Start Linear' address records                             */
+            startSegmentAddress.ipRegister = ihSource.startSegmentAddress.ipRegister;
+            startSegmentAddress.csRegister = ihSource.startSegmentAddress.csRegister;
+            startSegmentAddress.exists = ihSource.startSegmentAddress.exists;
+            startLinearAddress.eipRegister = ihSource.startLinearAddress.eipRegister;
+            startLinearAddress.exists = ihSource.startLinearAddress.exists;
+            /* Set up error and warning handling variables                    */
+            msgWarning.noOfWarnings = ihSource.msgWarning.noOfWarnings;
+            msgWarning.ihWarnings = ihSource.msgWarning.ihWarnings;
+            msgError.noOfErrors = ihSource.msgError.noOfErrors;
+            msgError.ihErrors = ihSource.msgError.ihErrors;
+            /* Note that the EOF record has not been found yet                */
+            foundEof = ihSource.foundEof;
+            /* Set verbose mode to off                                        */
+            verbose = ihSource.verbose;
+            /* Set segment address mode to false (default)                    */
+            segmentAddressMode = ihSource.segmentAddressMode;
+            /* Copy HEX file content variables                                */
+            ihContent = ihSource.ihContent;
+            ihIterator = ihSource.ihIterator;
+            
+            return *this;
+        }
+        
+        /**********************************************************************/
         /*! \brief Moves the address pointer to the first available address.
         *
         * The address pointer will be moved to the first available address in 

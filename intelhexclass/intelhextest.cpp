@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     }
     
     intelHexOutput << classTest;
-    
+
     return(0);
 }
 
