@@ -93,8 +93,8 @@ int main(int argc, char *argv[])
     	usage();
 	}
  
-    intelHexInput >> ihItegrity;
-    if ((ihIntegrity.getNoOfWarnings > 0) || (ihIntegrity.getNoOfErrors > 0))
+    intelHexInput >> ihIntegrity;
+    if ((ihIntegrity.getNoWarnings() > 0) || (ihIntegrity.getNoErrors() > 0))
     {
         cout << "Issues found with " << argv[1] << endl;
         
