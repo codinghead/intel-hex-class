@@ -98,7 +98,8 @@ int main(int argc, char *argv[])
     {
         cout << "Issues found with " << argv[1] << endl;
         
-        cout << "Warnings:" << endl;
+        if (ihIntegrity.getNoErrors() > 0)
+            cout << "Errors:" << endl;
         while (ihIntegrity.getNoErrors() > 0)
         {
             string message;
@@ -108,7 +109,8 @@ int main(int argc, char *argv[])
             cout << message << endl;
         }
         
-        cout << "Errors:" << endl;
+        if (ihIntegrity.getNoWarnings() > 0)
+            cout << "Warnings:" << endl;
         while (ihIntegrity.getNoWarnings() > 0)
         {
             string message;
