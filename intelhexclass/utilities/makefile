@@ -5,10 +5,16 @@ CC=g++
 CFLAGS=-g -Wall
 CINC=-I../intelhex_class
 CNAME=ihIntegrity
+DNAME=ihRefactor
 SNAME=../intelhex_class/intelhexclass
 
 $(CNAME): $(CNAME).cpp $(SNAME).cpp
 	$(CC) $(CFLAGS) $(CINC) -o$(CNAME) $(CNAME).cpp $(SNAME).cpp
 
+$(DNAME): $(DNAME).cpp $(SNAME).cpp
+	$(CC) $(CFLAGS) $(CINC) -o$(DNAME) $(DNAME).cpp $(SNAME).cpp
+
 clean:
 	rm $(CNAME)
+	rm $(DNAME)
+	
