@@ -151,34 +151,8 @@ int main(int argc, char *argv[])
         
         exit (EXIT_FAILURE);
     }
-    else
-    {
-        intelHexOutput.open(argv[2], ofstream::out);
-        
-        if(!intelHexOutput.good())
-	    {
-        	std::cerr << "Error: couldn't open " << argv[2] << std::endl;
-        	usage();
-	    }
-	    
-	    intelHexOutput << ihRefactor;
-	    
-	    if (ihRefactor.getNoWarnings() > 0)
-        {
-            cout << "Warnings generated during decoding:" << endl;
-            
-            while (ihRefactor.getNoWarnings() > 0)
-            {
-                string message;
-                
-                ihRefactor.popNextWarning(message);
-                
-                cout << message << endl;
-            }
-        }
-        
-        cout << "File " << argv[2] << " created successfully." << endl;
-    }
+    
+    
        
     return(0);	
 }
