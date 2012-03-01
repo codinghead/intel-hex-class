@@ -443,7 +443,7 @@ class intelhex {
         * \param    ihSource    - intelhex variable to be assigned to new 
         *                         variable
         * 
-        * \retarg   pointer to variable to which value is to be assigned
+        * \retval   pointer to variable to which value is to be assigned
         ***********************************************************************/
         intelhex& operator= (const intelhex &ihSource)
         {
