@@ -65,10 +65,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#ifndef _WIN32_
-#include <cstdio>
-#else
+#ifdef _MSC_FULL_VER
 #include <stdio.h>
+#else
+#include <cstdio>
 #endif
 
 #include "intelhexclass.h"
@@ -163,10 +163,10 @@ string intelhex::ulToHexString(unsigned long value)
     
     returnString.erase();
 
-#ifndef _WIN32_
-    snprintf(localString, 49, "%08lX", value);
-#else
+#ifdef _MSC_FULL_VER
     sprintf_s(localString, 49, "%08lX", value);
+#else
+    snprintf(localString, 49, "%08lX", value);
 #endif
 	
     returnString.insert(0, localString);
@@ -184,10 +184,10 @@ string intelhex::ulToString(unsigned long value)
     
     returnString.erase();
     
-#ifndef _WIN32_
-    snprintf(localString, 49, "%lu", value);
-#else
+#ifdef _MSC_FULL_VER
     sprintf_s(localString, 49, "%lu", value);
+#else
+    snprintf(localString, 49, "%lu", value);
 #endif
     returnString.insert(0, localString);
 
@@ -204,10 +204,10 @@ string intelhex::ucToHexString(unsigned char value)
     
     returnString.erase();
 
-#ifndef _WIN32_
-    snprintf(localString, 49, "%02X", value);
-#else
+#ifdef _MSC_FULL_VER
     sprintf_s(localString, 49, "%02X", value);
+#else
+    snprintf(localString, 49, "%02X", value);
 #endif
 
     returnString.insert(0, localString);
@@ -831,7 +831,7 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
     /* Stores the address offset needed by the linear/segment address records */
     unsigned long addressOffset;
     /* Iterator into the ihContent - where the addresses & data are stored    */
-    map<const unsigned long, unsigned char>::iterator ihIterator;
+    map<unsigned long, unsigned char>::iterator ihIterator;
     /* Holds string that represents next record to be written                 */
     string thisRecord;
     /* Checksum calculation variable                                          */
