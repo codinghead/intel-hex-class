@@ -65,7 +65,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#ifndef _WIN32_
 #include <cstdio>
+#else
+#include <stdio.h>
+#endif
 
 #include "intelhexclass.h"
 
@@ -158,7 +162,7 @@ string intelhex::ulToHexString(unsigned long value)
     char localString[50];
     
     returnString.erase();
-    
+
     snprintf(localString, 49, "%08lX", value);
     
     returnString.insert(0, localString);
