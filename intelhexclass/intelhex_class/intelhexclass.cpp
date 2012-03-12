@@ -163,8 +163,12 @@ string intelhex::ulToHexString(unsigned long value)
     
     returnString.erase();
 
+#ifndef _WIN32_
     snprintf(localString, 49, "%08lX", value);
-    
+#else
+    sprintf_s(localString, 49, "%08lX", value);
+#endif
+	
     returnString.insert(0, localString);
 
     return returnString;
@@ -180,8 +184,11 @@ string intelhex::ulToString(unsigned long value)
     
     returnString.erase();
     
+#ifndef _WIN32_
     snprintf(localString, 49, "%lu", value);
-    
+#else
+    sprintf_s(localString, 49, "%lu", value);
+#endif
     returnString.insert(0, localString);
 
     return returnString;
@@ -196,9 +203,13 @@ string intelhex::ucToHexString(unsigned char value)
     char localString[50];
     
     returnString.erase();
-    
+
+#ifndef _WIN32_
     snprintf(localString, 49, "%02X", value);
-    
+#else
+    sprintf_s(localString, 49, "%02X", value);
+#endif
+
     returnString.insert(0, localString);
 
     return returnString;
