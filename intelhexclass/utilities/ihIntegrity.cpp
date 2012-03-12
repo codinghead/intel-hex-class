@@ -64,9 +64,14 @@ char *program_name;
 // Usage for this program
 void usage()
 {
+	string buildDate = __DATE__;
+	string buildTime = __TIME__;
+	
     cerr << "Usage is " << program_name <<
                  " [file]" << endl;
-    exit (EXIT_FAILURE);
+    
+	cerr << "Build date: " << buildDate << " Build time: " << buildTime << endl;
+	exit (EXIT_FAILURE);
 }
 
 int main(int argc, char *argv[])
