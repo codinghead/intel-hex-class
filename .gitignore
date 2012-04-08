@@ -24,4 +24,5 @@ intelhexclass/doxygen/man/
 *.7z
 *.tar
 
-
+# Ignore executables under Windows
+*.exe
