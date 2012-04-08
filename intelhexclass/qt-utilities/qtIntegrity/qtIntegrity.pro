@@ -9,15 +9,15 @@ QT       += core gui
 TARGET = qtIntegrity
 TEMPLATE = app
 
-INCLUDEPATH += ../../intelhex/intelhexclass/intelhex_class/
+INCLUDEPATH += ../../intelhex_class/
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    ../../intelhex/intelhexclass/intelhex_class/intelhexclass.cpp
+    ../../intelhex_class/intelhexclass.cpp
 
 HEADERS  += mainwindow.h \
         intelhexclass.h \
-    ../../intelhex/intelhexclass/intelhex_class/intelhexclass.h
+    ../../intelhexclass.h
 
 RESOURCES += \
     qtIntegrity.qrc
