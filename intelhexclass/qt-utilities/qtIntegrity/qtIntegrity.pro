@@ -27,3 +27,6 @@ RC_FILE = qtIntegrity.rc
 OTHER_FILES += \
     qtIntegrity.rc \
     intelhexclass.ico
+
+TRANSLATIONS += \
+    qtIntegrity-de.ts
