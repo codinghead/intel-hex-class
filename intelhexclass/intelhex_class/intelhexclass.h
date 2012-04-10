@@ -438,7 +438,7 @@ class intelhex {
         * Implements the assignment operator so that the content of the Intel
         * HEX file in memory can be copied to another 'intelhex' variable.
         * You may want to keep a copy of the original data in memory and 
-        * only manipulate a copy-
+        * only manipulate a copy.
         *
         * \param    ihSource    - intelhex variable to be assigned to new 
         *                         variable
