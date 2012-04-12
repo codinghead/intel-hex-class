@@ -367,6 +367,19 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                                                 ihLocal.ulToString(lineCounter);
 
                 ihLocal.addWarning(message);
+                
+                /* If this is the first line, let's simply give up. Chances   */
+                /* are this is not an Intel HEX file at all                   */
+                if (lineCounter == 1)
+                {
+                    message = "Intel HEX File decode aborted; ':' missing in " \
+                              "first line.";
+                    ihLocal.addError(message);
+                    
+                    /* Erase ihLine content and break out of do...while loop  */
+                    ihLine.erase();
+                    break;
+                }
             }
             else
             {
@@ -817,7 +830,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
     
     if (ihLocal.verbose == true)
     {
-        cout << "File contained " << lineCounter << " lines." << endl;
+        cout << "Decoded " << lineCounter << " lines from file." << endl;
     }
     
     return(dataIn);
