@@ -9,6 +9,9 @@
 
 # Ignore documentation files in the doxygen directory created by doxygen
 intelhexclass/doxygen/*.txt
+intelhexclass/doxygen/*.build
+intelhexclass/doxygen/*.tmp
+
 intelhexclass/doxygen/html/*
 intelhexclass/doxygen/latex/*
 intelhexclass/doxygen/rtf/*
@@ -26,3 +29,6 @@ intelhexclass/doxygen/man/*
 
 # Ignore executables under Windows
 *.exe
+
+#Ignore compiler generated files
+*.o
