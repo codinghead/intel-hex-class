@@ -32,3 +32,6 @@ intelhexclass/doxygen/man/*
 
 #Ignore compiler generated files
 *.o
+
+#Ignore extraneous Qt generated files
+*.qm
