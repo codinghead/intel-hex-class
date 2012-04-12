@@ -81,6 +81,13 @@ int main(int argc, char *argv[])
 	intelhex ihDiffA;
 	intelhex ihDiffB;
 	
+	// Note if there were issues with decoding
+	bool decodingIssues = false;
+	
+	// Storage for the address being analysed for both files
+	unsigned long diffAAddress = 0UL;
+	unsinged long diffBAddress = 0UL;
+		
 	// The program name is the first argument - save for later use
 	program_name = argv[0];
 
@@ -105,8 +112,75 @@ int main(int argc, char *argv[])
     	usage();
 	}
  
+    /* Decode both files                                                      */
     intelHexInputA >> ihDiffA;
     intelHexInputB >> ihDiffB;
+    
+    /* Check for errors or warnings                                           */
+    if (ihDiffA.getNoWarnings() != 0)
+    {
+        std::cerr << "File " << argv[1] << " contained warnings." << std::endl;
+        decodingIssues = true;
+    }
+    if (ihDiffA.getNoErrors() != 0)
+    {
+        std::cerr << "File " << argv[1] << " contained errors." << std::endl;
+        decodingIssues = true;
+    }
+    if (ihDiffB.getNoWarnings() != 0)
+    {
+        std::cerr << "File " << argv[2] << " contained warnings." << std::endl;
+        decodingIssues = true;
+    }
+    if (ihDiffB.getNoErrors() != 0)
+    {
+        std::cerr << "File " << argv[2] << " contained errors." << std::endl;
+        decodingIssues = true;
+    }
+    
+    if (decodingIssues == true)
+    {
+        std::cerr << "Continuing with diff despite issues listed." << std::endl;
+    }
+    
+    /* Get start addresses for both files                                     */
+    ihDiffA.begin();
+    ihDiffB.begin();
+    
+    bool complete = false;
+    do
+    {
+        /* Get address of data we are pointing to                             */
+        diffAAddress = ihDiffA.currentAddress();
+        diffBAddress = ihDiffB.currentAddress();
+        
+        /* Get the data at two current addresses                              */
+        diffAData = ihDiffA.getData();
+        diffBData = ihDiffB.getData();
+        
+        /* If addresses are the same, compare data values                     */
+        if (diffAAddress == diffBAddress)
+        {
+            if (diffAData != diffBData)
+            {
+                std::cout << "Address 0x" << diffAAddress << " A = 0x" << \
+                               diffAData << " B = 0x" << diffBData << std::endl;
+            }
+        }
+        
+        /* If addresses are different, find out which one is lower and output */
+        /* that this address has data where the other does not have data      */
+        if (diffAAddress < diffBAddress)
+        {
+            std::cout << "Address 0x" << diffAAddress << " A = 0x" << \
+                                          diffAData << " B = ----" << std::endl;
+            
+        }
+        
+        
+    } while (complete != true);
+    
+    
     
     if (ihRefactor.getNoErrors() > 0)
     {
