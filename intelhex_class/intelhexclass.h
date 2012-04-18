@@ -378,6 +378,7 @@ class intelhex {
         * - note that there are, as yet, no errors or warnings
         * - note that the EOF record has not yet been found
         * - set verbode mode to 'false' (default)
+        * - initialise class ihIterator
         ***********************************************************************/
         intelhex()
         {
@@ -399,6 +400,10 @@ class intelhex {
             verbose = false;
             /* Set segment address mode to false (default)                    */
             segmentAddressMode = false;
+            /* Ensure ihContent is erased and point ihIterator at it          */
+            ihContent.clear();
+            ihContent.begin();
+            ihIterator = ihContent.begin();
         }
 
         /**********************************************************************/
