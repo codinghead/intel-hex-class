@@ -506,7 +506,7 @@ class intelhex {
         /**********************************************************************/
         /*! \brief Overloaded postfix increment operator
         *
-        * Overloads the prostfix increment operator to move interal iterator to
+        * Overloads the postfix increment operator to move interal iterator to
         * next entry in the ihContent map
         *
         ***********************************************************************/
@@ -514,6 +514,32 @@ class intelhex {
         {
             intelhex tmp(*this);
             ++(*this);
+            return(tmp);
+        }
+        
+        /**********************************************************************/
+        /*! \brief Overloaded prefix decrement operator
+        *
+        * Overloads the prefix decrement operator to move interal iterator to
+        * previous entry in the ihContent map
+        *
+        ***********************************************************************/
+        intelhex& operator--()
+        {
+            --ihIterator;
+        }
+        
+        /**********************************************************************/
+        /*! \brief Overloaded postfix decrement operator
+        *
+        * Overloads the postfix decrement operator to move interal iterator to
+        * previous entry in the ihContent map
+        *
+        ***********************************************************************/
+        const intelhex operator--(int)
+        {
+            intelhex tmp(*this);
+            --(*this);
             return(tmp);
         }
         
