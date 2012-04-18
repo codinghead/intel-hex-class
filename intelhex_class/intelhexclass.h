@@ -501,6 +501,8 @@ class intelhex {
         intelhex& operator++()
         {
             ++ihIterator;
+            
+            return(*this);
         }
         
         /**********************************************************************/
@@ -527,6 +529,8 @@ class intelhex {
         intelhex& operator--()
         {
             --ihIterator;
+            
+            return(*this);
         }
         
         /**********************************************************************/
