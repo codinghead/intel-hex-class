@@ -400,7 +400,7 @@ class intelhex {
             verbose = false;
             /* Set segment address mode to false (default)                    */
             segmentAddressMode = false;
-            /* Ensure ihContent is erased and point ihIterator at it          */
+            /* Ensure ihContent is cleared and point ihIterator at it         */
             ihContent.clear();
             ihContent.begin();
             ihIterator = ihContent.begin();
@@ -586,11 +586,47 @@ class intelhex {
         ***********************************************************************/
         void end()
         {
-            if (ihContent.size() != 0)
+            if (!ihContent.empty())
             {
-                map<unsigned long, unsigned char>::reverse_iterator rit;
-                rit = ihContent.rbegin();
+                ihIterator = ihContent.end();
+                --ihIterator;
             }
+        }
+        
+        /**********************************************************************/
+        /*! \brief Checks if we have reached end of available data
+        *
+        * The internal pointer is checked to see if we have reached the end of 
+        * the data held in memory
+        *
+        * \sa operator++(), operator++(int), operator--(), operator--(int),
+        * empty()
+        *
+        * \retval true  - reached the end of the Intel HEX data in memory or no
+        *                 data in memory yet.
+        * \retval false - end of Intel HEX data in memory not yet reached.
+        *
+        * \note This function has no effect if no file has been as yet decoded
+        * and no data has been inserted into memory.
+        ***********************************************************************/
+        bool endOfData()
+        {
+            /* Return true if there is no data anyway                         */
+            bool result = true;
+            
+            if (!ihContent.empty())
+            {
+                if (ihIterator != ihContent.end())
+                {
+                    result = false;
+                }
+            }
+            return result;
+        }
+        
+        bool empty()
+        {
+            return ihContent.empty();
         }
         
         /**********************************************************************/
