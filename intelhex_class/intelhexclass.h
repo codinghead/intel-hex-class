@@ -126,7 +126,11 @@ class intelhex {
         
         /**********************************************************************/
         /*! \brief Iterator for the container holding the decoded Intel HEX
-        *        content. 
+        *        content.
+        *
+        * This iterator is used by the class to point to the location in memory
+        * currently being used to read or write data. If no file has been 
+        * loaded into memory, it points to the start of ihContent. 
         ***********************************************************************/
         map<unsigned long, unsigned char>::iterator ihIterator;
         
@@ -149,7 +153,9 @@ class intelhex {
         * added to calculate the actual address of the data. The Data Records
         * can only point to a 64kByte address, so the segment base address 
         * expands the addressing to 4GB. This variable always holds the last
-        * address accessed.
+        * address accessed. This variable is only used during file decoding
+        * and encoding in the operator<< and operator>> class member friend
+        * functions.
         ***********************************************************************/
         unsigned long segmentBaseAddress;
         
@@ -158,13 +164,16 @@ class intelhex {
         *
         * Used to store the content of the CS and IS Register for HEX files 
         * created for x286 or earlier Intel processors. This information is 
-        * retrieved from the Start Segment Address Record.
+        * retrieved from the Start Segment Address Record or can be defined
+        * by the user using the setStartSegmentAddress() function.
         * The found element defines if these registers hold valid data or not.
         *
         * \param    csRegister  - content of the CS register
         * \param    ipRegister  - content of the IP register
         * \param    exists      - defines if values for the above registers have
         *                         been written (true) or not (false)
+        *
+        * \sa getStartSegmentAddress(), setStartSegmentAddress()
         ***********************************************************************/
         struct {
             unsigned short  csRegister;
@@ -177,12 +186,15 @@ class intelhex {
         *
         * Used to store the content of the EIP Register for HEX files created
         * for x386 Intel processors. This information is retrieved from the
-        * the Start Linear Address Record.
+        * the Start Linear Address Record or can be defined by using the 
+        * setStartLinearAddress() function.
         * The found element defines if this register holds valid data or not.
         *
         * \param    eipRegister - content of the EIP register
         * \param    exists      - defines if a value for the above register has
         *                         been written (true) or not (false)
+        *
+        * \sa getStartLinearAddress(), setStartLinearAddress()
         ***********************************************************************/
         struct {
             unsigned long   eipRegister;
@@ -264,8 +276,7 @@ class intelhex {
         *   -# The string contains anything other than the characters 0-9, a-f
         *      and A-F
         *
-        * \sa
-        * ulToHexString(), ucToHexString(), ulToString()
+        * \sa ulToHexString(), ucToHexString(), ulToString()
         ***********************************************************************/
         unsigned char stringToHex(string value);
 
@@ -481,6 +492,32 @@ class intelhex {
         }
         
         /**********************************************************************/
+        /*! \brief Overloaded prefix increment operator
+        *
+        * Overloads the prefix increment operator to move interal iterator to
+        * next entry in the ihContent map
+        *
+        ***********************************************************************/
+        intelhex& operator++()
+        {
+            ++ihIterator;
+        }
+        
+        /**********************************************************************/
+        /*! \brief Overloaded postfix increment operator
+        *
+        * Overloads the prostfix increment operator to move interal iterator to
+        * next entry in the ihContent map
+        *
+        ***********************************************************************/
+        const intelhex operator++(int)
+        {
+            intelhex tmp(*this);
+            ++(*this);
+            return(tmp);
+        }
+        
+        /**********************************************************************/
         /*! \brief Moves the address pointer to the first available address.
         *
         * The address pointer will be moved to the first available address in 
@@ -568,7 +605,7 @@ class intelhex {
             bool result = false;
 
             /* If we have data */            
-            if (ihContent.size != 0)
+            if (ihContent.size() != 0)
             {
                 /* If we're not already pointing to the end */
                 if (ihIterator != ihContent.end())
@@ -605,20 +642,16 @@ class intelhex {
             bool result = false;
 
             /* If we have data */            
-            if (ihContent.size != 0)
+            if (ihContent.size() != 0)
             {
                 /* If we're not already pointing to the start */
-                if (ihIterator != ihContent.rend())
+                if (ihIterator != ihContent.begin())
                 {
                     /* Decrement iterator */
                     ihIterator--;
                     
-                    /* If we still haven't reached the start... */
-                    if (ihIterator != ihContent.rend())
-                    {
-                        /* Everything is ok! */
-                        result = true;
-                    }
+                    /* Everything is ok! */
+                    result = true;
                 }
             }
 

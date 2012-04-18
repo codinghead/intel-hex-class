@@ -174,8 +174,8 @@ int main(int argc, char *argv[])
                                diffAData << " B = 0x" << diffBData << std::endl;
             }
             /* Increment both addresses                                       */
-            diffAAddress.increment();
-            diffBAddress.increment();
+            ihDiffA.increment();
+            ihDiffB.increment();
         }
         
         /* If addresses are different, find out which one is lower and output */
@@ -184,13 +184,13 @@ int main(int argc, char *argv[])
         {
             std::cout << "Address 0x" << diffAAddress << " A = 0x" << \
                                           diffAData << " B = ----" << std::endl;
-            diffAAddress.increment();
+            ihDiffA.increment();
         }
         else
         {
             std::cout << "Address 0x" << diffAAddress << " A = ----" << \
                                             " B = 0x" << diffBData << std::endl;
-            diffBAddress.increment();
+            ihDiffB.increment();
         }
         
         
