@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 	
 	// Storage for the address being analysed for both files
 	unsigned long diffAAddress = 0UL;
-	unsinged long diffBAddress = 0UL;
+	unsigned long diffBAddress = 0UL;
 		
 	// The program name is the first argument - save for later use
 	program_name = argv[0];
@@ -147,6 +147,13 @@ int main(int argc, char *argv[])
     ihDiffA.begin();
     ihDiffB.begin();
     
+    /* Two local var's to store data at the locations being analysed      */
+    unsigned char diffAData = 0;
+    unsigned char diffBData = 0;
+    
+    bool aFinished = false;
+    bool bFinished = false;
+    
     bool complete = false;
     do
     {
@@ -155,8 +162,8 @@ int main(int argc, char *argv[])
         diffBAddress = ihDiffB.currentAddress();
         
         /* Get the data at two current addresses                              */
-        diffAData = ihDiffA.getData();
-        diffBData = ihDiffB.getData();
+        ihDiffA.getData(&diffAData);
+        ihDiffB.getData(&diffBData);
         
         /* If addresses are the same, compare data values                     */
         if (diffAAddress == diffBAddress)
@@ -166,6 +173,9 @@ int main(int argc, char *argv[])
                 std::cout << "Address 0x" << diffAAddress << " A = 0x" << \
                                diffAData << " B = 0x" << diffBData << std::endl;
             }
+            /* Increment both addresses                                       */
+            diffAAddress.increment();
+            diffBAddress.increment();
         }
         
         /* If addresses are different, find out which one is lower and output */
@@ -174,59 +184,17 @@ int main(int argc, char *argv[])
         {
             std::cout << "Address 0x" << diffAAddress << " A = 0x" << \
                                           diffAData << " B = ----" << std::endl;
-            
+            diffAAddress.increment();
+        }
+        else
+        {
+            std::cout << "Address 0x" << diffAAddress << " A = ----" << \
+                                            " B = 0x" << diffBData << std::endl;
+            diffBAddress.increment();
         }
         
         
     } while (complete != true);
-    
-    
-    
-    if (ihRefactor.getNoErrors() > 0)
-    {
-        cout << "Issues found with " << argv[1] << endl;
-        
-        if (ihRefactor.getNoErrors() > 0)
-            cout << "Errors:" << endl;
-        while (ihRefactor.getNoErrors() > 0)
-        {
-            string message;
-            
-            ihRefactor.popNextError(message);
-            
-            cout << message << endl;
-        }
-        
-        cout << "No output file generated." << endl;
-    }
-    else
-    {
-        intelHexOutput.open(argv[2], ofstream::out);
-        
-        if(!intelHexOutput.good())
-	    {
-        	std::cerr << "Error: couldn't open " << argv[2] << std::endl;
-        	usage();
-	    }
-	    
-	    intelHexOutput << ihRefactor;
-	    
-	    if (ihRefactor.getNoWarnings() > 0)
-        {
-            cout << "Warnings generated during decoding:" << endl;
-            
-            while (ihRefactor.getNoWarnings() > 0)
-            {
-                string message;
-                
-                ihRefactor.popNextWarning(message);
-                
-                cout << message << endl;
-            }
-        }
-        
-        cout << "File " << argv[2] << " created successfully." << endl;
-    }
        
     return(0);	
 }

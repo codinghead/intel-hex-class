@@ -403,7 +403,7 @@ class intelhex {
         /**********************************************************************/
         /*! \brief intelhex Class Copy Constructor.
         *
-        * Currently the copy constructor is intentially empty.
+        * Copy constructor copies all essential elements for the class.
         ***********************************************************************/
         intelhex(const intelhex &ihSource)
         {
@@ -496,9 +496,7 @@ class intelhex {
         {
             if (ihContent.size() != 0)
             {
-                map<unsigned long, unsigned char>::iterator it;
-                it = ihContent.begin();
-                segmentBaseAddress = (*it).first;
+                ihIterator = ihContent.begin();
             }
         }
         
@@ -520,26 +518,116 @@ class intelhex {
             {
                 map<unsigned long, unsigned char>::reverse_iterator rit;
                 rit = ihContent.rbegin();
-                segmentBaseAddress = (*rit).first;
             }
         }
         
         /**********************************************************************/
         /*! \brief Moves the address pointer to the desired address.
         *
-        * Address pointer will take on the requested address.
+        * Address pointer will take on the requested address if the address
+        * exists in the data stored in memory. If not, the address pointer does
+        * not change.
         *
         * \sa currentAddress()
         *
-        * \param address        - Desired new address for the address pointer
+        * \param address    - Desired new address for the address pointer
+        *
+        * \retval true      - Address exists; pointer moved successfully
+        * \retval false     - Address did not exist; pointer not moved
         ***********************************************************************/
-        void jumpTo(unsigned long address)
+        bool jumpTo(unsigned long address)
         {
-            segmentBaseAddress = address;
+            bool result = false;
+            
+            if (ihContent.size() != 0)
+            {
+                map<unsigned long, unsigned char>::iterator it;
+                it = ihContent.find(address);
+                if (it != ihContent.end())
+                {
+                    result = true;
+                    ihIterator = it;
+                }
+            }
+            return result;
         }
         
         /**********************************************************************/
-        /*! \brief Returns the current segment base address.
+        /*! \brief Increments to next piece of data.
+        *
+        * Address pointer will take on the address of the next location for 
+        * which there is data.
+        *
+        * \sa decrementAddress()
+        *
+        * \retval true  - pointer was incremented; a new data value was found
+        * \retval false - end of available data reached; pointer is unchanged
+        ***********************************************************************/
+        bool incrementAddress()
+        {
+            bool result = false;
+
+            /* If we have data */            
+            if (ihContent.size != 0)
+            {
+                /* If we're not already pointing to the end */
+                if (ihIterator != ihContent.end())
+                {
+                    /* Increment iterator */
+                    ihIterator++;
+                    
+                    /* If we still haven't reached the end... */
+                    if (ihIterator != ihContent.end())
+                    {
+                        /* Everything is ok! */
+                        result = true;
+                    }
+                }
+            }
+
+            /* If incrementation of the iterator was successful, return true  */
+            return result;
+        }
+        
+        /**********************************************************************/
+        /*! \brief Decrements to next piece of data.
+        *
+        * Address pointer will take on the address of the previous location for 
+        * which there is data.
+        *
+        * \sa incrementAddress()
+        *
+        * \retval true  - pointer was decremented; a new data value was found
+        * \retval false - start of available data reached; pointer is unchanged
+        ***********************************************************************/
+        bool decrementAddress()
+        {
+            bool result = false;
+
+            /* If we have data */            
+            if (ihContent.size != 0)
+            {
+                /* If we're not already pointing to the start */
+                if (ihIterator != ihContent.rend())
+                {
+                    /* Decrement iterator */
+                    ihIterator--;
+                    
+                    /* If we still haven't reached the start... */
+                    if (ihIterator != ihContent.rend())
+                    {
+                        /* Everything is ok! */
+                        result = true;
+                    }
+                }
+            }
+
+            /* If incrementation of the iterator was successful, return true  */
+            return result;
+        }
+        
+        /**********************************************************************/
+        /*! \brief Returns the current address being pointed to.
         *
         * Current address will be returned.
         *
@@ -549,7 +637,7 @@ class intelhex {
         ***********************************************************************/
         unsigned long currentAddress()
         {
-            return segmentBaseAddress;
+            return ihIterator->first;
         }
         
         /**********************************************************************/
@@ -608,7 +696,24 @@ class intelhex {
             return false;
         }
 
-        bool getData(unsigned char * data);
+        bool getData(unsigned char * data)
+        {
+            if (ihContent.size() != 0)
+            {
+                map<unsigned long, unsigned char>::iterator it;
+            
+                it = ihContent.find(segmentBaseAddress);
+                
+                if (it != ihContent.end())
+                {
+                    *data = (*it).second;
+                    return true;
+                }
+                
+            }
+            return false;
+        }
+        
         bool getData(unsigned char * data, unsigned long address);
         
         /**********************************************************************/
