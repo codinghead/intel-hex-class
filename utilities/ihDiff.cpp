@@ -155,6 +155,7 @@ int main(int argc, char *argv[])
     bool bFinished = false;
     
     bool complete = false;
+    
     do
     {
         /* Get address of data we are pointing to                             */
@@ -174,25 +175,34 @@ int main(int argc, char *argv[])
                                diffAData << " B = 0x" << diffBData << std::endl;
             }
             /* Increment both addresses                                       */
-            ihDiffA.increment();
-            ihDiffB.increment();
+            ++ihDiffA;
+            ++ihDiffB;
         }
         
         /* If addresses are different, find out which one is lower and output */
         /* that this address has data where the other does not have data      */
-        if (diffAAddress < diffBAddress)
+        else if (diffAAddress < diffBAddress)
         {
             std::cout << "Address 0x" << diffAAddress << " A = 0x" << \
                                           diffAData << " B = ----" << std::endl;
-            ihDiffA.increment();
+            ++ihDiffA;
         }
         else
         {
             std::cout << "Address 0x" << diffAAddress << " A = ----" << \
                                             " B = 0x" << diffBData << std::endl;
-            ihDiffB.increment();
+            ++ihDiffB;
         }
         
+        /* Check if we got to the end of the two files                        */
+        if (ihDiffA.endOfData() == true)
+        {
+            break;
+        }
+        else if (ihDiffB.endOfData() == true)
+        {
+            break;
+        }
         
     } while (complete != true);
        
