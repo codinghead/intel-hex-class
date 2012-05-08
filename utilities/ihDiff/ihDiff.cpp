@@ -112,6 +112,10 @@ int main(int argc, char *argv[])
     	usage();
 	}
  
+    /* Output file names                                                      */
+    cout << "File A: " << argv[1] << endl;
+    cout << "File B: " << argv[2] << endl << endl;
+    
     /* Decode both files                                                      */
     intelHexInputA >> ihDiffA;
     intelHexInputB >> ihDiffB;
@@ -143,6 +147,9 @@ int main(int argc, char *argv[])
         std::cerr << "Continuing with diff despite issues listed." << std::endl;
     }
     
+    /* Output headings                                                        */
+    cout << "  Address          FileA        FileB" << endl;
+    
     /* Get start addresses for both files                                     */
     ihDiffA.begin();
     ihDiffB.begin();
@@ -171,8 +178,12 @@ int main(int argc, char *argv[])
         {
             if (diffAData != diffBData)
             {
-                std::cout << "Address 0x" << diffAAddress << " A = 0x" << \
-                               diffAData << " B = 0x" << diffBData << std::endl;
+                cout << uppercase << "0x" \
+                     << hex << setw(8) << setfill('0') << diffAAddress \
+                     << "         0x" << hex << setw(2) \
+                     << static_cast<unsigned short>(diffAData) \
+                     << "         0x" << hex << setw(2) \
+                     << static_cast<unsigned short>(diffBData) << endl;
             }
             /* Increment both addresses                                       */
             ++ihDiffA;
@@ -183,14 +194,24 @@ int main(int argc, char *argv[])
         /* that this address has data where the other does not have data      */
         else if (diffAAddress < diffBAddress)
         {
-            std::cout << "Address 0x" << diffAAddress << " A = 0x" << \
-                                          diffAData << " B = ----" << std::endl;
+            /* Output A address as reference address since this exists and    */
+            /* the B address doesn't                                          */
+            cout << uppercase << "0x" \
+                 << hex << setw(8) << setfill('0') << diffAAddress \
+                 << "         0x" << hex << setw(2) \
+                 << static_cast<unsigned short>(diffAData) \
+                 << "         ----" << endl;
             ++ihDiffA;
         }
         else
         {
-            std::cout << "Address 0x" << diffAAddress << " A = ----" << \
-                                            " B = 0x" << diffBData << std::endl;
+            /* Here we output the B address as reference address since data   */
+            /* appears at this address in file B, but not in file A           */
+            cout << uppercase << "0x" \
+                 << hex << setw(8) << setfill('0') << diffBAddress \
+                 << "         ----" \
+                 << "         0x" << hex << setw(2) \
+                 << static_cast<unsigned short>(diffBData) << endl;
             ++ihDiffB;
         }
         
