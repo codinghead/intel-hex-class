@@ -800,20 +800,26 @@ class intelhex {
             return false;
         }
 
+        /**********************************************************************/
+        /*! \brief Returns the data to which the iterator is currently pointing.
+        *
+        * Returns the data to which the internal iterator (pointer) is currently
+        * pointing. If no data is in memory, this function returns false.
+        *
+        * \param data       - variable to hold data requested
+        *
+        * \retval true      - data was available and returned value is valid
+        * \retval false     - data was not available and returned valid is not
+        *                     valid
+        *
+        * \sa putData()
+        ***********************************************************************/
         bool getData(unsigned char * data)
         {
-            if (ihContent.size() != 0)
+            if (!ihContent.empty() && (ihIterator != ihContent.end()))
             {
-                map<unsigned long, unsigned char>::iterator it;
-            
-                it = ihContent.find(segmentBaseAddress);
-                
-                if (it != ihContent.end())
-                {
-                    *data = (*it).second;
-                    return true;
-                }
-                
+                *data = ihIterator->second;
+                return true;
             }
             return false;
         }
