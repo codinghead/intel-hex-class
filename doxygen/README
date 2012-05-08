@@ -1,0 +1,22 @@
+README for Intel HEX Class Documentation
+========================================
+
+Build Instructions
+------------------
+
+1. In this directory, simply type "doxygen" on the command line.
+2. The generated files are to be found in the ./html, ./latex, ./man and ./rtf directories.
+3. To create the PDF documentation from the latex files, type "cd latex" from the command line, then "make"
+
+Required Tools
+--------------
+
+To build the documentation you will require
+
+* doxygen
+* latex
+* dot?
+
+These are all available on via *nix package managers.
+
+Last update: 12 April 2012, Stuart Cording aka CODINGHEAD
