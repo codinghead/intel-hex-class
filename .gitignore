@@ -35,3 +35,9 @@ intelhexclass/doxygen/man/*
 
 #Ignore extraneous Qt generated files
 *.qm
+
+#Ignore extraneous MSVC files
+*.tlog
+*.obj
+*.log
+*.ipch
