@@ -637,7 +637,12 @@ class intelhex {
             
             if (!ihContent.empty())
             {
-                if (ihIterator != ihContent.end())
+				map<unsigned long, unsigned char>::iterator it \
+					                                         = ihContent.end();
+				
+				--it;
+
+                if (it != ihIterator)
                 {
                     result = false;
                 }
@@ -845,7 +850,44 @@ class intelhex {
             return false;
         }
         
-        bool getData(unsigned char * data, unsigned long address);
+        /**********************************************************************/
+        /*! \brief Returns the data for desired address.
+        *
+        * Returns the data for the desired address. If the address has no data
+		* assigned to it, the function returns false, the pointer to data is not
+		* written and the class's address pointer remains unchanged. If the 
+		* address has data assigned to it, the pointer to data will be written 
+		* with the data found and the class's address pointer will be moved to 
+		* this new location.
+        *
+        * \param data       - variable to hold data requested
+		* \param address	- address to be queried for valid data
+        *
+        * \retval true      - data was available and returned value is valid
+        * \retval false     - data was not available and returned valid is not
+        *                     valid
+        *
+        * \sa putData()
+        ***********************************************************************/
+		bool getData(unsigned char * data, unsigned long address)
+		{
+			bool found = false;
+			map<unsigned long, unsigned char>::iterator localIterator;
+
+            if (!ihContent.empty())
+            {
+				localIterator = ihContent.find(address);
+				
+				if (localIterator != ihContent.end())
+				{
+					found = true;
+					ihIterator = localIterator;
+					*data = ihIterator->second;
+				}
+            }
+
+            return found;
+        }
         
         /**********************************************************************/
         /*! \brief Inserts desired byte at the current address pointer.
