@@ -14,9 +14,10 @@
 * 	- First address found
 *	- Last address found
 *	- Total size of this region
-*	- Regions and/or locations that contain no data entries
-*	- Values stored in IP/ES or EIP registers
 *	- Total number of bytes in file
+*	- Regions and/or locations that contain no data entries
+*	- Values stored in IP/ES or EIP registers (if present)
+*	- Regions for which there is no data available
 *
 * The utility also checks the source file for issues. Regardless of the issues
 * potentially found, the utility will do its best to generate a list of
