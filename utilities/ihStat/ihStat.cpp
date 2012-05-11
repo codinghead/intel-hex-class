@@ -112,15 +112,13 @@ int main(int argc, char *argv[])
     /* Decode file                                                            */
     intelHexInput >> ihStat;
 
-#error Got here
-    
-    /* Check for errors or warnings                                           */
-    if (intelHexInput.getNoWarnings() != 0)
+   /* Check for errors or warnings                                           */
+    if (ihStat.getNoWarnings() != 0)
     {
         std::cerr << "File " << argv[1] << " contained warnings." << std::endl;
         decodingIssues = true;
     }
-    if (intelHexInput.getNoErrors() != 0)
+    if (ihStat.getNoErrors() != 0)
     {
         std::cerr << "File " << argv[1] << " contained errors." << std::endl;
         decodingIssues = true;
@@ -132,91 +130,88 @@ int main(int argc, char *argv[])
     }
     
     /* Determine start and end addresses                                     */
-    intelHexInput.begin();
-	startAddress = intelHexInput.currentAddress();
-	intelHexInput.end();
-	endAddress = intelHexInput.currentAddress();
+    ihStat.begin();
+	startAddress = ihStat.currentAddress();
+	ihStat.end();
+	endAddress = ihStat.currentAddress();
 	
-	cout << "Start address: 0x" << hex << setw(8) << startAddress << endl;
-	cout << "End address  : 0x" << hex << setw(8) << endAddress << endl;
-	cout << "Address range: " << dec << ((endAddress - startAddress) +1) << \
-	        " bytes" << endl;
+	cout << "Start address: 0x" << hex << setw(8) << setfill('0') \
+		 << uppercase << startAddress << endl;
+	cout << "End address  : 0x" << hex << setw(8) << setfill('0') \
+		 << uppercase << endAddress << endl;
+	cout << "Address range: " << dec << ((endAddress - startAddress) +1UL) \
+		 << " bytes" << endl;
 	
 	/* Determine number of bytes in file                                     */
-	cout << "Data bytes   : " << dec << intelHexInput.size() << endl;
+	cout << "Data bytes   : " << dec << ihStat.size() << endl;
 	
-    /* Two local var's to store data at the locations being analysed         */
-    unsigned char diffAData = 0;
-    unsigned char diffBData = 0;
-    
-    bool aFinished = false;
-    bool bFinished = false;
-    
-    bool complete = false;
-    
-    do
-    {
-        /* Get address of data we are pointing to                             */
-        diffAAddress = ihDiffA.currentAddress();
-        diffBAddress = ihDiffB.currentAddress();
-        
-        /* Get the data at two current addresses                              */
-        ihDiffA.getData(&diffAData);
-        ihDiffB.getData(&diffBData);
-        
-        /* If addresses are the same, compare data values                     */
-        if (diffAAddress == diffBAddress)
-        {
-            if (diffAData != diffBData)
-            {
-                cout << uppercase << "0x" \
-                     << hex << setw(8) << setfill('0') << diffAAddress \
-                     << "         0x" << hex << setw(2) \
-                     << static_cast<unsigned short>(diffAData) \
-                     << "         0x" << hex << setw(2) \
-                     << static_cast<unsigned short>(diffBData) << endl;
-            }
-            /* Increment both addresses                                       */
-            ++ihDiffA;
-            ++ihDiffB;
-        }
-        
-        /* If addresses are different, find out which one is lower and output */
-        /* that this address has data where the other does not have data      */
-        else if (diffAAddress < diffBAddress)
-        {
-            /* Output A address as reference address since this exists and    */
-            /* the B address doesn't                                          */
-            cout << uppercase << "0x" \
-                 << hex << setw(8) << setfill('0') << diffAAddress \
-                 << "         0x" << hex << setw(2) \
-                 << static_cast<unsigned short>(diffAData) \
-                 << "         ----" << endl;
-            ++ihDiffA;
-        }
-        else
-        {
-            /* Here we output the B address as reference address since data   */
-            /* appears at this address in file B, but not in file A           */
-            cout << uppercase << "0x" \
-                 << hex << setw(8) << setfill('0') << diffBAddress \
-                 << "         ----" \
-                 << "         0x" << hex << setw(2) \
-                 << static_cast<unsigned short>(diffBData) << endl;
-            ++ihDiffB;
-        }
-        
-        /* Check if we got to the end of the two files                        */
-        if (ihDiffA.endOfData() == true)
-        {
-            break;
-        }
-        else if (ihDiffB.endOfData() == true)
-        {
-            break;
-        }
-        
-    } while (complete != true);
-       
+	/* If EIP register was found, output value                               */
+	unsigned long eipRegister;
+
+	if (ihStat.getStartLinearAddress(&eipRegister))
+	{
+		cout << "EIP      : 0x" << hex << setw(8) << setfill('0') \
+			 << uppercase << eipRegister << endl;
+	}
+
+	/* If IP & CS registers were found, output values                        */
+	unsigned short ipRegister;
+	unsigned short csRegister;
+
+	if (ihStat.getStartSegmentAddress(&ipRegister, &csRegister))
+	{
+		cout << "IP       : 0x" << hex << setw(4) << setfill('0') \
+			 << uppercase << ipRegister << endl;
+		cout << "CS       : 0x" << hex << setw(4) << setfill('0') \
+			 << uppercase << csRegister << endl;
+	}
+
+	/* Find empty regions                                                    */
+	bool foundEmptyRegion = false;
+	unsigned long emptyAddressCount = 0;
+	unsigned long emptyRegionStart = 0;
+	unsigned long emptyRegionEnd = 0;
+	unsigned long previousAddress = 0;
+	unsigned long currentAddress = 0;
+	unsigned char data = 0x00;
+	bool inEmptyRegion = false;
+
+	cout << "Finding empty regions..." << endl;
+
+	//for (unsigned long address = startAddress; address <= endAddress; 
+	//	                                                            address ++)
+	ihStat.begin();
+	previousAddress = ihStat.currentAddress();
+
+	do
+	{
+		++ihStat;
+
+		currentAddress = ihStat.currentAddress();
+
+		if (currentAddress != (previousAddress + 1UL))
+		{
+			foundEmptyRegion = true;
+			emptyRegionStart = previousAddress;
+			emptyRegionEnd = currentAddress;
+			emptyAddressCount = (currentAddress - previousAddress) + 1UL;
+			cout << "Between 0x" << hex << uppercase << setw(8) \
+				 << emptyRegionStart \
+				 << " and 0x" << hex << uppercase << setw(8) \
+				 << emptyRegionEnd \
+				 << " are " << dec << emptyAddressCount \
+				 << " free bytes." << endl;
+		}
+
+		previousAddress = currentAddress;
+	} while (!ihStat.endOfData());
+
+	if (foundEmptyRegion == false)
+	{
+		cout << "    ...no empty regions in file." << endl;
+	}
+
+	
+
     return(0);	
 }
