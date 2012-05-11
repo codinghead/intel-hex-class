@@ -193,9 +193,9 @@ int main(int argc, char *argv[])
 		if (currentAddress != (previousAddress + 1UL))
 		{
 			foundEmptyRegion = true;
-			emptyRegionStart = previousAddress;
-			emptyRegionEnd = currentAddress;
-			emptyAddressCount = (currentAddress - previousAddress) + 1UL;
+			emptyRegionStart = previousAddress + 1UL;
+			emptyRegionEnd = currentAddress - 1UL;
+			emptyAddressCount = (emptyRegionEnd - emptyRegionStart) + 1UL;
 			cout << "Between 0x" << hex << uppercase << setw(8) \
 				 << emptyRegionStart \
 				 << " and 0x" << hex << uppercase << setw(8) \
