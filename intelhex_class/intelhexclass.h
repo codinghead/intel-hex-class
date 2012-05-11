@@ -593,6 +593,27 @@ class intelhex {
             }
         }
         
+		/**********************************************************************/
+        /*! \brief Checks if we have reached end of available data
+        *
+        * The internal pointer is checked to see if we have reached the end of 
+        * the data held in memory
+        *
+        * \sa operator++(), operator++(int), operator--(), operator--(int),
+        * empty()
+        *
+        * \retval true  - reached the end of the Intel HEX data in memory or no
+        *                 data in memory yet.
+        * \retval false - end of Intel HEX data in memory not yet reached.
+        *
+        * \note This function has no effect if no file has been as yet decoded
+        * and no data has been inserted into memory.
+        ***********************************************************************/
+        unsigned long size()
+		{
+			return static_cast<unsigned long>(ihContent.size());
+		}
+		
         /**********************************************************************/
         /*! \brief Checks if we have reached end of available data
         *
