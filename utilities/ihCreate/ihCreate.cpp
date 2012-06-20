@@ -75,6 +75,41 @@ void usage()
     exit (EXIT_FAILURE);
 }
 
+/* Converts a hex value in a string into an unsigned long                     */
+unsigned long stringToHex(string hexString)
+{
+    unsigned long hexValue = 0;
+    
+    /* First check that the string is not empty                               */
+    if(hexString.size() != 0)
+    {
+        string::iterator it;
+        
+        for (it = hexString.begin(); it != hexString.end(); ++it)
+        {
+            cout << *it << endl;
+            
+            /* Shift value left 4 bits                                        */
+            hexValue <<= 4;
+            /* Add next hex value                                             */
+            if (*it >= '0' && *it <= '9')
+            {
+                hexValue += static_cast<unsigned long>(*it - '0');
+            }
+            else if (*it >= 'a' && *it <= 'f')
+            {
+                hexValue += static_cast<unsigned long>(*it - 'a' + 10);
+            }
+            else if (*it >= 'A' && *it <= 'F')
+            {
+                hexValue += static_cast<unsigned long>(*it - 'A' + 10);
+            }
+        }
+    }
+    
+    return hexValue;
+}
+
 int main(int argc, char *argv[])
 {
     // Create space to hold the arguments
@@ -104,10 +139,63 @@ int main(int argc, char *argv[])
         arguments.push_back(argv[parse]);
     }
     
+    int argumentsSize = arguments.size();
+    
     // Evaluate the arguments
-    for (int parse = 0; parse < arguments.size(); parse++)
-    {
+    for (int parse = 0; parse < argumentsSize; parse++)
+    {   
+        size_t found;
+        string searchString;
+        string sourceString;
+        string contentString;
         
+        sourceString = arguments.front();
+        
+        /* Look for start address                                             */
+        searchString = "-s";
+        found = sourceString.find(searchString);
+        /* If we found string and it is in position zero (i.e. -s0x00000)     */
+        if (found!=string::npos && found == 0)
+        {
+            cout << "Found start address @ " << found << endl;
+            
+            searchString = "0x";
+            found = sourceString.find(searchString);
+            if (found!=string::npos && found == 2)
+            {
+                /* Jump over the 0x part                                      */
+                found += 2;
+                contentString.erase();
+                contentString.assign(sourceString, found, sourceString.size());
+                cout << "Address = 0x" << contentString << endl;
+                startAddress = stringToHex(contentString);
+                cout << "Address = 0x" << uppercase << hex << startAddress << endl;
+            }
+        }
+        
+        /* Look for end address                                               */
+        searchString = "-e";
+        found = sourceString.find(searchString);
+        /* If we found string and it is in position zero (i.e. -e0x00000)     */
+        if (found!=string::npos && found == 0)
+        {
+            cout << "Found end address @ " << found << endl;
+
+            searchString = "0x";
+            found = sourceString.find(searchString);
+            if (found!=string::npos && found == 2)
+            {
+                /* Jump over the 0x part                                      */
+                found += 2;
+                contentString.erase();
+                contentString.assign(sourceString, found, sourceString.size());
+                cout << "Address = 0x" << contentString << endl;
+                endAddress = stringToHex(contentString);
+                cout << "Address = 0x" << uppercase << hex << endAddress << endl;
+            }
+        }
+        
+        arguments.erase(arguments.begin());
     }
     
 #if 0
