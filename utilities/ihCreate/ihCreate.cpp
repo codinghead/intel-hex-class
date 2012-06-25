@@ -67,6 +67,20 @@ using namespace std;
 
 char *program_name;
 
+// Notes which arguments were registered
+struct IHCREATE_ARGS
+{
+    bool foundStartAddress;
+    bool foundEndAddress;
+    bool foundFillValue;
+    bool foundRandomData;
+    bool foundOutputFileName;
+    bool foundInputFileName;
+    bool foundEipAddress;
+    bool foundEpAddress;
+    bool foundCsAddress;
+} ihCreateArgs;
+
 // Usage for this program
 void usage()
 {
@@ -128,6 +142,10 @@ int main(int argc, char *argv[])
 	// The program name is the first argument - save for later use
 	program_name = argv[0];
 
+    // Note that we haven't found any arguments yet
+    ihCreateArgs.foundStartAddress = false;
+    ihCreateArgs.foundEndAddress = false;
+    
 	// Decode commands; we need at least two commands to be able to do something
 	if(argc < 2) {
     	usage();
@@ -170,6 +188,9 @@ int main(int argc, char *argv[])
                 cout << "Address = 0x" << contentString << endl;
                 startAddress = stringToHex(contentString);
                 cout << "Address = 0x" << uppercase << hex << startAddress << endl;
+                
+                /* Note that we found the start address                       */
+                ihCreateArgs.foundStartAddress = true;
             }
         }
         
@@ -192,6 +213,9 @@ int main(int argc, char *argv[])
                 cout << "Address = 0x" << contentString << endl;
                 endAddress = stringToHex(contentString);
                 cout << "Address = 0x" << uppercase << hex << endAddress << endl;
+
+                /* Note that we found the end address                         */
+                ihCreateArgs.foundEndAddress = true;
             }
         }
         
