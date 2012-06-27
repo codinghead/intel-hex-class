@@ -79,6 +79,7 @@ struct IHCREATE_ARGS
     bool foundEipRegister;
     bool foundEpRegister;
     bool foundCsRegister;
+    bool foundVerbose;
 } ihCreateArgs;
 
 // Note the core settings for this run of ihCreate
@@ -162,6 +163,12 @@ int main(int argc, char *argv[])
     ihCreateArgs.foundEndAddress = false;
     ihCreateArgs.foundFillValue = false;
     ihCreateArgs.foundRandomData = false;
+    ihCreateArgs.foundOutputFileName = false;
+    ihCreateArgs.foundCsvFileName = false;
+    ihCreateArgs.foundEipRegister = false;
+    ihCreateArgs.foundEpRegister = false;
+    ihCreateArgs.foundCsRegister = false;
+    ihCreateArgs.foundVerbose = false;
     
     // Define default settings
     ihCreateSettings.fillValue = 0xFF;
@@ -389,6 +396,48 @@ int main(int argc, char *argv[])
                 /* Note that we found the end address                         */
                 ihCreateArgs.foundCsRegister = true;
             }
+        }
+        
+        /* Look for output file name                                          */
+        searchString = "-o";
+        found = sourceString.find(searchString);
+        /* If we found string and it is in position zero (i.e. -oMyFile.txt)  */
+        if (found!=string::npos && found == 0)
+        {
+#if 0
+            cout << "Found output file name @ " << found << endl;
+#endif
+            /* Copy rest of string into variable                              */
+            ihCreateSettings.outputFileName.erase();
+            ihCreateSettings.outputFileName.assign(sourceString, 2, 
+                                                           sourceString.size());
+#if 0
+            cout << "Address = 0x" << uppercase << hex << 
+                                           ihCreateSettings.eipRegister << endl;
+#endif
+            /* Note that we found the output file name                        */
+            ihCreateArgs.foundOutputFileName = true;
+        }
+
+        /* Look for input file name                                           */
+        searchString = "-i";
+        found = sourceString.find(searchString);
+        /* If we found string and it is in position zero (i.e. -iMyFile.csv)  */
+        if (found!=string::npos && found == 0)
+        {
+#if 0
+            cout << "Found output file name @ " << found << endl;
+#endif
+            /* Copy rest of string into variable                              */
+            ihCreateSettings.csvFileName.erase();
+            ihCreateSettings.csvFileName.assign(sourceString, 2, 
+                                                           sourceString.size());
+#if 0
+            cout << "Address = 0x" << uppercase << hex << 
+                                           ihCreateSettings.eipRegister << endl;
+#endif
+            /* Note that we found the output file name                        */
+            ihCreateArgs.foundCsvFileName = true;
         }
         /* Remove the evaluated argument from the list                        */        
         arguments.erase(arguments.begin());
