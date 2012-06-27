@@ -301,7 +301,7 @@ int main(int argc, char *argv[])
         /* Look for EIP register value                                        */
         searchString = "-eip";
         found = sourceString.find(searchString);
-        /* If we found string and it is in position zero (i.e. -e0x00000)     */
+        /* If we found string and it is in position zero (i.e. -eip0x00000)   */
         if (found!=string::npos && found == 0)
         {
 #if 0
@@ -329,6 +329,67 @@ int main(int argc, char *argv[])
             }
         }
 
+        /* Look for EP register value                                         */
+        searchString = "-ep";
+        found = sourceString.find(searchString);
+        /* If we found string and it is in position zero (i.e. -es0x00000)    */
+        if (found!=string::npos && found == 0)
+        {
+#if 0
+            cout << "Found end address @ " << found << endl;
+#endif
+            /* Check that 0x is at start of hex value                         */
+            searchString = "0x";
+            found = sourceString.find(searchString);
+            if (found!=string::npos && found == 2)
+            {
+                /* Jump over the 0x part                                      */
+                found += 2;
+                contentString.erase();
+                contentString.assign(sourceString, found, sourceString.size());
+#if 0
+                cout << "Address = 0x" << contentString << endl;
+#endif
+                ihCreateSettings.epRegister = stringToHex(contentString);
+#if 0
+                cout << "Address = 0x" << uppercase << hex << 
+                                           ihCreateSettings.eipRegister << endl;
+#endif
+                /* Note that we found the end address                         */
+                ihCreateArgs.foundEpRegister = true;
+            }
+        }
+        
+        /* Look for CS register value                                         */
+        searchString = "-cs";
+        found = sourceString.find(searchString);
+        /* If we found string and it is in position zero (i.e. -cp0x00000)    */
+        if (found!=string::npos && found == 0)
+        {
+#if 0
+            cout << "Found end address @ " << found << endl;
+#endif
+            /* Check that 0x is at start of hex value                         */
+            searchString = "0x";
+            found = sourceString.find(searchString);
+            if (found!=string::npos && found == 2)
+            {
+                /* Jump over the 0x part                                      */
+                found += 2;
+                contentString.erase();
+                contentString.assign(sourceString, found, sourceString.size());
+#if 0
+                cout << "Address = 0x" << contentString << endl;
+#endif
+                ihCreateSettings.csRegister = stringToHex(contentString);
+#if 0
+                cout << "Address = 0x" << uppercase << hex << 
+                                           ihCreateSettings.eipRegister << endl;
+#endif
+                /* Note that we found the end address                         */
+                ihCreateArgs.foundCsRegister = true;
+            }
+        }
         /* Remove the evaluated argument from the list                        */        
         arguments.erase(arguments.begin());
     }
