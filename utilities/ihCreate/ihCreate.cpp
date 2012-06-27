@@ -379,6 +379,17 @@ int main(int argc, char *argv[])
     /* If verbose mode, output the result of the command line input           */
     if (ihCreateArgs.foundVerbose)
     {
+        if (ihCreateArgs.foundStartAddress)
+        {
+            cout << "Start Address = 0x" << uppercase << hex << 
+                                          ihCreateSettings.startAddress << endl;
+        }
+        if (ihCreateArgs.foundEndAddress)
+        {
+            cout << "End Address   = 0x" << uppercase << hex << 
+                                            ihCreateSettings.endAddress << endl;
+        }
+
 #if 0
             cout << "Address = 0x" << uppercase << hex << 
                                            ihCreateSettings.eipRegister << endl;
