@@ -404,17 +404,10 @@ int main(int argc, char *argv[])
         /* If we found string and it is in position zero (i.e. -oMyFile.txt)  */
         if (found!=string::npos && found == 0)
         {
-#if 0
-            cout << "Found output file name @ " << found << endl;
-#endif
             /* Copy rest of string into variable                              */
             ihCreateSettings.outputFileName.erase();
             ihCreateSettings.outputFileName.assign(sourceString, 2, 
                                                            sourceString.size());
-#if 0
-            cout << "Address = 0x" << uppercase << hex << 
-                                           ihCreateSettings.eipRegister << endl;
-#endif
             /* Note that we found the output file name                        */
             ihCreateArgs.foundOutputFileName = true;
         }
@@ -425,24 +418,36 @@ int main(int argc, char *argv[])
         /* If we found string and it is in position zero (i.e. -iMyFile.csv)  */
         if (found!=string::npos && found == 0)
         {
-#if 0
-            cout << "Found output file name @ " << found << endl;
-#endif
             /* Copy rest of string into variable                              */
             ihCreateSettings.csvFileName.erase();
             ihCreateSettings.csvFileName.assign(sourceString, 2, 
                                                            sourceString.size());
-#if 0
-            cout << "Address = 0x" << uppercase << hex << 
-                                           ihCreateSettings.eipRegister << endl;
-#endif
             /* Note that we found the output file name                        */
             ihCreateArgs.foundCsvFileName = true;
         }
+        
+        /* Look for verbose output request                                    */
+        searchString = "-verbose";
+        found = sourceString.find(searchString);
+        /* If we found string and it is in position zero (i.e. -verbose)      */
+        if (found!=string::npos && found == 0)
+        {
+            /* Note that we found the verbose argument                        */
+            ihCreateArgs.foundVerbose = true;
+        }
+        
         /* Remove the evaluated argument from the list                        */        
         arguments.erase(arguments.begin());
     }
 
+    /* If verbose mode, output the result of the command line input           */
+    if (ihCreateArgs.foundVerbose)
+    {
+#if 0
+            cout << "Address = 0x" << uppercase << hex << 
+                                           ihCreateSettings.eipRegister << endl;
+#endif
+    }
     
 #if 0
 	intelHexInput.open(argv[1], ifstream::in);
