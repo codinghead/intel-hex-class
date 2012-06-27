@@ -75,17 +75,35 @@ struct IHCREATE_ARGS
     bool foundFillValue;
     bool foundRandomData;
     bool foundOutputFileName;
-    bool foundInputFileName;
-    bool foundEipAddress;
-    bool foundEpAddress;
-    bool foundCsAddress;
+    bool foundCsvFileName;
+    bool foundEipRegister;
+    bool foundEpRegister;
+    bool foundCsRegister;
 } ihCreateArgs;
+
+// Note the core settings for this run of ihCreate
+struct IHCREATE_SETTINGS
+{
+    unsigned long   startAddress;
+    unsigned long   endAddress;
+    unsigned char   fillValue;
+    unsigned long   eipRegister;
+    unsigned long   epRegister;
+    unsigned long   csRegister;
+    string          outputFileName;
+    string          csvFileName;
+} ihCreateSettings;
 
 // Usage for this program
 void usage()
 {
-    cerr << "Usage is " << program_name <<
-                 " -s [start address] -e [end address]" << endl;
+    cerr << "Usage is " << program_name << endl
+         << "   -s[start address] - format 0x00000000 (req)" << endl 
+         << "   -e[end address]   - format 0xFFFFFFFF (req)" << endl
+         << "   -f[fill value]    - format 0x00 (optional)"  << endl
+         << "                       else defaults to 0xFF"   << endl
+         << "   -r                - use random values (optional" << endl;
+         
     exit (EXIT_FAILURE);
 }
 
@@ -101,8 +119,9 @@ unsigned long stringToHex(string hexString)
         
         for (it = hexString.begin(); it != hexString.end(); ++it)
         {
+#if 0
             cout << *it << endl;
-            
+#endif            
             /* Shift value left 4 bits                                        */
             hexValue <<= 4;
             /* Add next hex value                                             */
@@ -135,16 +154,18 @@ int main(int argc, char *argv[])
 	// Create a variable for the intel hex data
 	intelhex ihCreate;
 	
-	// Store the start and end addresses required
-	unsigned long startAddress = 0UL;
-	unsigned long endAddress = 0UL;
-		
 	// The program name is the first argument - save for later use
 	program_name = argv[0];
 
     // Note that we haven't found any arguments yet
     ihCreateArgs.foundStartAddress = false;
     ihCreateArgs.foundEndAddress = false;
+    ihCreateArgs.foundFillValue = false;
+    ihCreateArgs.foundRandomData = false;
+    
+    // Define default settings
+    ihCreateSettings.fillValue = 0xFF;
+    ihCreateSettings.outputFileName = "output.hex";
     
 	// Decode commands; we need at least two commands to be able to do something
 	if(argc < 2) {
@@ -175,8 +196,10 @@ int main(int argc, char *argv[])
         /* If we found string and it is in position zero (i.e. -s0x00000)     */
         if (found!=string::npos && found == 0)
         {
+#if 0
             cout << "Found start address @ " << found << endl;
-            
+#endif            
+            /* Check that 0x is at start of hex value                         */
             searchString = "0x";
             found = sourceString.find(searchString);
             if (found!=string::npos && found == 2)
@@ -185,10 +208,14 @@ int main(int argc, char *argv[])
                 found += 2;
                 contentString.erase();
                 contentString.assign(sourceString, found, sourceString.size());
+#if 0
                 cout << "Address = 0x" << contentString << endl;
-                startAddress = stringToHex(contentString);
-                cout << "Address = 0x" << uppercase << hex << startAddress << endl;
-                
+#endif
+                ihCreateSettings.startAddress = stringToHex(contentString);
+#if 0
+                cout << "Address = 0x" << uppercase << hex << 
+                                          ihCreateSettings.startAddress << endl;
+#endif                
                 /* Note that we found the start address                       */
                 ihCreateArgs.foundStartAddress = true;
             }
@@ -200,8 +227,10 @@ int main(int argc, char *argv[])
         /* If we found string and it is in position zero (i.e. -e0x00000)     */
         if (found!=string::npos && found == 0)
         {
+#if 0
             cout << "Found end address @ " << found << endl;
-
+#endif
+            /* Check that 0x is at start of hex value                         */
             searchString = "0x";
             found = sourceString.find(searchString);
             if (found!=string::npos && found == 2)
@@ -210,17 +239,100 @@ int main(int argc, char *argv[])
                 found += 2;
                 contentString.erase();
                 contentString.assign(sourceString, found, sourceString.size());
+#if 0
                 cout << "Address = 0x" << contentString << endl;
-                endAddress = stringToHex(contentString);
-                cout << "Address = 0x" << uppercase << hex << endAddress << endl;
-
+#endif
+                ihCreateSettings.endAddress = stringToHex(contentString);
+#if 0
+                cout << "Address = 0x" << uppercase << hex << 
+                                            ihCreateSettings.endAddress << endl;
+#endif
                 /* Note that we found the end address                         */
                 ihCreateArgs.foundEndAddress = true;
             }
         }
-        
+
+        /* Look for data fill value                                           */
+        searchString = "-f";
+        found = sourceString.find(searchString);
+        /* If we found string and it is in position zero (i.e. -f0x00)        */
+        if (found!=string::npos && found == 0)
+        {
+#if 0
+            cout << "Found fill value @ " << found << endl;
+#endif
+            /* Check that 0x is at start of hex value                         */
+            searchString = "0x";
+            found = sourceString.find(searchString);
+            if (found!=string::npos && found == 2)
+            {
+                /* Jump over the 0x part                                      */
+                found += 2;
+                contentString.erase();
+                contentString.assign(sourceString, found, sourceString.size());
+#if 0
+                cout << "Fill Value = 0x" << contentString << endl;
+#endif
+                ihCreateSettings.fillValue = static_cast<unsigned char>
+                                                   (stringToHex(contentString));
+#if 0
+                cout << "Fill Value = 0x" << uppercase << hex << 
+                 static_cast<unsigned long>(ihCreateSettings.fillValue) << endl;
+#endif
+                /* Note that we found the end address                         */
+                ihCreateArgs.foundFillValue = true;
+            }
+        }
+
+        /* Look for random data fill argument                                 */
+        searchString = "-r";
+        found = sourceString.find(searchString);
+        /* If we found string and it is in position zero (i.e. -r)            */
+        if (found!=string::npos && found == 0)
+        {
+#if 0
+            cout << "Found random data argument @ " << found << endl;
+#endif
+            /* Note that we found the argument                                */
+            ihCreateArgs.foundRandomData = true;
+            
+        }
+
+        /* Look for EIP register value                                        */
+        searchString = "-eip";
+        found = sourceString.find(searchString);
+        /* If we found string and it is in position zero (i.e. -e0x00000)     */
+        if (found!=string::npos && found == 0)
+        {
+#if 0
+            cout << "Found end address @ " << found << endl;
+#endif
+            /* Check that 0x is at start of hex value                         */
+            searchString = "0x";
+            found = sourceString.find(searchString);
+            if (found!=string::npos && found == 3)
+            {
+                /* Jump over the 0x part                                      */
+                found += 3;
+                contentString.erase();
+                contentString.assign(sourceString, found, sourceString.size());
+#if 0
+                cout << "Address = 0x" << contentString << endl;
+#endif
+                ihCreateSettings.eipRegister = stringToHex(contentString);
+#if 0
+                cout << "Address = 0x" << uppercase << hex << 
+                                           ihCreateSettings.eipRegister << endl;
+#endif
+                /* Note that we found the end address                         */
+                ihCreateArgs.foundEipRegister = true;
+            }
+        }
+
+        /* Remove the evaluated argument from the list                        */        
         arguments.erase(arguments.begin());
     }
+
     
 #if 0
 	intelHexInput.open(argv[1], ifstream::in);
