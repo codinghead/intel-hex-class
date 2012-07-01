@@ -126,7 +126,11 @@ class intelhex {
         
         /**********************************************************************/
         /*! \brief Iterator for the container holding the decoded Intel HEX
-        *        content. 
+        *        content.
+        *
+        * This iterator is used by the class to point to the location in memory
+        * currently being used to read or write data. If no file has been 
+        * loaded into memory, it points to the start of ihContent. 
         ***********************************************************************/
         map<unsigned long, unsigned char>::iterator ihIterator;
         
@@ -149,7 +153,9 @@ class intelhex {
         * added to calculate the actual address of the data. The Data Records
         * can only point to a 64kByte address, so the segment base address 
         * expands the addressing to 4GB. This variable always holds the last
-        * address accessed.
+        * address accessed. This variable is only used during file decoding
+        * and encoding in the operator<< and operator>> class member friend
+        * functions.
         ***********************************************************************/
         unsigned long segmentBaseAddress;
         
@@ -158,13 +164,16 @@ class intelhex {
         *
         * Used to store the content of the CS and IS Register for HEX files 
         * created for x286 or earlier Intel processors. This information is 
-        * retrieved from the Start Segment Address Record.
+        * retrieved from the Start Segment Address Record or can be defined
+        * by the user using the setStartSegmentAddress() function.
         * The found element defines if these registers hold valid data or not.
         *
         * \param    csRegister  - content of the CS register
         * \param    ipRegister  - content of the IP register
         * \param    exists      - defines if values for the above registers have
         *                         been written (true) or not (false)
+        *
+        * \sa getStartSegmentAddress(), setStartSegmentAddress()
         ***********************************************************************/
         struct {
             unsigned short  csRegister;
@@ -177,12 +186,15 @@ class intelhex {
         *
         * Used to store the content of the EIP Register for HEX files created
         * for x386 Intel processors. This information is retrieved from the
-        * the Start Linear Address Record.
+        * the Start Linear Address Record or can be defined by using the 
+        * setStartLinearAddress() function.
         * The found element defines if this register holds valid data or not.
         *
         * \param    eipRegister - content of the EIP register
         * \param    exists      - defines if a value for the above register has
         *                         been written (true) or not (false)
+        *
+        * \sa getStartLinearAddress(), setStartLinearAddress()
         ***********************************************************************/
         struct {
             unsigned long   eipRegister;
@@ -264,8 +276,7 @@ class intelhex {
         *   -# The string contains anything other than the characters 0-9, a-f
         *      and A-F
         *
-        * \sa
-        * ulToHexString(), ucToHexString(), ulToString()
+        * \sa ulToHexString(), ucToHexString(), ulToString()
         ***********************************************************************/
         unsigned char stringToHex(string value);
 
@@ -367,6 +378,7 @@ class intelhex {
         * - note that there are, as yet, no errors or warnings
         * - note that the EOF record has not yet been found
         * - set verbode mode to 'false' (default)
+        * - initialise class ihIterator
         ***********************************************************************/
         intelhex()
         {
@@ -388,6 +400,10 @@ class intelhex {
             verbose = false;
             /* Set segment address mode to false (default)                    */
             segmentAddressMode = false;
+            /* Ensure ihContent is cleared and point ihIterator at it         */
+            ihContent.clear();
+            ihContent.begin();
+            ihIterator = ihContent.begin();
         }
 
         /**********************************************************************/
@@ -403,7 +419,7 @@ class intelhex {
         /**********************************************************************/
         /*! \brief intelhex Class Copy Constructor.
         *
-        * Currently the copy constructor is intentially empty.
+        * Copy constructor copies all essential elements for the class.
         ***********************************************************************/
         intelhex(const intelhex &ihSource)
         {
@@ -481,6 +497,62 @@ class intelhex {
         }
         
         /**********************************************************************/
+        /*! \brief Overloaded prefix increment operator
+        *
+        * Overloads the prefix increment operator to move interal iterator to
+        * next entry in the ihContent map
+        *
+        ***********************************************************************/
+        intelhex& operator++()
+        {
+            ++ihIterator;
+            
+            return(*this);
+        }
+        
+        /**********************************************************************/
+        /*! \brief Overloaded postfix increment operator
+        *
+        * Overloads the postfix increment operator to move interal iterator to
+        * next entry in the ihContent map
+        *
+        ***********************************************************************/
+        const intelhex operator++(int)
+        {
+            intelhex tmp(*this);
+            ++(*this);
+            return(tmp);
+        }
+        
+        /**********************************************************************/
+        /*! \brief Overloaded prefix decrement operator
+        *
+        * Overloads the prefix decrement operator to move interal iterator to
+        * previous entry in the ihContent map
+        *
+        ***********************************************************************/
+        intelhex& operator--()
+        {
+            --ihIterator;
+            
+            return(*this);
+        }
+        
+        /**********************************************************************/
+        /*! \brief Overloaded postfix decrement operator
+        *
+        * Overloads the postfix decrement operator to move interal iterator to
+        * previous entry in the ihContent map
+        *
+        ***********************************************************************/
+        const intelhex operator--(int)
+        {
+            intelhex tmp(*this);
+            --(*this);
+            return(tmp);
+        }
+        
+        /**********************************************************************/
         /*! \brief Moves the address pointer to the first available address.
         *
         * The address pointer will be moved to the first available address in 
@@ -496,9 +568,7 @@ class intelhex {
         {
             if (ihContent.size() != 0)
             {
-                map<unsigned long, unsigned char>::iterator it;
-                it = ihContent.begin();
-                segmentBaseAddress = (*it).first;
+                ihIterator = ihContent.begin();
             }
         }
         
@@ -516,30 +586,178 @@ class intelhex {
         ***********************************************************************/
         void end()
         {
-            if (ihContent.size() != 0)
+            if (!ihContent.empty())
             {
-                map<unsigned long, unsigned char>::reverse_iterator rit;
-                rit = ihContent.rbegin();
-                segmentBaseAddress = (*rit).first;
+                ihIterator = ihContent.end();
+                --ihIterator;
             }
+        }
+        
+		/**********************************************************************/
+        /*! \brief Checks if we have reached end of available data
+        *
+        * The internal pointer is checked to see if we have reached the end of 
+        * the data held in memory
+        *
+        * \sa operator++(), operator++(int), operator--(), operator--(int),
+        * empty()
+        *
+        * \retval true  - reached the end of the Intel HEX data in memory or no
+        *                 data in memory yet.
+        * \retval false - end of Intel HEX data in memory not yet reached.
+        *
+        * \note This function has no effect if no file has been as yet decoded
+        * and no data has been inserted into memory.
+        ***********************************************************************/
+        unsigned long size()
+		{
+			return static_cast<unsigned long>(ihContent.size());
+		}
+		
+        /**********************************************************************/
+        /*! \brief Checks if we have reached end of available data
+        *
+        * The internal pointer is checked to see if we have reached the end of 
+        * the data held in memory
+        *
+        * \sa operator++(), operator++(int), operator--(), operator--(int),
+        * empty()
+        *
+        * \retval true  - reached the end of the Intel HEX data in memory or no
+        *                 data in memory yet.
+        * \retval false - end of Intel HEX data in memory not yet reached.
+        *
+        * \note This function has no effect if no file has been as yet decoded
+        * and no data has been inserted into memory.
+        ***********************************************************************/
+        bool endOfData()
+        {
+            /* Return true if there is no data anyway                         */
+            bool result = true;
+            
+            if (!ihContent.empty())
+            {
+				map<unsigned long, unsigned char>::iterator it \
+					                                         = ihContent.end();
+				
+				--it;
+
+                if (it != ihIterator)
+                {
+                    result = false;
+                }
+            }
+            return result;
+        }
+        
+        bool empty()
+        {
+            return ihContent.empty();
         }
         
         /**********************************************************************/
         /*! \brief Moves the address pointer to the desired address.
         *
-        * Address pointer will take on the requested address.
+        * Address pointer will take on the requested address if the address
+        * exists in the data stored in memory. If not, the address pointer does
+        * not change.
         *
         * \sa currentAddress()
         *
-        * \param address        - Desired new address for the address pointer
+        * \param address    - Desired new address for the address pointer
+        *
+        * \retval true      - Address exists; pointer moved successfully
+        * \retval false     - Address did not exist; pointer not moved
         ***********************************************************************/
-        void jumpTo(unsigned long address)
+        bool jumpTo(unsigned long address)
         {
-            segmentBaseAddress = address;
+            bool result = false;
+            
+            if (ihContent.size() != 0)
+            {
+                map<unsigned long, unsigned char>::iterator it;
+                it = ihContent.find(address);
+                if (it != ihContent.end())
+                {
+                    result = true;
+                    ihIterator = it;
+                }
+            }
+            return result;
         }
         
         /**********************************************************************/
-        /*! \brief Returns the current segment base address.
+        /*! \brief Increments to next piece of data.
+        *
+        * Address pointer will take on the address of the next location for 
+        * which there is data.
+        *
+        * \sa decrementAddress()
+        *
+        * \retval true  - pointer was incremented; a new data value was found
+        * \retval false - end of available data reached; pointer is unchanged
+        ***********************************************************************/
+        bool incrementAddress()
+        {
+            bool result = false;
+
+            /* If we have data */            
+            if (ihContent.size() != 0)
+            {
+                /* If we're not already pointing to the end */
+                if (ihIterator != ihContent.end())
+                {
+                    /* Increment iterator */
+                    ihIterator++;
+                    
+                    /* If we still haven't reached the end... */
+                    if (ihIterator != ihContent.end())
+                    {
+                        /* Everything is ok! */
+                        result = true;
+                    }
+                }
+            }
+
+            /* If incrementation of the iterator was successful, return true  */
+            return result;
+        }
+        
+        /**********************************************************************/
+        /*! \brief Decrements to next piece of data.
+        *
+        * Address pointer will take on the address of the previous location for 
+        * which there is data.
+        *
+        * \sa incrementAddress()
+        *
+        * \retval true  - pointer was decremented; a new data value was found
+        * \retval false - start of available data reached; pointer is unchanged
+        ***********************************************************************/
+        bool decrementAddress()
+        {
+            bool result = false;
+
+            /* If we have data */            
+            if (ihContent.size() != 0)
+            {
+                /* If we're not already pointing to the start */
+                if (ihIterator != ihContent.begin())
+                {
+                    /* Decrement iterator */
+                    ihIterator--;
+                    
+                    /* Everything is ok! */
+                    result = true;
+                }
+            }
+
+            /* If incrementation of the iterator was successful, return true  */
+            return result;
+        }
+        
+        /**********************************************************************/
+        /*! \brief Returns the current address being pointed to.
         *
         * Current address will be returned.
         *
@@ -549,7 +767,7 @@ class intelhex {
         ***********************************************************************/
         unsigned long currentAddress()
         {
-            return segmentBaseAddress;
+            return ihIterator->first;
         }
         
         /**********************************************************************/
@@ -608,8 +826,68 @@ class intelhex {
             return false;
         }
 
-        bool getData(unsigned char * data);
-        bool getData(unsigned char * data, unsigned long address);
+        /**********************************************************************/
+        /*! \brief Returns the data to which the iterator is currently pointing.
+        *
+        * Returns the data to which the internal iterator (pointer) is currently
+        * pointing. If no data is in memory, this function returns false.
+        *
+        * \param data       - variable to hold data requested
+        *
+        * \retval true      - data was available and returned value is valid
+        * \retval false     - data was not available and returned valid is not
+        *                     valid
+        *
+        * \sa putData()
+        ***********************************************************************/
+        bool getData(unsigned char * data)
+        {
+            if (!ihContent.empty() && (ihIterator != ihContent.end()))
+            {
+                *data = ihIterator->second;
+                return true;
+            }
+            return false;
+        }
+        
+        /**********************************************************************/
+        /*! \brief Returns the data for desired address.
+        *
+        * Returns the data for the desired address. If the address has no data
+		* assigned to it, the function returns false, the pointer to data is not
+		* written and the class's address pointer remains unchanged. If the 
+		* address has data assigned to it, the pointer to data will be written 
+		* with the data found and the class's address pointer will be moved to 
+		* this new location.
+        *
+        * \param data       - variable to hold data requested
+		* \param address	- address to be queried for valid data
+        *
+        * \retval true      - data was available and returned value is valid
+        * \retval false     - data was not available and returned valid is not
+        *                     valid
+        *
+        * \sa putData()
+        ***********************************************************************/
+		bool getData(unsigned char * data, unsigned long address)
+		{
+			bool found = false;
+			map<unsigned long, unsigned char>::iterator localIterator;
+
+            if (!ihContent.empty())
+            {
+				localIterator = ihContent.find(address);
+				
+				if (localIterator != ihContent.end())
+				{
+					found = true;
+					ihIterator = localIterator;
+					*data = ihIterator->second;
+				}
+            }
+
+            return found;
+        }
         
         /**********************************************************************/
         /*! \brief Inserts desired byte at the current address pointer.
