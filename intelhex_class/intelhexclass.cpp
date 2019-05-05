@@ -279,7 +279,7 @@ void intelhex::decodeDataRecord(unsigned char recordLength,
         byteRead = stringToHex(sByteRead);
         
         ihReturn=ihContent.insert(
-                         pair<int,unsigned char>(segmentBaseAddress, byteRead)); 
+                         pair<unsigned long, unsigned char>(segmentBaseAddress, byteRead)); 
         
         if (ihReturn.second==false)
         {
