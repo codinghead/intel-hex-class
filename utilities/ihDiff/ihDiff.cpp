@@ -54,7 +54,7 @@
 #include <cstdlib>
 #include <iomanip>
 
-#include "intelhexclass.h"
+#include "../../intelhex_class/intelhexclass.h"
 
 using namespace std;
 
@@ -157,9 +157,10 @@ int main(int argc, char *argv[])
     /* Two local var's to store data at the locations being analysed      */
     unsigned char diffAData = 0;
     unsigned char diffBData = 0;
-    
-    bool aFinished = false;
-    bool bFinished = false;
+
+    /* Create to markers to find end of files */
+    bool endOfFileA = false;
+    bool endOfFileB = false;
     
     bool complete = false;
     
@@ -216,13 +217,17 @@ int main(int argc, char *argv[])
         }
         
         /* Check if we got to the end of the two files                        */
-        if (ihDiffA.endOfData() == true)
+        if (ihDiffA.endOfData() == true && endOfFileA == false)
         {
-            break;
+            endOfFileA = true;
+            if (endOfFileA == true && endOfFileB == true)
+                break;
         }
-        else if (ihDiffB.endOfData() == true)
+        else if (ihDiffB.endOfData() == true && endOfFileB == false)
         {
-            break;
+            endOfFileB = true;
+                if (endOfFileA == true && endOfFileB == true)
+                break;
         }
         
     } while (complete != true);
