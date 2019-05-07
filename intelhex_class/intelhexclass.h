@@ -588,26 +588,15 @@ class intelhex {
             }
         }
         
-		/**********************************************************************/
-        /*! \brief Checks if we have reached end of available data
+        /**********************************************************************/
+        /*! \brief Returns current size of decoded file
         *
-        * The internal pointer is checked to see if we have reached the end of 
-        * the data held in memory
-        *
-        * \sa operator++(), operator++(int), operator--(), operator--(int),
-        * empty()
-        *
-        * \retval true  - reached the end of the Intel HEX data in memory or no
-        *                 data in memory yet.
-        * \retval false - end of Intel HEX data in memory not yet reached.
-        *
-        * \note This function has no effect if no file has been as yet decoded
-        * and no data has been inserted into memory.
+        * The quantity of bytes decoded thus far is returned.
         ***********************************************************************/
         unsigned long size()
-		{
-			return static_cast<unsigned long>(ihContent.size());
-		}
+        {
+            return static_cast<unsigned long>(ihContent.size());
+        }
 		
         /**********************************************************************/
         /*! \brief Checks if we have reached end of available data
@@ -615,15 +604,9 @@ class intelhex {
         * The internal pointer is checked to see if we have reached the end of 
         * the data held in memory
         *
-        * \sa operator++(), operator++(int), operator--(), operator--(int),
-        * empty()
-        *
         * \retval true  - reached the end of the Intel HEX data in memory or no
         *                 data in memory yet.
         * \retval false - end of Intel HEX data in memory not yet reached.
-        *
-        * \note This function has no effect if no file has been as yet decoded
-        * and no data has been inserted into memory.
         ***********************************************************************/
         bool endOfData()
         {
@@ -632,10 +615,10 @@ class intelhex {
             
             if (!ihContent.empty())
             {
-				map<unsigned long, unsigned char>::iterator it \
-					                                         = ihContent.end();
+                map<unsigned long, unsigned char>::iterator it \
+                    = ihContent.end();
 				
-				--it;
+                --it;
 
                 if (it != ihIterator)
                 {
@@ -645,6 +628,14 @@ class intelhex {
             return result;
         }
         
+        /**********************************************************************/
+        /*! \brief Indicates if the container for data is empty or not
+        *
+        * The map container is checked for content.
+        *
+        * \retval true  - the container is empty - no data has been extracted.
+        * \retval false - there is data in the container.
+        ***********************************************************************/
         bool empty()
         {
             return ihContent.empty();
@@ -833,7 +824,7 @@ class intelhex {
         * \retval false     - data was not available and returned valid is not
         *                     valid
         *
-        * \sa putData()
+        * \sa insertData(), overwriteData()
         ***********************************************************************/
         bool getData(unsigned char * data)
         {
@@ -846,39 +837,39 @@ class intelhex {
         }
         
         /**********************************************************************/
-        /*! \brief Returns the data for desired address.
+        /*! \brief Returns the data from the desired address.
         *
         * Returns the data for the desired address. If the address has no data
-		* assigned to it, the function returns false, the pointer to data is not
-		* written and the class's address pointer remains unchanged. If the 
-		* address has data assigned to it, the pointer to data will be written 
-		* with the data found and the class's address pointer will be moved to 
-		* this new location.
+        * assigned to it, the function returns false, the pointer to data is not
+        * written and the class's address pointer remains unchanged. If the 
+        * address has data assigned to it, the pointer to data will be written 
+        * with the data found and the class's address pointer will be moved to 
+        * this new location.
         *
         * \param data       - variable to hold data requested
-		* \param address	- address to be queried for valid data
+        * \param address    - address to be queried for valid data
         *
         * \retval true      - data was available and returned value is valid
         * \retval false     - data was not available and returned valid is not
         *                     valid
         *
-        * \sa putData()
+        * \sa insertData(), overwriteData()
         ***********************************************************************/
-		bool getData(unsigned char * data, unsigned long address)
-		{
-			bool found = false;
-			map<unsigned long, unsigned char>::iterator localIterator;
+        bool getData(unsigned char * data, unsigned long address)
+        {
+            bool found = false;
+            map<unsigned long, unsigned char>::iterator localIterator;
 
             if (!ihContent.empty())
             {
-				localIterator = ihContent.find(address);
-				
-				if (localIterator != ihContent.end())
-				{
-					found = true;
-					ihIterator = localIterator;
-					*data = ihIterator->second;
-				}
+                localIterator = ihContent.find(address);
+
+                if (localIterator != ihContent.end())
+                {
+                    found = true;
+                    ihIterator = localIterator;
+                    *data = ihIterator->second;
+                }
             }
 
             return found;
@@ -889,14 +880,51 @@ class intelhex {
         *
         * Inserts byte of data at the current address pointer
         *
-        * \param    data - data byte to be inserted
+        * \param data       - data byte to be inserted
         *
-        * \sa startAddress()
+        * \retval true      - data insertion was successful
+        * \retval false     - data insertion failed
+        *
+        * \sa getAddress(), overwriteData()
         ***********************************************************************/
         bool insertData(unsigned char data);
+
+        /**********************************************************************/
+        /*! \brief Inserts desired byte at the desired address.
+        *
+        * Inserts byte of data at the desired address.
+        *
+        * \param data       - data byte to be inserted
+        * \param address    - address at which to insert data
+        *
+        * \retval true      - data insertion was successful
+        * \retval false     - data insertion failed
+        *
+        * \sa getAddress(), overwriteData()
+        ***********************************************************************/
         bool insertData(unsigned char data, unsigned long address);
         
+        /**********************************************************************/
+        /*! \brief Forces insertion of desired byte at the current address pointer.
+        *
+        * Forces insertion of byte of data at the current address pointer
+        *
+        * \param data       - data byte to be inserted
+        *
+        * \sa getAddress()
+        ***********************************************************************/
         void overwriteData(unsigned char data);
+
+        /**********************************************************************/
+        /*! \brief Forces insertion of desired byte at the desired address.
+        *
+        * Forces insertion of byte of data at the desired address.
+        *
+        * \param data       - data byte to be inserted
+        * \param address    - address at which to insert data
+        *
+        * \sa getAddress()
+        ***********************************************************************/
         void overwriteData(unsigned char data, unsigned long address);
         
         bool blankFill(unsigned char data);
