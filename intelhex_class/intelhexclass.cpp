@@ -81,12 +81,12 @@ using namespace std;
 * List of all possible record types that can be found in an Intel HEX file.
 *******************************************************************************/
 enum intelhexRecordType {
-    DATA_RECORD,
-    END_OF_FILE_RECORD,
-    EXTENDED_SEGMENT_ADDRESS,
-    START_SEGMENT_ADDRESS,
-    EXTENDED_LINEAR_ADDRESS,
-    START_LINEAR_ADDRESS,
+    DATA_RECORD,                 // '00'
+    END_OF_FILE_RECORD,          // '01'
+    EXTENDED_SEGMENT_ADDRESS,    // '02'
+    START_SEGMENT_ADDRESS,       // '03'
+    EXTENDED_LINEAR_ADDRESS,     // '04'
+    START_LINEAR_ADDRESS,        // '05'
     NO_OF_RECORD_TYPES
 };
 
@@ -707,7 +707,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                     case START_LINEAR_ADDRESS:
                         /* Make sure we have 4 bytes of data                  */
                         if (recordLength == 4 && 
-                                      ihLocal.startLinearAddress.exists == false)
+                                     ihLocal.startLinearAddress.exists == false)
                         {
                             /* Extract the four bytes of the SLA              */
                             ihLocal.startLinearAddress.eipRegister = 0;
@@ -721,6 +721,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
                             ihLocal.startLinearAddress.eipRegister <<= 8;
+                            
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
@@ -730,6 +731,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
                             ihLocal.startLinearAddress.eipRegister <<= 8;
+                            
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
@@ -739,6 +741,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
                             ihLocal.startLinearAddress.eipRegister <<= 8;
+                            
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
@@ -747,6 +750,10 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             ihLocal.startLinearAddress.eipRegister += 
                             static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
+
+                            /* Note that the linear start address has been    */
+                            /* found                                          */
+                            ihLocal.startLinearAddress.exists = true;
                         }
                         /* Note an error if the start seg. address already    */
                         /* exists                                             */
@@ -754,7 +761,8 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         {
                             string message;
                             
-                            message = "Start Linear Address record appears again @ line " + 
+                            message = "Start Linear Address record appears " +
+                                      "again @ line " + 
                                       ihLocal.ulToString(lineCounter) + 
                                       "; repeated record ignored.";
                             
