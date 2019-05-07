@@ -709,9 +709,14 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         if (recordLength == 4 && 
                                      ihLocal.startLinearAddress.exists == false)
                         {
-                            /* Extract the four bytes of the SLA              */
+                            /* Note that the linear start address has been    */
+                            /* found                                          */
+                            ihLocal.startLinearAddress.exists = true;
+
+                            /* Clear the EIP register                         */
                             ihLocal.startLinearAddress.eipRegister = 0;
                             
+                            /* Extract the four bytes of the SLA              */
                             ihByte.erase();
                             ihByte = *ihLineIterator;
                             ++ihLineIterator;
@@ -751,9 +756,6 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                             static_cast<unsigned long>
                                                   (ihLocal.stringToHex(ihByte));
 
-                            /* Note that the linear start address has been    */
-                            /* found                                          */
-                            ihLocal.startLinearAddress.exists = true;
                         }
                         /* Note an error if the start seg. address already    */
                         /* exists                                             */
