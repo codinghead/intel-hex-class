@@ -763,9 +763,8 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         {
                             string message;
                             
-                            message = "Start Linear Address record appears " +
-                                      "again @ line " + 
-                                      ihLocal.ulToString(lineCounter) + 
+                            message = "Start Linear Address record appears again @ line " +
+                                      ihLocal.ulToString(lineCounter) +
                                       "; repeated record ignored.";
                             
                             ihLocal.addError(message);
