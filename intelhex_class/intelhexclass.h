@@ -615,15 +615,7 @@ class intelhex {
             
             if (!ihContent.empty())
             {
-                map<unsigned long, unsigned char>::iterator it \
-                    = ihContent.end();
-				
-                --it;
-
-                if (it != ihIterator)
-                {
-                    result = false;
-                }
+                return ihIterator == ihContent.end();
             }
             return result;
         }

@@ -479,7 +479,9 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         if (ihLocal.verbose == true)
                         {
                             cout << "Data Record begining @ 0x" << 
-                                      ihLocal.ulToHexString(loadOffset) << endl;
+                                    ihLocal.ulToHexString(loadOffset) <<
+                                    " size 0x" <<
+                                    ihLocal.ulToHexString(recordLength) << endl;
                         }
                         break;
                     
