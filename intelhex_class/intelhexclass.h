@@ -59,7 +59,7 @@
 *                                    DEFINES
 *******************************************************************************/
 
-using namespace std;
+//using namespace std;
 
 /******************************************************************************/
 /*! \cond
@@ -90,7 +90,7 @@ class intelhex {
         *
         * \retval           - pointer to output stream
         ***********************************************************************/
-        friend ostream& operator<<(ostream& dataOut, 
+        friend std::ostream& operator<<(std::ostream& dataOut,
                                    intelhex& ihLocal);
         
         /**********************************************************************/
@@ -107,7 +107,7 @@ class intelhex {
         *
         * \retval           - pointer to input stream
         ***********************************************************************/
-        friend istream& operator>>(istream& dataIn, 
+        friend std::istream& operator>>(std::istream& dataIn,
                                    intelhex& ihLocal);
 
     private:
@@ -117,7 +117,7 @@ class intelhex {
         * STL map holding the addresses found in the Intel HEX file and the
         * associated data byte stored at that address                 
         ***********************************************************************/
-        map<unsigned long, unsigned char> ihContent;
+        std::map<unsigned long, unsigned char> ihContent;
         
         /**********************************************************************/
         /*! \brief Iterator for the container holding the decoded Intel HEX
@@ -127,7 +127,7 @@ class intelhex {
         * currently being used to read or write data. If no file has been 
         * loaded into memory, it points to the start of ihContent. 
         ***********************************************************************/
-        map<unsigned long, unsigned char>::iterator ihIterator;
+        std::map<unsigned long, unsigned char>::iterator ihIterator;
         
         /**********************************************************************/
         /*! \brief Pair for the container holding the decoded Intel HEX content.
@@ -138,7 +138,7 @@ class intelhex {
         * can ensure that no address in a file is falsely assigned data more 
         * than once.
         ***********************************************************************/
-        pair<map<unsigned long, unsigned char>::iterator,bool> ihReturn;
+        std::pair<std::map<unsigned long, unsigned char>::iterator,bool> ihReturn;
   
         /**********************************************************************/
         /*! \brief Stores segment base address of Intel HEX file.
@@ -208,7 +208,7 @@ class intelhex {
         *                             the list
         ***********************************************************************/
         struct {
-            list<string> ihWarnings;
+            std::list<std::string> ihWarnings;
             unsigned long noOfWarnings;
         } msgWarning;
         
@@ -223,7 +223,7 @@ class intelhex {
         *                             list
         ***********************************************************************/
         struct {
-            list<string> ihErrors;
+            std::list<std::string> ihErrors;
             unsigned long noOfErrors;
         } msgError;
         
@@ -273,7 +273,7 @@ class intelhex {
         *
         * \sa ulToHexString(), ucToHexString(), ulToString()
         ***********************************************************************/
-        unsigned char stringToHex(string value);
+        unsigned char stringToHex(std::string value);
 
         /***********************************************************************   
         * \brief Converts an unsigned long to a string in HEX format.
@@ -292,7 +292,7 @@ class intelhex {
         * \sa
         * stringToHex(), ucToHexString(), ulToString()
         ***********************************************************************/
-        string ulToHexString(unsigned long value);
+        std::string ulToHexString(unsigned long value);
 
         /**********************************************************************/
         /*! \brief Converts an unsigned char to a string in HEX format.
@@ -311,7 +311,7 @@ class intelhex {
         * \sa
         * stringToHex(), ulToHexString(), ulToString()
         ***********************************************************************/
-        string ucToHexString(unsigned char value);
+        std::string ucToHexString(unsigned char value);
         
         /**********************************************************************/
         /*! \brief Converts an unsigned long to a string in DEC format.
@@ -327,7 +327,7 @@ class intelhex {
         * \sa
         * stringToHex(), ulToHexString(), ucToHexString()
         ***********************************************************************/
-        string ulToString(unsigned long value);
+        std::string ulToString(unsigned long value);
         
         /**********************************************************************/
         /*! \brief Decodes the data content of a data record.
@@ -346,7 +346,7 @@ class intelhex {
         ***********************************************************************/
         void decodeDataRecord(unsigned char recordLength,
                               unsigned long loadOffset, 
-                              string::const_iterator data);
+                              std::string::const_iterator data);
                               
         /**********************************************************************/
         /*! \brief Add a warning message to the warning message list.
@@ -354,14 +354,14 @@ class intelhex {
         *
         * \param    warningMessage - the text to be added for this warning
         ***********************************************************************/
-        void addWarning(string warningMessage);
+        void addWarning(std::string warningMessage);
         
         /**********************************************************************/
         /*! \brief Add an error message to the error message list.
         *
         * \param    errorMessage - the text to be added for this error        
         ***********************************************************************/
-        void addError(string errorMessage);
+        void addError(std::string errorMessage);
         
     public:
         /**********************************************************************/
@@ -653,7 +653,7 @@ class intelhex {
             
             if (ihContent.size() != 0)
             {
-                map<unsigned long, unsigned char>::iterator it;
+                std::map<unsigned long, unsigned char>::iterator it;
                 it = ihContent.find(address);
                 if (it != ihContent.end())
                 {
@@ -766,7 +766,7 @@ class intelhex {
         {
             if (ihContent.size() != 0)
             {
-                map<unsigned long, unsigned char>::iterator it;
+                std::map<unsigned long, unsigned char>::iterator it;
             
                 it = ihContent.begin();
                 *address = (*it).first;
@@ -794,7 +794,7 @@ class intelhex {
         {
             if (ihContent.size() != 0)
             {
-                map<unsigned long, unsigned char>::reverse_iterator rit;
+                std::map<unsigned long, unsigned char>::reverse_iterator rit;
             
                 rit = ihContent.rbegin();
                 *address = (*rit).first;
@@ -850,7 +850,7 @@ class intelhex {
         bool getData(unsigned char * data, unsigned long address)
         {
             bool found = false;
-            map<unsigned long, unsigned char>::iterator localIterator;
+            std::map<unsigned long, unsigned char>::iterator localIterator;
 
             if (!ihContent.empty())
             {
@@ -971,7 +971,7 @@ class intelhex {
         *
         * \sa getNoWarnings(), getNoErrors(), popNextError()
         ***********************************************************************/
-        bool popNextWarning(string& warning)
+        bool popNextWarning(std::string& warning)
         {
             if (msgWarning.noOfWarnings > 0)
             {
@@ -1002,7 +1002,7 @@ class intelhex {
         *
         * \sa getNoWarnings(), getNoErrors(), popNextError()
         ***********************************************************************/
-        bool popNextError(string& error)
+        bool popNextError(std::string& error)
         {
             if (msgError.noOfErrors > 0)
             {
