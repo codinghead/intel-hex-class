@@ -128,7 +128,7 @@ unsigned char intelhex::stringToHex(string value)
                 string message;
 
                 message = "Can't convert byte 0x" + value + " @ 0x" + 
-                          ulToHexString(segmentBaseAddress) + " to hex.";
+                          ulToHexString(segmentBaseAddress, false) + " to hex.";
 
                 addError(message);
                 
@@ -144,7 +144,7 @@ unsigned char intelhex::stringToHex(string value)
         /* Error occured - more or less than two nibbles in the string        */
         string message;
 
-        message = value + " @ 0x" + ulToHexString(segmentBaseAddress) + 
+        message = value + " @ 0x" + ulToHexString(segmentBaseAddress, false) + 
                                                        " isn't an 8-bit value.";
 
         addError(message);
@@ -156,7 +156,7 @@ unsigned char intelhex::stringToHex(string value)
 /*******************************************************************************
 * Converts an unsigned long to a string in HEX format
 *******************************************************************************/
-string intelhex::ulToHexString(unsigned long value)
+string intelhex::ulToHexString(unsigned long value, bool useLowerCase)
 {
     string returnString;
     char localString[50];
@@ -164,9 +164,17 @@ string intelhex::ulToHexString(unsigned long value)
     returnString.erase();
 
 #ifdef _MSC_FULL_VER
-    sprintf_s(localString, 49, "%08lX", value);
+    if (!useLowerCase) {
+        sprintf_s(localString, 49, "%08lX", value);
+    } else {
+        sprintf_s(localString, 49, "%08lx", value);
+    }
 #else
-    snprintf(localString, 49, "%08lX", value);
+    if (!useLowerCase) {
+        snprintf(localString, 49, "%08lX", value);
+    } else {
+        snprintf(localString, 49, "%08lx", value);
+    }
 #endif
 	
     returnString.insert(0, localString);
@@ -197,7 +205,7 @@ string intelhex::ulToString(unsigned long value)
 /*******************************************************************************
 * Converts an unsigned char to a string in HEX format
 *******************************************************************************/
-string intelhex::ucToHexString(unsigned char value)
+string intelhex::ucToHexString(unsigned char value, bool useLowerCase)
 {
     string returnString;
     char localString[50];
@@ -205,11 +213,18 @@ string intelhex::ucToHexString(unsigned char value)
     returnString.erase();
 
 #ifdef _MSC_FULL_VER
-    sprintf_s(localString, 49, "%02X", value);
+    if (!useLowerCase) {
+        sprintf_s(localString, 49, "%02lX", value);
+    } else {
+        sprintf_s(localString, 49, "%02lx", value);
+    }
 #else
-    snprintf(localString, 49, "%02X", value);
+    if (!useLowerCase) {
+        snprintf(localString, 49, "%02lX", value);
+    } else {
+        snprintf(localString, 49, "%02lx", value);
+    }
 #endif
-
     returnString.insert(0, localString);
 
     return returnString;
@@ -289,7 +304,7 @@ void intelhex::decodeDataRecord(unsigned char recordLength,
             {
                 string message;
 
-                message = "Location 0x" + ulToHexString(segmentBaseAddress) + 
+                message = "Location 0x" + ulToHexString(segmentBaseAddress, false) + 
                                         " already contains data 0x" + sByteRead;
                                         
                 addWarning(message);
@@ -300,9 +315,9 @@ void intelhex::decodeDataRecord(unsigned char recordLength,
                 string message;
 
                 message = "Couldn't add 0x" + sByteRead + " @ 0x" + 
-                          ulToHexString(segmentBaseAddress) + 
+                          ulToHexString(segmentBaseAddress, false) + 
                                "; already contains 0x" + 
-                                          ucToHexString(ihReturn.first->second);
+                                          ucToHexString(ihReturn.first->second, false);
 
                 addError(message);
             }
@@ -479,7 +494,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         if (ihLocal.verbose == true)
                         {
                             cout << "Data Record begining @ 0x" << 
-                                      ihLocal.ulToHexString(loadOffset) << endl;
+                                      ihLocal.ulToHexString(loadOffset, false) << endl;
                         }
                         break;
                     
@@ -551,7 +566,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         if (ihLocal.verbose == true)
                         {
                             cout << "Ext. Seg. Address found: 0x" <<
-                               ihLocal.ulToHexString(ihLocal.segmentBaseAddress)
+                               ihLocal.ulToHexString(ihLocal.segmentBaseAddress, false)
                                                                         << endl;
                         }
                         
@@ -645,9 +660,9 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         if (ihLocal.verbose == true)
                         {
                             cout << "Start Seg. Address - CS 0x" <<
-                                 ihLocal.ulToHexString(ihLocal.startSegmentAddress.csRegister) <<
+                                 ihLocal.ulToHexString(ihLocal.startSegmentAddress.csRegister, false) <<
                                  " IP 0x" << 
-                                 ihLocal.ulToHexString(ihLocal.startSegmentAddress.ipRegister) 
+                                 ihLocal.ulToHexString(ihLocal.startSegmentAddress.ipRegister, false) 
                                                                         << endl;
                         }
                         break;
@@ -698,7 +713,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         if (ihLocal.verbose == true)
                         {
                             cout << "Ext. Lin. Address 0x" << 
-                               ihLocal.ulToHexString(ihLocal.segmentBaseAddress)
+                               ihLocal.ulToHexString(ihLocal.segmentBaseAddress, false)
                                                                         << endl;
                         }
                         
@@ -796,7 +811,7 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                         if (ihLocal.verbose == true)
                         {
                             cout << "Start Lin. Address - EIP 0x" <<
-                                 ihLocal.ulToHexString(ihLocal.startLinearAddress.eipRegister) 
+                                 ihLocal.ulToHexString(ihLocal.startLinearAddress.eipRegister, false) 
                                                                         << endl;
                         }
                         break;
@@ -828,9 +843,9 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
                 message = "Checksum error @ line " + 
                           ihLocal.ulToString(lineCounter) + 
                           "; calculated 0x" + 
-                          ihLocal.ucToHexString(intelHexChecksum - byteRead) +
+                          ihLocal.ucToHexString(intelHexChecksum - byteRead, false) +
                           " expected 0x" + 
-                          ihLocal.ucToHexString(byteRead);
+                          ihLocal.ucToHexString(byteRead, ihLocal.useLowerCase);
                 
                 ihLocal.addError(message);
             }
@@ -881,13 +896,13 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
             
             dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
             checksum += dataByte;
-            thisRecord += ihLocal.ucToHexString(dataByte);
+            thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
             
             dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
             checksum += dataByte;
-            thisRecord += ihLocal.ucToHexString(dataByte);
+            thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
             
-            thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+            thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF), ihLocal.useLowerCase);
         }
         else
         {
@@ -900,17 +915,21 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
             
             dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
             checksum += dataByte;
-            thisRecord += ihLocal.ucToHexString(dataByte);
+            thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
             
             dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
             checksum += dataByte;
-            thisRecord += ihLocal.ucToHexString(dataByte);
+            thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
             
-            thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+            thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF), ihLocal.useLowerCase);
         }
         
         /* Output the record                                                  */
-        dataOut << thisRecord << endl;
+        if (!ihLocal.useCarriageReturn) {
+            dataOut << thisRecord << endl;
+        } else {
+            dataOut << thisRecord << '\r' << endl;
+        }
         
         /* Now loop through all the available data and insert into file       */
         /* with maximum 16 bytes per line, and making sure to keep the        */
@@ -943,16 +962,20 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
                     
                     dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
                     checksum += dataByte;
-                    thisRecord += ihLocal.ucToHexString(dataByte);
+                    thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
                     
                     dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
                     checksum += dataByte;
-                    thisRecord += ihLocal.ucToHexString(dataByte);
+                    thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
                     
-                    thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+                    thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF), ihLocal.useLowerCase);
                     
                     /* Output the record                                      */
-                    dataOut << thisRecord << endl;
+                    if (!ihLocal.useCarriageReturn) {
+                        dataOut << thisRecord << endl;
+                    } else {
+                        dataOut << thisRecord << '\r' << endl;
+                    }
                 }
             }
             /* ...otherwise assume segment mode                               */
@@ -973,16 +996,20 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
                     
                     dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
                     checksum += dataByte;
-                    thisRecord += ihLocal.ucToHexString(dataByte);
+                    thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
                     
                     dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
                     checksum += dataByte;
-                    thisRecord += ihLocal.ucToHexString(dataByte);
+                    thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
                     
-                    thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+                    thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF), ihLocal.useLowerCase);
                     
                     /* Output the record                                      */
-                    dataOut << thisRecord << endl;
+                    if (!ihLocal.useCarriageReturn) {
+                        dataOut << thisRecord << endl;
+                    } else {
+                        dataOut << thisRecord << '\r' << endl;
+                    }
                 }
             }
             
@@ -1034,15 +1061,15 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
                 
                 /* Start with the RECLEN record length                        */
                 dataByte = static_cast<unsigned char>(recordData.size());
-                thisRecord += ihLocal.ucToHexString(dataByte);
+                thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
                 checksum += dataByte;
                 
                 /* Then the LOAD OFFSET                                       */
                 dataByte = static_cast<unsigned char>((loadOffset >> 8) & 0xFF);
-                thisRecord += ihLocal.ucToHexString(dataByte);
+                thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
                 checksum += dataByte;
                 dataByte = static_cast<unsigned char>(loadOffset & 0xFF);
-                thisRecord += ihLocal.ucToHexString(dataByte);
+                thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
                 checksum += dataByte;
                 
                 /* Then the RECTYP record type (no need to add to checksum -  */
@@ -1054,14 +1081,18 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
                 {
                     dataByte = (*itData);
                     checksum += dataByte;
-                    thisRecord += ihLocal.ucToHexString(dataByte);
+                    thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
                 }
                 
                 /* Last bit - add the checksum                                */
-                thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+                thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF), ihLocal.useLowerCase);
                 
                 /* Now write the record                                       */
-                dataOut << thisRecord << endl;
+                if (!ihLocal.useCarriageReturn) {
+                    dataOut << thisRecord << endl;
+                } else {
+                    dataOut << thisRecord << '\r' << endl;
+                }
             }
         }
     }
@@ -1079,26 +1110,30 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
         
         dataByte = static_cast<unsigned char>((ihLocal.startSegmentAddress.csRegister >> 8) & 0xFF);
         checksum += dataByte;
-        thisRecord += ihLocal.ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
         
         dataByte = static_cast<unsigned char>(ihLocal.startSegmentAddress.csRegister & 0xFF);
         checksum += dataByte;
-        thisRecord += ihLocal.ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
         
         dataByte = static_cast<unsigned char>((ihLocal.startSegmentAddress.ipRegister >> 8) & 0xFF);
         checksum += dataByte;
-        thisRecord += ihLocal.ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
         
         dataByte = static_cast<unsigned char>(ihLocal.startSegmentAddress.ipRegister & 0xFF);
         checksum += dataByte;
-        thisRecord += ihLocal.ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
         
         
         /* Last bit - add the checksum                                        */
-        thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+        thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF), ihLocal.useLowerCase);
         
         /* Now write the record                                               */
-        dataOut << thisRecord << endl;
+        if (!ihLocal.useCarriageReturn) {
+            dataOut << thisRecord << endl;
+        } else {
+            dataOut << thisRecord << '\r' << endl;
+        }
     }
     
     /* If there is a linear start address, output the data                    */
@@ -1114,30 +1149,43 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
         
         dataByte = static_cast<unsigned char>((ihLocal.startLinearAddress.eipRegister >> 24) & 0xFF);
         checksum += dataByte;
-        thisRecord += ihLocal.ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
         
         dataByte = static_cast<unsigned char>((ihLocal.startLinearAddress.eipRegister >> 16) & 0xFF);
         checksum += dataByte;
-        thisRecord += ihLocal.ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
         
         dataByte = static_cast<unsigned char>((ihLocal.startLinearAddress.eipRegister >> 8) & 0xFF);
         checksum += dataByte;
-        thisRecord += ihLocal.ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
         
         dataByte = static_cast<unsigned char>(ihLocal.startLinearAddress.eipRegister & 0xFF);
         checksum += dataByte;
-        thisRecord += ihLocal.ucToHexString(dataByte);
+        thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
         
         
         /* Last bit - add the checksum                                        */
-        thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF));
+        thisRecord += ihLocal.ucToHexString(0x00 - (checksum & 0xFF), ihLocal.useLowerCase);
         
         /* Now write the record                                               */
-        dataOut << thisRecord << endl;
+        if (!ihLocal.useCarriageReturn) {
+            dataOut << thisRecord << endl;
+        } else {
+            dataOut << thisRecord << '\r' << endl;
+        }
     }
     
     /* Whatever happened, we can always output the EOF record                 */
-    dataOut << ":00000001FF" << endl;
+    if (!ihLocal.useLowerCase) {
+        dataOut << ":00000001FF";
+    } else {
+        dataOut << ":00000001ff";
+    }
+    if (!ihLocal.useCarriageReturn) {
+        dataOut << endl;
+    } else {
+        dataOut << '\r' << endl;
+    }
     
     return (dataOut);
 }

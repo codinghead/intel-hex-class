@@ -236,6 +236,22 @@ class intelhex {
         bool foundEof;
         
         /**********************************************************************/
+        /*! \brief Insert carriage return and new line.
+        *
+        * Used to note that a carriage return and new line are needed at the end
+        * of lines.                
+        ***********************************************************************/
+        bool useCarriageReturn;
+        
+        /**********************************************************************/
+        /*! \brief Use lower case hex output.
+        *
+        * Used to note that lower case hex (1a, af, ed) should be used instead
+        * of upper case (1A, AF, ED).                
+        ***********************************************************************/
+        bool useLowerCase;
+        
+        /**********************************************************************/
         /*! \brief Select verbose mode.
         *
         * Used during development to display messages as the incoming data 
@@ -283,16 +299,17 @@ class intelhex {
         * 8 character long string, prefaced with '0's where necessary.
         *
         * \param        value   - a value between 0x0000000 and 0xFFFFFFFF
+        * \param        useLowerCase - if true, output lower case hex
         * 
         * \retval               - 8-character long string
         *
         * \note
-        * Alpha characters are capitalised.
+        * Alpha characters are capitalised unless useLowerCase is true.
         *
         * \sa
         * stringToHex(), ucToHexString(), ulToString()
         ***********************************************************************/
-        string ulToHexString(unsigned long value);
+        string ulToHexString(unsigned long value, bool useLowerCase);
 
         /**********************************************************************/
         /*! \brief Converts an unsigned char to a string in HEX format.
@@ -302,16 +319,17 @@ class intelhex {
         * 2 character long string, prefaced with '0' where necessary.
         *
         * \param        value   - a value between 0x00 and 0xFF
+        * \param        useLowerCase - if true, output lower case hex
         * 
         * \retval               - 2-character long string
         *
         * \note
-        * Alpha characters are capitalised.
+        * Alpha characters are capitalised unless useLowerCase is true.
         *
         * \sa
         * stringToHex(), ulToHexString(), ulToString()
         ***********************************************************************/
-        string ucToHexString(unsigned char value);
+        string ucToHexString(unsigned char value, bool useLowerCase);
         
         /**********************************************************************/
         /*! \brief Converts an unsigned long to a string in DEC format.
@@ -391,6 +409,10 @@ class intelhex {
             msgError.noOfErrors = 0;
             /* Note that the EOF record has not been found yet                */
             foundEof = false;
+            /* Set carriage return insertion to off                           */
+            useCarriageReturn = false;
+            /* Set lower case use to off                                      */
+            useLowerCase = false;
             /* Set verbose mode to off                                        */
             verbose = false;
             /* Set segment address mode to false (default)                    */
@@ -434,6 +456,10 @@ class intelhex {
             msgError.ihErrors = ihSource.msgError.ihErrors;
             /* Note that the EOF record has not been found yet                */
             foundEof = ihSource.foundEof;
+            /* Set carriage return insertion to off                           */
+            useCarriageReturn = ihSource.useCarriageReturn;
+            /* Set lower case use to off                                      */
+            useLowerCase = ihSource.useLowerCase;
             /* Set verbose mode to off                                        */
             verbose = ihSource.verbose;
             /* Set segment address mode to false (default)                    */
@@ -480,6 +506,10 @@ class intelhex {
             msgError.ihErrors = ihSource.msgError.ihErrors;
             /* Note that the EOF record has not been found yet                */
             foundEof = ihSource.foundEof;
+            /* Set carriage return insertion to off                           */
+            useCarriageReturn = ihSource.useCarriageReturn;
+            /* Set lower case use to off                                      */
+            useLowerCase = ihSource.useLowerCase;
             /* Set verbose mode to off                                        */
             verbose = ihSource.verbose;
             /* Set segment address mode to false (default)                    */
@@ -1154,6 +1184,45 @@ class intelhex {
         void verboseOff()
         {
             verbose = false;
+        }
+
+        /*! \brief Turns on insertion of carriage return during encoding.
+        *
+        * Output of carriage return and new line during encoding of Intel HEX
+        * files.
+        ***********************************************************************/
+        void carriageReturnOn()
+        {
+            useCarriageReturn = true;
+        }
+        
+        /**********************************************************************/
+        /*! \brief Turns off insertion of carriage return during encoding.
+        *
+        * Output of new line only during encoding of Intel HEX files.
+        ***********************************************************************/
+        void carriageReturnOff()
+        {
+            useCarriageReturn = false;
+        }
+        
+        /*! \brief Turns on use of lower case during encoding.
+        *
+        * Output uses lower case during encoding.
+        ***********************************************************************/
+        void lowerCaseOn()
+        {
+            useLowerCase = true;
+        }
+        
+        /**********************************************************************/
+        /*! \brief Turns off use of lower case during encoding.
+        *
+        * Output uses upper case during encoding.
+        ***********************************************************************/
+        void lowerCaseOff()
+        {
+            useLowerCase = false;
         }
 };
 #endif
