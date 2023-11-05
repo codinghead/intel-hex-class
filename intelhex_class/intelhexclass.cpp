@@ -894,11 +894,11 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
             thisRecord = ":02000004";
             checksum = 0x02 + 0x04;
             
-            dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
+            dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
             checksum += dataByte;
             thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
             
-            dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
+            dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
             checksum += dataByte;
             thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
             
@@ -913,11 +913,11 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
             thisRecord = ":02000002";
             checksum = 0x02 + 0x02;
             
-            dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
+            dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
             checksum += dataByte;
             thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
             
-            dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
+            dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
             checksum += dataByte;
             thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
             
@@ -960,11 +960,11 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
                     thisRecord = ":02000004";
                     checksum = 0x02 + 0x04;
                     
-                    dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
+                    dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
                     checksum += dataByte;
                     thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
                     
-                    dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
+                    dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
                     checksum += dataByte;
                     thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
                     
@@ -994,11 +994,11 @@ ostream& operator<<(ostream& dataOut, intelhex& ihLocal)
                     thisRecord = ":02000002";
                     checksum = 0x02 + 0x02;
                     
-                    dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
+                    dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
                     checksum += dataByte;
                     thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
                     
-                    dataByte = static_cast<unsigned char>((addressOffset >> 8) & 0xFF);
+                    dataByte = static_cast<unsigned char>(addressOffset & 0xFF);
                     checksum += dataByte;
                     thisRecord += ihLocal.ucToHexString(dataByte, ihLocal.useLowerCase);
                     
