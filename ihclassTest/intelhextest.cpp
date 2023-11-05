@@ -27,11 +27,18 @@ int main(int argc, char *argv[])
 	
 	// Create a string to store lines of Intel Hex info
 	std::string intelHexLine;
+	
 	// Create a variable of the class we are testing
 	intelhex classTest;
 	
 	// Make class verbose
 	classTest.verboseOn();
+	
+	// Output carriage return with new line
+	classTest.carriageReturnOn();
+	
+	// Output hex values in lower case
+	classTest.lowerCaseOn();
 	
 	// The program name is the first argument - save for later use
 	program_name = argv[0];
