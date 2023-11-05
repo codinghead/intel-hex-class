@@ -23,8 +23,3 @@ Key Software Capabilities
 * Class contains no 'try' calls; will always return cleanly for programmer to make decision how to proceed.
 * File sizes up to 4GB supported (system dependent).
 * All records as per the official Intel "Hexadecimal Object File Format Specification, Revision A, January 6, 1988" supported
-
-Project Page
-------------
-
-For all current information, visit the project page at [codinghead.github.com/Intel-HEX-Class](http://codinghead.github.com/Intel-HEX-Class/).
