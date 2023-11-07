@@ -838,13 +838,14 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
             else
             {
                 /* Note that the checksum contained an error                  */
+                /* Checksum is 0xFF - sum of entire line + 1 (2s complement)  */
                 string message;
                             
                 message = "Checksum error @ line " + 
                           ihLocal.ulToString(lineCounter) + 
-                          "; calculated 0x" + 
-                          ihLocal.ucToHexString(intelHexChecksum - byteRead, false) +
-                          " expected 0x" + 
+                          "; expected 0x" + 
+                          ihLocal.ucToHexString(0xFF - (intelHexChecksum - byteRead) + 1, false) +
+                          " read 0x" + 
                           ihLocal.ucToHexString(byteRead, ihLocal.useLowerCase);
                 
                 ihLocal.addError(message);
