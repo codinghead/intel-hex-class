@@ -12,6 +12,9 @@ doxygen/rtf/*
 doxygen/man/*
 doxygen/*.bak
 
+# Ignore any old documentation files in the Documentation directory
+Documentation/*.dox.old
+
 # Ignore extraneous Open Office files
 *.odt#
 *.ods#
