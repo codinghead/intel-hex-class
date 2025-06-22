@@ -1,0 +1,33 @@
+/******************************************************************************/
+/*!
+* \page ihbasics Background on Intel HEX format
+
+The Intel HEX format has been around since the 1980s. It lists addresses in
+memory and the data they contain. In addition, it has commands that provide 
+values for registers in the early x86 processors that would have been used as a
+program start address. Microcontroller build tools typically generate a HEX file
+output that can be used to flash the code onto the device.
+
+This project was started to create utilities that could manipulate Intel HEX
+files. It is not unusual to need to create an empty block of data or change the
+value of specific bytes (e.g. an Ethernet or Wi-Fi MAC address) in a file. It 
+could also be helpful to merge two files together or compare the memory contents
+of two files that will otherwise fail a regular \c diff despite actually
+containing the same data.
+
+This class is constructed based upon the definition given in the document 
+'Hexadecimal Object File Format Specification', Revision A, January 6, 1988, 
+© 1998 Intel Corporation
+
+Further reading on the Intel HEX file format can be found here:
+
+\li <a href="https://ia801008.us.archive.org/3/items/IntelHEXStandard/Intel%20HEX%20Standard.pdf">Hexadecimal Object File Format Specification, 1988</a>
+\li <a href="https://en.wikipedia.org/wiki/Intel_HEX">Intel HEX, Wikipedia</a>
+\li <a href="https://developer.arm.com/documentation/ka003292/latest/">GENERAL: Intel HEX File Format, Arm</a>
+\li <a href="https://onlinedocs.microchip.com/oxy/GUID-BB433107-FD4E-4D28-BB58-9D4A58955B1A-en-US-7/GUID-DF9E479D-6BA8-49E3-A2A5-997BBA49D34D.html">Intel HEX file Specification, Microchip Technology Inc.</a>
+
+
+# Heading 1
+
+*******************************************************************************/
+

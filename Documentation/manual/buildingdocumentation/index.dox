@@ -1,0 +1,73 @@
+/******************************************************************************/
+/*! \page docbuild Building Documentation
+ 
+The project uses doxygen to create the available documentation. The 
+configuration and location for building the documentation is the "doxygen" 
+folder. Documentation is pulled from the source code in the "intelhex_class" 
+folder and the dox files and images in the "Documentation" folder.
+
+\section docsetup Setting up doxygen
+
+To install doxygen, refer to the website 
+<a href="https://www.doxygen.nl">www.doxygen.nl</a>
+. On Linux machines you may be able to install it from the command line as 
+follows:
+
+\code{.txt}
+
+sudo apt install doxygen
+
+\endcode
+
+Once installed, check the version using:
+
+\code{.txt}
+
+doxygen --version
+
+\endcode
+
+and compare with the version listed at the top of the file doxygen/Doxyfile.
+It should be the same or more recent.
+
+\section docothertools Other tools to create documentation
+
+The documentation tool is configured to build an RTF, HTML, PDF using LaTeX,
+and MAN files. This requires Tex and GraphViz and make. On Linux machines, the 
+simplest way to install the required tools is:
+
+\code{.txt}
+
+sudo apt install graphviz
+sudo apt install texlive-utils
+sudo apt install make
+
+\endcode
+
+The texlive-utils is a large package that will take some time to install.
+
+\section docbuilding Building the Intel HEX Class Documentation
+
+The file doxygen/Doxyfile contains the build configuration file for building
+the documentation. At the command line, simply move to the doxygen folder and
+start doxygen. Assuming Linux:
+
+\code{.txt}
+cd doxygen
+doxygen
+\endcode
+
+The documentation should build without errors. The results will be found in this
+folder.
+
+To build the PDF version of the documentation, change to the latex folder and 
+use make to build the file. On Linux:
+
+\code{.txt}
+cd latex
+make
+\endcode
+
+On completion, the folder should contain a file named refman.pdf.
+
+*******************************************************************************/

@@ -1,0 +1,8 @@
+/******************************************************************************/
+/*!
+* \page codebuild Building Example Applications
+# Building Example Applications
+
+To build the example applications, you will need cmake and gcc.
+
+*******************************************************************************/
