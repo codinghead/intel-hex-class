@@ -1,8 +1,10 @@
 /******************************************************************************/
 /*!
 * \page codebuild Building Example Applications
-# Building Example Applications
 
-To build the example applications, you will need cmake and gcc.
+This documentation page is incomplete.
+
+There are make files available with the test code and utilities. However, the
+project is being changed to use CMake.
 
 *******************************************************************************/

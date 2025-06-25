@@ -2,9 +2,25 @@
 /*!
 * \page examples Example Applications
 
-# ihDiff
+The example programs are in the "utilities" directory. There is also a program
+used during code development for testing in the "ihclassTest" folder.
 
-A diff for intel hex files.
+\section ihdiff ihDiff
+
+A diff for Intel HEX files.
+
+\section ihintegrity ihIntegrity
+
+Checks Intel HEX files for errors (missing bytes, erronous checksums, missing
+end-of-file, etc.)
+
+\section ihrefactor ihRefactor
+
+Refactors the contents into a single address block if possible.
+
+\section ihstat ihStat
+
+Provides Intel HEX file statistics.
 
 *******************************************************************************/
 
