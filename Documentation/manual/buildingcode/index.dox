@@ -2,9 +2,25 @@
 /*!
 * \page codebuild Building Example Applications
 
-This documentation page is incomplete.
+The test application 'ihclassTest' and the applications in the 'utilities'
+folder are built using CMake. 
 
-There are make files available with the test code and utilities. However, the
-project is being changed to use CMake.
+\section ihclasstest ihClassTest
+
+This application is used during development to test the class. To build, do the
+following:
+
+\code
+cd ihclassTest
+cmake -B build
+cd build
+cmake --build . --parallel
+\endcode
+
+\section utilities Utilities
+
+There are make files available current. However, the project is in the process
+of being changed to use CMake. Further instructions will be provided here once
+this is complete.
 
 *******************************************************************************/
