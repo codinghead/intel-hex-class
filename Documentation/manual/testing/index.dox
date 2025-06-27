@@ -1,0 +1,35 @@
+/******************************************************************************/
+/*!
+* \page codetest Running Tests
+
+The Intel HEX Class uses GoogleTest to perform testing. The test suite is
+in the folder 'test.'
+
+\section gtestbuild Building GoogleTest
+
+The GoogleTest test suite uses CMake to build the testing environment.
+Change to the 'test' director and do the following:
+
+\code
+cd test
+cmake -S . -B build
+cmake --build build --parallel
+\endcode
+
+\section gtestrun Running GoogleTest
+
+To run the GoogleTest test suite, do the following:
+
+\code
+cd build
+ctest
+\endcode
+
+If you're keen on generating XML JUnit output for Jenkins or a CI/CD 
+environment, try:
+
+\code
+ctest --output-junit testRes.xml
+\endcode
+
+*******************************************************************************/
