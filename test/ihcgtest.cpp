@@ -14,6 +14,7 @@ namespace {
     unsigned long  memoryAddress = 0x00;
     unsigned char  memoryData = 0x00;
     
+    // Tests Segment Address functions
     TEST(SegmentAddress, NoSegmentAddress) {
         EXPECT_EQ(false, classTest.getStartSegmentAddress(&ipRegister, &csRegister));
         EXPECT_EQ(0x00, ipRegister);
@@ -27,11 +28,13 @@ namespace {
         EXPECT_EQ(0xABCD, csRegister);
     }
 
+    // Tests Linear Address functions
     TEST(LinearAddress, NoLinearAddress) {
         EXPECT_EQ(false, classTest.getStartLinearAddress(&eipRegister));
         EXPECT_EQ(0x00, eipRegister);
     }
 
+    // Tests what happens before any data is put in the memory
     TEST(LinearAddress, SetAndGetLinearAddress) {
         classTest.setStartLinearAddress(0x12345678);
         EXPECT_EQ(true, classTest.getStartLinearAddress(&eipRegister));
@@ -84,6 +87,7 @@ namespace {
         EXPECT_EQ(false, classTest.getData(&memoryData));
         EXPECT_EQ(0, memoryData);
     }
+
     TEST(MemorySpace, CheckMemoryEmpty10) {
         memoryAddress = 0x00;
         memoryData = 0x00;
@@ -91,6 +95,35 @@ namespace {
         EXPECT_EQ(0, memoryData);
         EXPECT_EQ(0, memoryAddress);    
     }
+
+    TEST(MemorySpace, CheckMemoryEmpty11) {
+        EXPECT_EQ(true, classTest.endOfData());
+    }
+
+    // Now we add a block of data (16 bytes) to local memory and check 
+    // related functions
+/* The insertData method is not currently implemented
+    TEST(MemorySpace, CheckMemoryData01) {
+        memoryData = 0x10;
+        memoryAddress = 0x00;
+        for (unsigned char x = 0; x < 0x10; x ++) {
+            classTest.insertData(memoryData);
+            ++memoryData;
+            ++memoryAddress;
+        }
+        memoryData = 0x00;
+
+        EXPECT_EQ(false, classTest.empty());
+    }
+
+    TEST(MemorySpace, CheckMemoryData02) {
+        EXPECT_EQ(16, classTest.size());
+    }
+
+    TEST(MemorySpace, CheckMemoryData03) {
+        EXPECT_EQ(true, classTest.endOfData());
+    }
+*/
 } // namespace - segment address
 
 /*****************************************************************************/
