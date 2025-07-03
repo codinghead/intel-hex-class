@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <regex>
 #ifdef _MSC_FULL_VER
 #include <stdio.h>
 #else
@@ -161,15 +162,15 @@ string intelhex::ucToHexString(unsigned char value, bool useLowerCase)
 
 #ifdef _MSC_FULL_VER
     if (!useLowerCase) {
-        sprintf_s(localString, 49, "%02lX", value);
+        sprintf_s(localString, 49, "%02X", value);
     } else {
-        sprintf_s(localString, 49, "%02lx", value);
+        sprintf_s(localString, 49, "%02x", value);
     }
 #else
     if (!useLowerCase) {
-        snprintf(localString, 49, "%02lX", value);
+        snprintf(localString, 49, "%02X", value);
     } else {
-        snprintf(localString, 49, "%02lx", value);
+        snprintf(localString, 49, "%02x", value);
     }
 #endif
     returnString.insert(0, localString);
@@ -298,6 +299,8 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
     unsigned long loadOffset;
     // Variables to hold the record type
     intelhexRecordType recordType;
+    // Variable to hold regex patternt to check for valid HEX format
+    static const std::regex pattern("^:[0-9a-fA-F]+$");
     
     do
     {
@@ -315,41 +318,34 @@ istream& operator>>(istream& dataIn, intelhex& ihLocal)
         {
             /* Increment line counter                                         */
             lineCounter++;
-        
+
+            /* Use regex to determine validity of line's content              */
+            if (!std::regex_match(ihLine, pattern))
+            {
+                /* If this fails, it's probably not Intel HEX format so we    */
+                /* simply give up                                             */
+                string message = "Not an Intel HEX format file - aborting";
+
+                ihLocal.addError(message);
+
+                /* Generate error if there were                               */
+                if (ihLocal.verbose == true)
+                {
+                    cout << "Aborting: Not an Intel HEX file format." << endl;
+                }
+
+                /* Erase ihLine content and break out of do...while loop      */
+                ihLine.erase();
+                break;
+            }
+
             /* Set string iterator to start of string                         */
             ihLineIterator = ihLine.begin();
         
-            /* Check that we have a ':' record mark at the beginning          */
-            if (*ihLineIterator != ':')
-            {
-                /* Add some warning code here                                 */
-                string message;
+            /* Remove the record mark from the beginning of the strong as we  */
+            /* don't need it                                                  */
+            ihLine.erase(ihLineIterator);
 
-                message = "Line without record mark ':' found @ line " +
-                                                ihLocal.ulToString(lineCounter);
-
-                ihLocal.addWarning(message);
-                
-                /* If this is the first line, let's simply give up. Chances   */
-                /* are this is not an Intel HEX file at all                   */
-                if (lineCounter == 1)
-                {
-                    message = "Intel HEX File decode aborted; ':' missing in " \
-                              "first line.";
-                    ihLocal.addError(message);
-                    
-                    /* Erase ihLine content and break out of do...while loop  */
-                    ihLine.erase();
-                    break;
-                }
-            }
-            else
-            {
-                /* Remove the record mark from the string as we don't need it */
-                /* anymore                                                    */
-                ihLine.erase(ihLineIterator);
-            }
-        
             /* Run through the whole line to check the checksum               */
             for (ihLineIterator = ihLine.begin(); 
                  ihLineIterator != ihLine.end(); 
