@@ -62,7 +62,7 @@ using namespace std;
 char *program_name;
 
 // Usage for this program
-void usage()
+void usage(int returnValue)
 {
 	string buildDate = __DATE__;
 	string buildTime = __TIME__;
@@ -71,23 +71,27 @@ void usage()
                  " [file]" << endl;
     
 	cerr << "Build date: " << buildDate << " Build time: " << buildTime << endl;
-	exit (EXIT_FAILURE);
+	exit (returnValue);
 }
 
 int main(int argc, char *argv[])
 {
     // Create an input stream
 	std::ifstream intelHexInput;
-	
+	// Success/Failure return
+	int returnValue = EXIT_SUCCESS;
 	// Create a variable for the intel hex data
 	intelhex ihIntegrity;
-	
+
+    // Turn on verbose output
+//    ihIntegrity.verboseOn();
+    
 	// The program name is the first argument - save for later use
 	program_name = argv[0];
 
 	// Make sure there are only <command> and 1 x <file> arguments	
 	if(argc != 2) {
-    	usage();
+    	usage(EXIT_FAILURE);
     }
     	
 	intelHexInput.open(argv[1], ifstream::in);
@@ -95,7 +99,7 @@ int main(int argc, char *argv[])
 	if(!intelHexInput.good())
 	{
     	std::cerr << "Error: couldn't open " << argv[1] << std::endl;
-    	usage();
+    	usage(EXIT_FAILURE);
 	}
  
     intelHexInput >> ihIntegrity;
@@ -103,26 +107,32 @@ int main(int argc, char *argv[])
     {
         cout << "Issues found with " << argv[1] << endl;
         
-        if (ihIntegrity.getNoErrors() > 0)
+        if (ihIntegrity.getNoErrors() > 0) {
             cout << "Errors:" << endl;
-        while (ihIntegrity.getNoErrors() > 0)
-        {
-            string message;
+            returnValue = EXIT_FAILURE;
             
-            ihIntegrity.popNextError(message);
+            while (ihIntegrity.getNoErrors() > 0)
+            {
+                string message;
             
-            cout << message << endl;
+                ihIntegrity.popNextError(message);
+            
+                cout << message << endl;
+            }
         }
         
-        if (ihIntegrity.getNoWarnings() > 0)
+        if (ihIntegrity.getNoWarnings() > 0) {
+        
             cout << "Warnings:" << endl;
-        while (ihIntegrity.getNoWarnings() > 0)
-        {
-            string message;
+
+            while (ihIntegrity.getNoWarnings() > 0)
+            {
+                string message;
             
-            ihIntegrity.popNextWarning(message);
+                ihIntegrity.popNextWarning(message);
             
-            cout << message << endl;
+                cout << message << endl;
+            }
         }
     }
     else
@@ -130,5 +140,5 @@ int main(int argc, char *argv[])
         cout << "No errors found in " << argv[1] << endl;
     }
        
-    return(0);	
+    return(returnValue);	
 }
