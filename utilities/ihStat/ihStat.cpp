@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 	
     if(!intelHexInput.good())
     {
-        std::cerr << "Error: couldn't open " << argv[1] << std::endl;
+        cerr << "Error: couldn't open " << argv[1] << endl;
         usage();
     }
 	
@@ -114,23 +114,38 @@ int main(int argc, char *argv[])
     /* Decode file                                                            */
     intelHexInput >> ihStat;
 
-    /* Check for errors or warnings                                           */
-    if (ihStat.getNoWarnings() != 0)
-    {
-        std::cerr << "File " << argv[1] << " contained warnings." << std::endl;
-        decodingIssues = true;
-    }
+    /* Check for errors and abort                                             */
     if (ihStat.getNoErrors() != 0)
     {
-        std::cerr << "File " << argv[1] << " contained errors." << std::endl;
-        decodingIssues = true;
+        cerr << "File " << argv[1] << " contained errors:" << endl;
+
+        while (ihStat.getNoErrors() > 0) {
+            string message;
+            ihStat.popNextError(message);
+            cerr << message << endl;
+        }
+        return(EXIT_FAILURE);
     }
         
+    /* Check for warnings and continue                                        */
+    if (ihStat.getNoWarnings() != 0)
+    {
+        cout << "File " << argv[1] << " contained warnings:" << endl;
+        decodingIssues = true;
+
+        while (ihStat.getNoWarnings() > 0) {
+            string message;
+            ihStat.popNextWarning(message);
+            cout << message << std::endl;
+        }
+    }
+
     if (decodingIssues == true)
     {
-        std::cerr << "Continuing with stat despite issues listed." << std::endl;
+        cout << "Continuing with stat despite warnings listed." << endl;
     }
-    
+
+    /* Start the statistical analysis                                        */
     /* Determine start and end addresses                                     */
     ihStat.startAddress(&startAddress);
     ihStat.endAddress(&endAddress);
@@ -139,11 +154,14 @@ int main(int argc, char *argv[])
         << uppercase << startAddress << endl;
     cout << "End address  : 0x" << hex << setw(8) << setfill('0') \
         << uppercase << endAddress << endl;
-    cout << "Address range: " << dec << ((endAddress - startAddress) +1UL) \
-        << " bytes" << endl;
+    cout << "Address range: " << dec << ((endAddress - startAddress) + 1UL) \
+        << " bytes (0x" << hex << setw(8) << uppercase \
+        << setfill('0') << ((endAddress - startAddress) + 1UL) << ")" << endl;
 	
     /* Determine number of bytes in file                                     */
-    cout << "Data bytes   : " << dec << ihStat.size() << endl;
+    cout << "Data bytes   : " << dec << ihStat.size() \
+        << " bytes (0x" << hex << setw(8) << uppercase \
+        << setfill('0') << ihStat.size() << ")" << endl;
 
     /* If EIP register was found, output value                               */
     unsigned long eipRegister;
@@ -182,8 +200,8 @@ int main(int argc, char *argv[])
     unsigned long emptyRegionEnd = 0;
     unsigned long previousAddress = 0;
     unsigned long currentAddress = 0;
-    unsigned char data = 0x00;
-    bool inEmptyRegion = false;
+//    unsigned char data = 0x00;
+//    bool inEmptyRegion = false;
 
     cout << "Finding empty regions..." << endl;
 
@@ -218,5 +236,5 @@ int main(int argc, char *argv[])
         cout << "    ...no empty regions in file." << endl;
     }
 
-    return(0);	
+    return(EXIT_SUCCESS);	
 }
