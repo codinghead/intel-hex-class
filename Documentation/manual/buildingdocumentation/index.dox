@@ -38,13 +38,11 @@ simplest way to install the required tools is:
 
 \code{.txt}
 
-sudo apt install graphviz
-sudo apt install texlive-utils
-sudo apt install make
+sudo apt install graphviz texlive texlive-extra-utils make
 
 \endcode
 
-The texlive-utils is a large package that will take some time to install.
+The texlive-extra-utils is a large package that will take some time to install.
 
 \section docbuilding Building the Intel HEX Class Documentation
 
