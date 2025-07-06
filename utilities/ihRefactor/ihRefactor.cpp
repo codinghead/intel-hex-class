@@ -63,7 +63,7 @@
 #include <cstdlib>
 #include <iomanip>
 
-#include "intelhexclass.h"
+#include "../../intelhex_class/intelhexclass.h"
 
 using namespace std;
 
